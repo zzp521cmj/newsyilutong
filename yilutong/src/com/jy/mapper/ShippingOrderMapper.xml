@@ -1,0 +1,1454 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jy.dao.ShippingOrderDao">
+
+
+	<select id="getShipOrderInfo" resultType="ShippingOrder">
+		SELECT
+		datediff(now(),order_arrive_time) as stocks_predestination,
+		ji.*
+		FROM
+		jy_shiping_order ji
+		where
+		1=1
+		<if test="param3==null or param3==''">
+			and ji.is_order_arrive =0
+		</if>
+		<if test="param3!=null and param3!=''">
+			and ji.shiping_order_num like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.receipt like "%${param4}%"
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.end_address like "%${param5}%"
+		</if>
+		<if test="param6!=null and param6!=''">
+			and ji.weituo_time &gt;=#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">
+			and ji.weituo_time &lt;=#{param7}
+		</if>
+
+		<if test="param8!=null and param8!=''">
+			and ji.custom_id =#{param8}
+		</if>
+			<if test="param9!=null and param9!=''">
+			and ji.receipt_tel like "%${param9}%"
+		</if>
+			<if test="param10!=null and param10!=''">
+			and ji.shipping_order_state =#{param10}
+		</if>
+			<if test="param11!=null and param11!=''">
+			and ji.pay_type =#{param11}
+		</if>
+		<if test="param12!=null and param12!=''">
+			and ji.send_station =#{param12}
+		</if>
+		<if test="param14!=null and param14!=''">
+            and ji.weitoudanhao like "%${param14}%"
+        </if>
+		ORDER BY
+		ji.updatetime
+		DESC
+		limit
+		#{param1},#{param2}
+	</select>
+
+	<select id="getShipOrder" resultType="int">
+		select count(*) from jy_shiping_order where
+			1=1
+		<if test="param1==null or param1==''">
+			and is_order_arrive =0
+		</if>
+		<if test="param1!=null and param1!=''">
+			and shiping_order_num like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and receipt like "%${param2}%"
+		</if>
+		<if test="param3!=null and param3!=''">
+			and end_address like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and weituo_time &gt;=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			and weituo_time &lt;=#{param5}
+		</if>
+	
+			<if test="param6!=null and param6!=''">
+			and custom_id =#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">
+			and receipt_tel like "%${param7}%"
+		</if>
+			<if test="param8!=null and param8!=''">
+			and shipping_order_state =#{param8}
+		</if>
+			<if test="param9!=null and param9!=''">
+			and pay_type =#{param9}
+		</if>
+			<if test="param10!=null and param10!=''">
+			and send_station =#{param10}
+		</if>
+<!-- 		<if test="param11!=null and param11!=''">
+			and user_id =#{param11}
+		</if> -->
+		<if test="param12!=null and param12!=''">
+            and weitoudanhao like "%${param12}%"
+        </if>
+	</select>
+
+	<select id="getShipOrderInfoCA" resultType="ShippingOrder">
+		 SELECT
+		ji.*
+		FROM
+		jy_shiping_order ji
+		where
+		(ji.shipping_order_state=0 or ji.shipping_order_state=4)
+		<!--  SELECT
+		ji.*
+		FROM
+		jy_shiping_order ji
+		where
+		(ji.shipping_order_state=0
+		OR ji.shipping_order_state=2)	 -->
+<!--startDate, end_date, ddId, order_state, pay_type,perpole,end_address,send_address,phone_number -->
+		<if test="param4!=null and param4!=''">
+			and ji.weituo_time &gt;=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.weituo_time &lt;=#{param5}
+		</if>
+
+		<if test="param6!=null and param6!=''">
+			and ji.shiping_order_num like "%${param6}%"
+		</if>
+		<if test="param7!=null and param7!=''">
+			and ji.shipping_order_state =#{param7}
+		</if>
+		<if test="param8!=null and param8!=''">
+			and ji.pay_type =#{param8}
+		</if>
+		<if test="param9!=null and param9!=''">
+			and ji.receipt like "%${param9}%"
+		</if>
+		<if test="param10!=null and param10!=''">
+			and ji.end_address like "%${param10}%"
+		</if>
+		<if test="param11!=null and param11!=''">
+			and ji.send_station =#{param11}
+		</if>
+		<if test="param12!=null and param12!=''">
+			and ji.receipt_tel =#{param12}
+		</if>
+		ORDER BY
+		ji.updatetime
+		DESC
+		limit
+		#{param1},#{param2}
+	</select>
+
+	<select id="getShipOrderCA" resultType="int">
+		select count(*) from jy_shiping_order ji where 
+		(ji.shipping_order_state=0 or ji.shipping_order_state=4)
+		 AND ji.send_type!=0
+		<if test="param1!=null and param1!=''">
+			and ji.shiping_order_num like "%${param3}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and ji.shiping_order_num like "%${param4}%"
+		</if>
+		<if test="param3!=null and param3!=''">
+			and ji.receipt like "%${param5}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.end_address like "%${param6}%"
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.weituo_time &gt;=#{param7}
+		</if>
+		<if test="param6!=null and param6!=''">
+			and ji.weituo_time &lt;=#{param8}
+		</if>
+		
+		<if test="param7!=null and param7!=''">
+			and ji.send_station like "%${param7}%"
+		</if>
+		<if test="param8!=null and param8!=''">
+			and ji.end_address like "%${param10}%"
+		</if>
+		<if test="param9!=null and param9!=''">
+			and ji.car_number like "%${param11}%"
+		</if>
+
+	</select>
+	<!--导出  -->
+	<select id="getShipOrderAll" resultType="ShippingOrder">
+		SELECT 
+		ji.*,so.*
+		FROM
+		 jy_shiping_order  so
+		LEFT JOIN  jy_order_custom ji on ji.custom_id=so.custom_id
+
+		 where 1=1 
+		 and so.is_order_arrive=0
+		
+		 and ji.custom_id in
+		 
+		 <foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		
+	</select>
+
+	<delete id="deleteShipOrder" parameterType="java.util.Arrays">
+		delete from
+		jy_shiping_order
+		where
+		shiping_order_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	<!-- 删除与订单关联的需求 -->
+	
+	<delete id="deleteShipToDemand" parameterType="java.util.Arrays">
+		delete from
+		jy_shiping_demand
+		where
+		shiping_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+<!--删除订单且删除相关修改订单信息  -->
+	<delete id="deleteOrderEH" parameterType="java.util.Arrays">
+		delete from
+		jy_order_ehistory
+		where
+		shiping_order_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	<!-- 保存 -->
+	<insert id="saveShipOrder" parameterType="ShippingOrder">
+		insert 	into
+		jy_shiping_order
+		(
+		shiping_order_id,
+		shiping_order_num,
+		send_station,
+		end_address,
+		send_time, 
+		receipt,
+		receipt_tel,
+		receipt_phone,
+		receipt_address,
+		goods_name,
+		goods_packing,
+		<if test="goods_num != null and goods_num !=''" >
+			 goods_num,
+		 </if>
+		  <if test="goods_weight != null and goods_weight !=''" >
+			 goods_weight,
+		 </if>
+		  <if test="goods_vol != null and goods_vol !=''" >
+			 goods_vol,
+		 </if>
+		 transport_mode,
+		  <if test="adorn_fee != null and adorn_fee !=''" >
+		 		adorn_fee,
+		 </if>
+		 <if test="trunk_fee != null and trunk_fee !=''" >
+				trunk_fee,
+		 </if>
+		 <if test="receivable_ground_fee != null and receivable_ground_fee !=''">
+		        receivable_ground_fee,
+		 </if>
+		 <if test="upstairs_fee !=null and upstairs_fee !=''">
+		        upstairs_fee,
+		 </if>
+		 <if test="deliver_fee !=null and deliver_fee !=''">
+		        deliver_fee,
+		 </if>
+		 <if test="seized_fee !=null and seized_fee !=''">
+		        seized_fee,
+		 </if>
+		 <if test="inspect_fee !=null and inspect_fee !=''">
+		    	inspect_fee,
+		 </if>
+		pay_type,
+			 <if test="transport_pay != null and transport_pay !=''" >
+				transport_pay,
+		 </if>
+		remarks,
+		send_type,
+		 <if test="trade_agency != null and trade_agency !=''" >
+					trade_agency,
+		 </if>
+		shipping_order_name,
+		is_recept,
+		custom_id,
+		car_number,
+		custom_name,
+		remarks_fee,
+		creat_type,
+		<if test="back_fee !=null and back_fee !=''" >
+		back_fee,
+		</if>
+
+		order_time,
+		invoice_state,
+		<if test="insurance_fee !=null and insurance_fee !=''" >
+		insurance_fee,
+		</if>
+		<if test="freight_fee !=null and freight_fee !=''" >
+		freight_fee,
+		</if>
+		<if test="picking_fee !=null" >
+		picking_fee,
+		</if>
+		user_id,
+		<if test="destination_fee !=null and destination_fee !=''" >
+		destination_fee,
+		</if>
+		send_phone,
+		duty_rate,
+	
+		<if test="weituo_time !=null and weituo_time !=''" >
+	    weituo_time,
+	    </if>
+        weitoudanhao,
+        fhdanweiname,
+        send_shouji,
+        fahuo_address,
+        shdanweiname,
+        rates,
+        shouxu_feelv,
+        handling_charge,
+        <if test="daohuo_time !=null and daohuo_time !=''" >
+        daohuo_time,
+        </if>
+        trade_agency_stata,
+        fankuan_stata,
+        konghuo,
+        most_urgent,
+        printed,
+        shouliwangdian,
+       baozhuang_name, 
+        yewuyuan,
+        <if test="affirm_value != ''">
+        affirm_value,
+        </if>
+        is_recept_no,
+        customer_id,
+        <if test="gatheringhj != '' and gatheringhj!=null">   
+        gatheringhj,
+        </if>
+        <if test="reality_sum != null and reality_sum != ''">
+        reality_sum,
+        </if>
+        <if test="paid_fu != null and paid_fu != ''">
+        paid_fu,
+        </if>
+        <if test="setldaisk_trade != null and setldaisk_trade != ''">
+        setldaisk_trade,
+        </if>
+        <if test="paidgf_fu != null and paidgf_fu != ''">
+        paidgf_fu,
+        </if>
+        <if test="paid_fee != null and paid_fee != ''">
+        paid_fee,
+        </if>
+        <if test="handling_shihou != null and handling_shihou != ''">
+        handling_shihou
+        </if>
+        
+		)
+		values (
+		#{shiping_order_id},
+		#{shiping_order_num},
+		#{send_station},
+		#{end_address},	
+		#{send_time},
+		#{receipt},
+		#{receipt_tel},
+		#{receipt_phone},
+		#{receipt_address},
+		#{goods_name},
+		#{goods_packing},
+		<if test="goods_num != null and goods_num !=''" >
+			#{goods_num},
+		 </if>
+		  <if test="goods_weight != null and goods_weight !=''" >
+			#{goods_weight},
+		 </if>
+		  <if test="goods_vol != null and goods_vol !=''" >
+			 #{goods_vol},
+		 </if>
+		 #{transport_mode},
+		  <if test="adorn_fee != null and adorn_fee !=''" >
+		 	#{adorn_fee},
+		 </if>
+		 <if test="trunk_fee != null and trunk_fee !=''" >
+			#{trunk_fee},
+		 </if>
+		 <if test="receivable_ground_fee != null and receivable_ground_fee !=''">
+		       #{receivable_ground_fee},
+		 </if>
+		 <if test="upstairs_fee !=null and upstairs_fee !=''">
+		        #{upstairs_fee},
+		 </if>
+		 <if test="deliver_fee !=null and deliver_fee !=''">
+		        #{deliver_fee},
+		 </if>
+		 <if test="seized_fee !=null and seized_fee !=''">
+		        #{seized_fee},
+		 </if>
+		 <if test="inspect_fee !=null and inspect_fee !=''">
+		    	#{inspect_fee},
+		 </if>
+		#{pay_type},
+		<if test="transport_pay != null and transport_pay !=''" >
+				#{transport_pay},
+		 </if>
+		#{remarks},
+		#{send_type},
+		<if test="trade_agency != null and trade_agency !=''" >
+			#{trade_agency},
+		 </if>
+		#{shipping_order_name},
+	    #{is_recept}, 
+		#{custom_id},
+		#{car_number},
+		#{custom_name},		
+		#{remarks_fee},
+		#{creat_type},
+	    <if test="back_fee !=null and back_fee !=''" >
+		#{back_fee},	
+		</if>	
+		now(),
+		#{invoice_state},
+		<if test="insurance_fee !=null and insurance_fee !=''" >
+		#{insurance_fee},
+		</if>
+		<if test="freight_fee !=null and freight_fee !=''" >
+		#{freight_fee},
+		</if>
+		<if test="picking_fee !=null" >
+		#{picking_fee},
+		</if>
+		#{user_id},
+		<if test="destination_fee !=null and destination_fee !=''" >
+		#{destination_fee},
+		</if>
+		#{send_phone},
+		#{duty_rate},
+		
+		
+		<if test="weituo_time !=null and weituo_time !=''" >
+		 #{weituo_time},
+		 </if>
+         #{weitoudanhao},
+        #{fhdanweiname},
+        #{send_shouji},
+         #{fahuo_address},
+         #{shdanweiname},
+         #{rates},
+         #{shouxu_feelv},
+         #{handling_charge},
+         <if test="daohuo_time !=null and daohuo_time !=''" >
+         #{daohuo_time},
+         </if>
+         #{trade_agency_stata},
+        #{fankuan_stata},
+        #{konghuo},
+         #{most_urgent},
+         #{printed},
+         #{shouliwangdian},
+         #{baozhuang_name}, 
+         #{yewuyuan},
+         <if test="affirm_value != ''">         
+         #{affirm_value},
+         </if>
+         #{is_recept_no},
+         #{customer_id},
+          <if test="gatheringhj != '' and gatheringhj!=null">         
+         #{gatheringhj},
+         </if>
+         <if test="reality_sum != null and reality_sum != ''">
+        #{reality_sum},
+        </if>
+        <if test="paid_fu != null and paid_fu != ''">
+        #{paid_fu},
+        </if>
+        <if test="setldaisk_trade != null and setldaisk_trade != ''">
+         #{setldaisk_trade},
+        </if>
+        <if test="paidgf_fu != null and paidgf_fu != ''">
+         #{paidgf_fu},
+        </if>
+        <if test="paid_fee != null and paid_fee != ''">
+         #{paid_fee},
+        </if>
+        <if test="handling_shihou != null and handling_shihou != ''">
+         #{handling_shihou}
+        </if>
+		)
+
+	</insert>
+	<!-- 订单修改历史表 -->
+	<insert id="saveOrderEHistory" parameterType="ShippingOrder">
+		insert 	into
+		jy_order_ehistory
+		(
+		ehistory_id,
+		shiping_order_id,
+		shiping_order_num,
+		send_station,
+		end_address,
+		send_time, 
+		receipt,
+		receipt_tel,
+		receipt_phone,
+		receipt_address,
+		goods_name,
+		goods_packing,
+		<if test="goods_num != null and goods_num !=''" >
+			 goods_num,
+		 </if>
+		  <if test="goods_weight != null and goods_weight !=''" >
+			 goods_weight,
+		 </if>
+		  <if test="goods_vol != null and goods_vol !=''" >
+			 goods_vol,
+		 </if>
+		 transport_mode,
+	 <if test="take_fee != null and take_fee !=''" >
+			 take_fee,
+		 </if>
+		<!--  <if test="ys_unloading_fee != null and ys_unloading_fee !=''" >
+			ys_unloading_fee,
+		 </if> -->
+		  <if test="adorn_fee != null and adorn_fee !=''" >
+		 		adorn_fee,
+		 </if>
+		 <if test="trunk_fee != null and trunk_fee !=''" >
+				trunk_fee,
+		 </if>
+		 <if test="receivable_ground_fee != null and receivable_ground_fee !=''">
+		        receivable_ground_fee,
+		 </if>
+		 <if test="upstairs_fee !=null and upstairs_fee !=''">
+		        upstairs_fee,
+		 </if>
+		 <if test="deliver_fee !=null and deliver_fee !=''">
+		        deliver_fee,
+		 </if>
+		 <if test="seized_fee !=null and seized_fee !=''">
+		        seized_fee,
+		 </if>
+		 <if test="inspect_fee !=null and inspect_fee !=''">
+		    	inspect_fee,
+		 </if>
+		pay_type,
+			 <if test="transport_pay != null and transport_pay !=''" >
+				transport_pay,
+		 </if>
+		remarks,
+		send_type,
+		 <if test="trade_agency != null and trade_agency !=''" >
+					trade_agency,
+		 </if>
+		shipping_order_name,
+		is_recept,
+		custom_id,
+		car_number,
+		custom_name,
+		remarks_fee,
+		creat_type,
+		
+		change_fee,
+		<if test="back_fee !=null and back_fee !=''" >
+		back_fee,
+	    </if>
+		send_fee,
+		updatetime,
+		edit_order
+		)
+		values (
+		#{ehistory_id},
+		#{shiping_order_id},
+		#{shiping_order_num},
+		#{send_station},
+		#{end_address},	
+		#{send_time},
+		#{receipt},
+		#{receipt_tel},
+		#{receipt_phone},
+		#{receipt_address},
+		#{goods_name},
+		#{goods_packing},
+		<if test="goods_num != null and goods_num !=''" >
+			#{goods_num},
+		 </if>
+		  <if test="goods_weight != null and goods_weight !=''" >
+			#{goods_weight},
+		 </if>
+		  <if test="goods_vol != null and goods_vol !=''" >
+			 #{goods_vol},
+		 </if>
+		 #{transport_mode},
+		 <if test="take_fee != null and take_fee !=''" >
+			#{take_fee},
+		 </if>
+		<!--  <if test="ys_unloading_fee != null and ys_unloading_fee !=''" >
+			#{ys_unloading_fee},
+		 </if> -->
+		  <if test="adorn_fee != null and adorn_fee !=''" >
+		 	#{adorn_fee},
+		 </if>
+		 <if test="trunk_fee != null and trunk_fee !=''" >
+			#{trunk_fee},
+		 </if>
+		 <if test="receivable_ground_fee != null and receivable_ground_fee !=''">
+		       #{receivable_ground_fee},
+		 </if>
+		 <if test="upstairs_fee !=null and upstairs_fee !=''">
+		        #{upstairs_fee},
+		 </if>
+		 <if test="deliver_fee !=null and deliver_fee !=''">
+		        #{deliver_fee},
+		 </if>
+		 <if test="seized_fee !=null and seized_fee !=''">
+		        #{seized_fee},
+		 </if>
+		 <if test="inspect_fee !=null and inspect_fee !=''">
+		    	#{inspect_fee},
+		 </if>
+		#{pay_type},
+		<if test="transport_pay != null and transport_pay !=''" >
+				#{transport_pay},
+		 </if>
+		#{remarks},
+		#{send_type},
+		<if test="trade_agency != null and trade_agency !=''" >
+			#{trade_agency},
+		 </if>
+		#{shipping_order_name},
+	    #{is_recept}, 
+		#{custom_id},
+		#{car_number},
+		#{custom_name},		
+		#{remarks_fee},
+		#{creat_type},
+		#{change_fee},
+	    <if test="back_fee !=null and back_fee !=''" >
+		#{back_fee},	
+		</if>
+		#{send_fee},
+		#{updatetime},
+		#{edit_order}
+		)
+		
+	</insert>
+	<!--  货物到达修改以及时间-->
+	<update id="isArrive"  parameterType="java.util.Arrays" >
+		update jy_shiping_order
+		<set>
+		is_order_arrive=1,
+		order_arrive_time=now()
+		</set>
+		where shiping_order_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>	
+	</update>
+	<!--  货物到达修改车到时间-->
+	<update id="isArriveCoustom"  parameterType="String" >
+		update jy_order_custom
+		<set>
+		receipt_time=now(),
+		is_arrived=1
+		</set>
+		where custom_id =#{_parameter}
+	</update>
+	<!--  货物取消到达修改-->
+	<update id="isNotArrive"  parameterType="java.util.Arrays"  >
+		update jy_shiping_order
+		<set>
+		is_order_arrive=0,
+		updatetime=now(),
+		order_arrive_time= null
+		</set>
+		where shiping_order_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	
+	
+	<!-- 到达订单历史表存储 -->
+	<insert id="saveOrderHistory"  parameterType="java.util.List" >
+		INSERT 
+			jy_order_history
+		(
+		order_history_id,
+		orders_id,
+		order_arrive_time,
+		goods_arrive_remakes
+		)
+		VALUES
+		<foreach collection="list" index="index" item="item"
+			separator=",">
+		(
+		#{item.order_history_id},
+		#{item.orders_id},
+		#{item.order_arrive_time},
+		#{item.goods_arrive_remakes}		
+		)
+	</foreach>
+	</insert>
+	
+	<!--取消到达删除数据  -->
+	<delete id="deleteOrderHistory"  parameterType="java.util.Arrays" >
+		DELETE FROM
+			jy_order_history
+		WHERE
+			 orders_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	
+	
+	<select id="getUpdateShipOrder" parameterType="String"
+		resultType="ShippingOrder">
+		SELECT
+		ji.*
+		FROM
+		jy_shiping_order ji
+		where
+		ji.shiping_order_id=#{_parameter}
+	</select>
+	
+	
+	<select id="getShipOrderCAM" parameterType="java.util.Arrays" resultType="ShippingOrder">
+		select * from
+		jy_shiping_order
+		where
+		shiping_order_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		ORDER BY
+		updatetime
+		DESC
+		LIMIT
+		#{param1},#{param2}
+	</select>
+	<update id="updateShipOrder" parameterType="ShippingOrder">
+		update
+		jy_shiping_order
+		<set>
+		    shiping_order_num = #{shiping_order_num},
+		    <!-- send_station = #{send_station}, -->
+		    end_address = #{end_address},
+		    receipt = #{receipt},
+		    receipt_tel = #{receipt_tel},
+		    receipt_phone = #{receipt_phone},
+		    receipt_address = #{receipt_address},
+		    goods_name = #{goods_name},
+		    goods_packing = #{goods_packing},
+		    <if test="goods_num !=null and goods_num!=''">
+		    goods_num = #{goods_num},
+		    </if>
+		    <if test="goods_weight !=null and goods_weight!=''">
+		    goods_weight = #{goods_weight},
+		    </if>
+		    <if test="goods_vol !=null and goods_vol!=''">		    
+		    goods_vol = #{goods_vol},
+		    </if>
+		    transport_mode = #{transport_mode},
+		    send_type = #{send_type},
+		    take_fee = #{take_fee},
+		    send_fee = #{send_fee},
+		    <if test="adorn_fee ==null or adorn_fee ==''">	
+		      adorn_fee ="0.00",
+		    </if>
+		   <if test="adorn_fee !=null and adorn_fee !=''">	 
+		    adorn_fee = #{adorn_fee},
+		    </if>
+		       <if test="change_fee !=null and change_fee !=''">	
+		    change_fee = #{change_fee},
+		    </if>
+		    <if test="receivable_ground_fee ==null or receivable_ground_fee ==''">
+		    receivable_ground_fee = "0.00",
+		    </if>
+		    <if test="receivable_ground_fee !=null and receivable_ground_fee !=''">
+		    receivable_ground_fee = #{receivable_ground_fee},
+		    </if>
+		     <if test="upstairs_fee ==null or upstairs_fee ==''">
+		      upstairs_fee = "0.00",
+		     </if>
+		    <if test="upstairs_fee !=null and upstairs_fee !=''">
+		    upstairs_fee = #{upstairs_fee},
+		    </if>
+		    <if test="deliver_fee ==null or deliver_fee ==''">
+		    deliver_fee = "0.00",
+		    </if>
+		    <if test="deliver_fee !=null and deliver_fee !=''">
+		    deliver_fee = #{deliver_fee},
+		    </if>
+		    <if test="seized_fee ==null or seized_fee ==''">
+		    seized_fee = "0.00",
+		    </if>
+		    <if test="seized_fee !=null and seized_fee !=''">
+		    seized_fee = #{seized_fee},
+		    </if>
+		     <if test="inspect_fee ==null or inspect_fee ==''">
+		     inspect_fee = "0.00",
+		     </if>
+		    <if test="inspect_fee !=null and inspect_fee !=''">		    
+		    inspect_fee = #{inspect_fee},
+		    </if>
+		     <if test="back_fee ==null or back_fee ==''">	
+		     back_fee = "0.00",
+		     </if>
+		    <if test="back_fee !=null and back_fee !=''">		    		    
+		    back_fee = #{back_fee},
+		    </if>
+		    remarks_fee = #{remarks_fee},
+		    pay_type = #{pay_type},
+		     <if test="transport_pay ==null or transport_pay ==''">
+		      transport_pay = "0.00",
+		     
+		     </if>
+		    <if test="transport_pay !=null and transport_pay !=''">	
+		    transport_pay = #{transport_pay},
+		    
+		    </if>
+            <if test="trade_agency ==null or trade_agency ==''">
+            trade_agency = "0.00",
+            </if>
+		    <if test="trade_agency !=null and trade_agency !=''">	
+		    trade_agency = #{trade_agency},
+		    </if>
+		    is_recept = #{is_recept},
+		    remarks = #{remarks},
+		    edit_order = #{edit_order},
+		    updatetime = #{updatetime},
+		    <if test="insurance_fee ==null or insurance_fee ==''">
+		    insurance_fee = "0.00",
+		    </if>
+		   <if test="insurance_fee !=null and insurance_fee !=''">	 
+		    insurance_fee = #{insurance_fee},
+		    </if>
+		    <if test="freight_fee !=null and freight_fee !=''">	
+		    freight_fee = #{freight_fee},
+		    </if>
+		     <if test="picking_fee ==null or picking_fee ==''">	
+		      picking_fee ="0.00",
+		      </if>
+		    <if test="picking_fee !=null and picking_fee !=''">	
+		     picking_fee = #{picking_fee},
+		     </if>
+		     <if test="destination_fee ==null or destination_fee ==''" >
+		     destination_fee = "0.00",
+		     </if>
+             <if test="destination_fee !=null and destination_fee !=''" >
+		   destination_fee = #{destination_fee},
+		</if>
+		send_phone = #{send_phone},
+		<if test="duty_rate !=null and duty_rate !=''" >
+		duty_rate = #{duty_rate},
+		</if>
+		invoice_state = #{invoice_state},
+		<if test="weituo_time !=null and weituo_time !=''" >
+	    weituo_time = #{weituo_time},
+	    </if>
+        weitoudanhao = #{weitoudanhao},
+        fhdanweiname = #{fhdanweiname},
+        send_shouji = #{send_shouji},
+        fahuo_address = #{fahuo_address},
+        shdanweiname = #{shdanweiname},
+        rates = #{rates},
+        shouxu_feelv = #{shouxu_feelv},
+        handling_charge = #{handling_charge},
+        <if test="daohuo_time !=null and daohuo_time !=''" >
+        daohuo_time = #{daohuo_time},
+        </if>
+        trade_agency_stata = #{trade_agency_stata},
+        fankuan_stata = #{fankuan_stata},
+        konghuo = #{konghuo},
+        most_urgent = #{most_urgent},
+        printed = #{printed},
+        shouliwangdian = #{shouliwangdian},
+       baozhuang_name = #{baozhuang_name}, 
+        yewuyuan = #{yewuyuan},
+        <if test="affirm_value ==null or affirm_value == ''">
+        affirm_value = "0.00",
+        </if>
+        <if test="affirm_value !=null and affirm_value != ''">
+        affirm_value = #{affirm_value},
+        </if>
+        is_recept_no = #{is_recept_no},
+        <if test="gatheringhj ==null or gatheringhj == ''">
+        gatheringhj="0.00",
+        
+        </if>
+        <if test="gatheringhj !=null and gatheringhj != ''">
+        gatheringhj=#{gatheringhj},
+        </if>
+        <if test="reality_sum == null or reality_sum != ''">
+              reality_sum = "0.00",
+	    </if>
+	    <if test="reality_sum == null or reality_sum == ''">
+              reality_sum = "0.00",
+	    </if>
+	    <if test="reality_sum == null and reality_sum == ''">
+              reality_sum = "0.00",
+	    </if>
+        <if test="reality_sum != null and reality_sum != ''">
+              reality_sum = #{reality_sum},
+	    </if>
+	     <if test="paid_fu == null or paid_fu == ''">
+	       paid_fu = "0.00",
+	        </if>
+	        <if test="paid_fu != null and paid_fu != ''">
+	       paid_fu = #{paid_fu},
+	        </if>
+	        <if test="setldaisk_trade == null or setldaisk_trade == ''">
+	        setldaisk_trade =  "0.00",
+	        </if>
+	        <if test="setldaisk_trade != null and setldaisk_trade != ''">
+	        setldaisk_trade =  #{setldaisk_trade},
+	        </if>
+	        <if test="paidgf_fu == null and paidgf_fu == ''">
+	        paidgf_fu = "0.00",
+	        </if>
+	        <if test="paidgf_fu != null and paidgf_fu != ''">
+	        paidgf_fu = #{paidgf_fu},
+	        </if>
+	        <if test="paid_fee == null or paid_fee == ''">
+	         paid_fee  = "0.00",
+	        </if>
+	        <if test="paid_fee != null and paid_fee != ''">
+	         paid_fee  = #{paid_fee},
+	        </if>
+	        <if test="handling_shihou == null or handling_shihou == ''">
+	        handling_shihou ="0.00"
+	        </if>
+	        <if test="handling_shihou != null and handling_shihou != ''">
+	        handling_shihou = #{handling_shihou}
+	        </if>
+		</set>		
+		where shiping_order_id = #{shiping_order_id}
+	</update>
+	<select id="getNumber" resultType="ShippingOrder">
+		select
+		*
+		from
+		jy_shiping_order
+		<if test="_parameter!=null">
+			where shiping_order_num=#{_parameter}
+		</if>
+	</select>
+	<select id="getAorder" resultType="int">
+		SELECT
+				COUNT(*)
+		FROM
+				jy_shiping_order
+		<if test="_parameter!=null">
+			where shiping_order_num=#{_parameter}
+		</if>
+	</select>
+
+	<select id="getPlateNumberLength" resultType="ShippingOrder">
+	
+		SELECT
+			DISTINCT travel_card_id,plate_number	
+		FROM
+			jy_travel_card jtc
+		INNER JOIN 
+			 jy_driver_info jd ON jd.car_id=jtc.travel_card_id
+		where
+			 jtc.state=1
+		<if test="_parameter!=null">
+			and plate_number like "%${_parameter}%"
+		</if>
+	</select>
+
+		<select id="getSignShipOrder" resultType="ShippingOrder">
+			
+		SELECT ja.*,ji.*,jca.*,jc.*,jso.*,jsi.*
+         FROM
+				jy_shiping_order ji
+				left  JOIN jy_agreementtoorder ja ON ji.shiping_order_id=ja.order_id 
+				left join jy_create_agreement jca on jca.agreement_id=ja.agreement_id
+				left join jy_company jc on jc.company_id=jca.company_id
+				left join jy_sign_order jso ON jso.order_id=ji.shiping_order_id
+						left join jy_signorderimages jsi on jsi.order_id=ji.shiping_order_id
+				where 
+				(ji.send_type !=0)
+					<if test="param3!=null and param3!=''">
+					and ji.shiping_order_num like "%${param3}%"
+				</if>
+				<if test="param4!=null and param4!=''">
+					and ji.weituo_time &gt;=#{param4}
+				</if>
+				<if test="param5!=null and param5!=''">
+					and ji.weituo_time &lt;=#{param5}
+				</if>
+			
+				<if test="param6!=null and param6!='' and param6 ==4">
+					and ji.shipping_order_state =4
+				</if>
+				<if test="param6!=null and param6!='' and param6 !=4">
+					and ji.shipping_order_state !=4
+				</if>
+				<if test="param6==null">
+				and ji.shipping_order_state !=5
+				</if>
+				<if test="param7!=null and param7!=''">
+					and (ji.custom_name like "%${param7}%" or ji.customer_id like "%${param7}%")
+				</if>
+				<if test="param8!=null and param8!=''">
+					and ji.receipt like "%${param8}%"
+				</if>
+				<if test="param9!=null and param9!=''">
+					and ji.end_address like "%${param9}%"
+				</if>
+				<if test="param10!=null and param10!=''">
+					and jca.driverid =#{param10}
+				</if>
+				group by ji.shiping_order_id	
+				limit
+				#{param1},#{param2}
+		</select>
+	<select id="getUpdateSignShipOrder" parameterType="String"
+		resultType="ShippingOrder">
+		<!-- select * from jy_car_owner_info where car_owner_id=#{carOwnerId} -->
+	SELECT 
+ jy_shiping_order.*,jy_sign_order.*
+FROM
+  jy_shiping_order 
+  LEFT JOIN jy_sign_order 
+    ON jy_sign_order.order_id = jy_shiping_order.shiping_order_id 
+		where
+		jy_shiping_order.shiping_order_id=#{shiping_order_id}
+	</select>
+	<select id="getSignShipOrdercount" resultType="int">
+
+				select count(*) from (	SELECT ji.shiping_order_id
+					FROM
+				jy_shiping_order ji
+				left  JOIN jy_agreementtoorder ja ON ji.shiping_order_id=ja.order_id 
+				left join jy_create_agreement jca on jca.agreement_id=ja.agreement_id
+				left join jy_company jc on jc.company_id=jca.company_id
+				left join jy_sign_order jso ON jso.order_id=ji.shiping_order_id
+						left join jy_signorderimages jsi on jsi.order_id=ji.shiping_order_id
+				where 
+				
+				( ji.send_type!=0)
+				<if test="param1!=null and param1!=''">
+					and ji.shiping_order_num like "%${param1}%"
+				</if>
+				<if test="param2!=null and param2!=''">
+					and ji.weituo_time &gt;=#{param2}
+				</if>
+				<if test="param3!=null and param3!=''">
+					and ji.weituo_time &lt;=#{param3}
+				</if>
+			
+				<if test="param4!=null and param4!='' and param4 ==4">
+					and ji.shipping_order_state =4
+				</if>
+				<if test="param4!=null and param4!='' and param4 !=4">
+					and ji.shipping_order_state !=4
+				</if>
+				<if test="param4==null">
+					and ji.shipping_order_state !=5
+				</if>
+				<if test="param5!=null and param5!=''">
+					and (ji.custom_name like "%${param5}%" or ji.customer_id like "%${param5}%")
+				</if>
+				<if test="param6!=null and param6!=''">
+					and ji.receipt like "%${param6}%"
+				</if>
+				<if test="param7!=null and param7!=''">
+					and ji.end_address like "%${param7}%"
+				</if>
+				<if test="param8!=null and param8!=''">
+					and jca.driverid =#{param8}
+				</if>
+				
+				group by ji.shiping_order_id
+				)as a
+	</select>
+	
+	<insert id="saveSignShipOrder" parameterType="Sign_order">
+		INSERT INTO
+		jy_sign_order (
+		sign_id,
+		order_id,
+		order_number,
+		sign_user,
+		sign_usernumber,
+		sign_userphone,
+		sign_result,
+		actual_number,
+		defect_number,
+		copies_number,
+		sign_remarks,
+		sign_time,
+		sign_name,
+		sign_number,
+		sign_username,
+		sign_date
+		)
+		VALUES
+		(
+		#{sign_id},
+		#{order_id},
+		#{order_number},
+		#{sign_user},
+		#{sign_usernumber},
+		#{sign_userphone},
+		#{sign_result},
+		#{actual_number},
+		#{defect_number},
+		#{copies_number},
+		#{sign_remarks},
+		#{sign_time},
+		#{sign_name},
+		#{sign_number},
+		#{sign_username},
+		sysdate()
+		)
+	</insert>
+	<update id="updatestate" parameterType="String">
+		<if test="_parameter!=null">
+			UPDATE jy_shiping_order
+			SET shipping_order_state='4' WHERE
+			shiping_order_id = "${_parameter}"
+		</if>
+	</update>
+	<update id="appupdatestate" parameterType="String">
+		<if test="_parameter!=null">
+			UPDATE jy_shiping_order
+			SET shipping_order_state='4' WHERE
+			shiping_order_id = "${_parameter}"
+		</if>
+	</update>
+	<!-- hqhend -->
+	<!-- 导入 -->
+	<insert id="saveShipOrders" parameterType="java.util.List">
+		insert into
+		jy_shiping_order
+		(
+			shiping_order_id,
+		shiping_order_num,
+		send_station,
+		end_address,
+		send_time,
+		receipt,
+		receipt_tel,
+		receipt_address,
+		goods_name,
+		goods_packing,
+		goods_num,
+		goods_weight,
+		goods_vol,
+		pay_type,
+		transport_pay,
+		remarks,
+		send_type,
+		trade_agency,
+		updatetime,
+		shipping_order,
+		is_recept,
+		custom_id,
+		car_number,
+		custom_name
+		)
+		values
+		<foreach collection="list" index="index" item="item"
+			separator=",">
+		 (
+			#{item.shiping_order_id},
+			#{item.shiping_order_num},
+			#{item.send_station},
+			#{item.end_address},
+			#{item.send_time},
+			#{item.receipt},
+			#{item.receipt_tel},
+			#{item.receipt_address},
+			#{item.goods_name},
+			#{item.goods_packing},
+			#{item.goods_num},
+			#{item.goods_weight},
+			#{item.goods_vol},
+
+			#{item.pay_type},
+			#{item.transport_pay},
+			#{item.remarks},
+			#{item.send_type}, 
+			#{item.shipping_order_state},
+			#{item.trade_agency},
+			#{item.creat_type},
+			#{item.updatetime},
+			#{item.shipping_order},
+			#{item.is_recept},
+			#{item.custom_id},
+			#{item.car_number},
+			#{item.custom_name}
+			)
+		</foreach>
+	</insert>
+	<!-- 图片路径 -->
+	<insert id="saveSignImages">
+		INSERT INTO 
+			jy_signorderimages
+		(
+			image_id,
+			order_id,
+			imageUrl
+			
+		)
+		VALUES
+		(
+			#{param1},
+			#{param2},
+			#{param3}
+		)
+	</insert>
+	
+	<!-- 获取运单的司机id -->
+	<select id="getCarShipOrder" resultType="ShippingOrder">
+		SELECT  * 
+		FROM 
+			jy_shiping_order js
+		LEFT JOIN jy_create_agreement jc ON 1=1
+		INNER JOIN jy_agreementtoorder ja ON jc.agreement_id=ja.agreement_id AND ja.order_id=js.shiping_order_id
+		WHERE
+			js.shipping_order_state=1
+		AND
+			jc.car_id=#{_parameter}
+	</select>
+			<!-- 一维码打印查询 -->
+	<select id="getUpdateShipOrderArray" resultType="ShippingOrder" parameterType="java.util.Arrays">
+		SELECT
+		ji.*<!-- ,
+		jtc.travel_card_id, jtc.plate_number  -->
+		FROM
+		jy_shiping_order ji
+<!-- 		LEFT JOIN jy_travel_card jtc ON jtc.travel_card_id = ji.car_id
+ -->		where
+		ji.shiping_order_num IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	<select id="getAppShipOrder" parameterType="String"
+		resultType="ShippingOrder">
+		SELECT
+		ji.*<!-- ,
+		jtc.travel_card_id, jtc.plate_number
+ -->		FROM
+		jy_shiping_order ji
+<!-- 		LEFT JOIN jy_travel_card jtc ON jtc.travel_card_id = ji.car_id
+ -->		where
+		ji.shiping_order_num=#{_parameter}
+	</select>
+	<!-- zzp添加短信保存模板 -->
+	<insert id="sendMsgModelInfo" parameterType="MsgModel" >
+		INSERT INTO
+		jy_msgmodel
+			(
+				model_id,
+				model_title,
+				model_content,
+				updatetime
+			)
+		VALUES
+			(
+				#{model_id},
+				#{model_title},
+				#{model_content},
+				SYSDATE()
+			)
+	</insert>
+	<select id="getMsgModel" resultType="MsgModel">
+		SELECT * FROM jy_msgmodel
+	</select>
+	<select id="sendMsgContent" resultType="String">
+		SELECT 
+			model_content
+		FROM 
+			jy_msgmodel
+		WHERE
+			model_id=#{_parameter}
+	</select>
+	
+	<select id="getShowOrder" resultType="OrderHistory">
+		SELECT 
+			*
+		FROM jy_order_history where orders_id in (select shiping_order_id from jy_shiping_order 
+		where shiping_order_num = #{_parameter}) order by order_arrive_time desc
+	</select>
+		<delete id="deleteOrders" parameterType="java.util.Arrays">
+		delete from
+		jy_confluence
+		where
+		id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+		<select id="getDepartment" resultType="Department">
+		select * from jy_department where department_id = #{_parameter} 
+			
+	</select>
+	<select id="getSignOutput" resultType="ShippingOrder">
+	<!-- 		(SELECT ja.*,jca.*,ji.*,js.*,jo.*FROM
+				jy_agreementtoorder ja
+				INNER JOIN
+				jy_create_agreement jca ON ja.agreement_id=jca.agreement_id
+				INNER JOIN
+				jy_shiping_order ji ON ji.shiping_order_id=ja.order_id
+				left join jy_sign_order jo on jo.order_number= (select shiping_order_num son from jy_shiping_order son  where son.shiping_order_id=ja.order_id)
+				LEFT JOIN jy_signorderimages js ON ji.shiping_order_id=js.order_id
+				WHERE
+				ji.send_type=1 )
+			UNION ALL
+				(SELECT ja.*,jca.*,ji.*,js.*,jo.*
+	 			from 
+	 			jy_shiping_order ji left join 
+	 			jy_agreementtoorder ja
+	 			on
+	 			ji.shiping_order_id = ja.order_id
+				left join jy_create_agreement jca ON jca.agreement_id=ja.agreement_id
+				left join jy_sign_order jo on jo.order_number= (select shiping_order_num son from jy_shiping_order son  where son.shiping_order_id=ji.shiping_order_id)
+				left join jy_signorderimages js on js.order_id = ja.order_id
+				where ji.send_type=0	)
+				ORDER BY
+				sign_time
+				DESC -->
+					SELECT ja.*,ji.*,jca.*,jc.*,jso.*,jsi.*
+FROM
+				jy_shiping_order ji
+				left  JOIN jy_agreementtoorder ja ON ji.shiping_order_id=ja.order_id 
+				left join jy_create_agreement jca on jca.agreement_id=ja.agreement_id
+				left join jy_company jc on jc.company_id=jca.company_id
+				left join jy_sign_order jso ON jso.order_id=ji.shiping_order_id
+						left join jy_signorderimages jsi on jsi.order_id=ji.shiping_order_id
+				where 
+				(ji.send_type !=0)
+					<if test="param1!=null and param1!=''">
+					and ji.shiping_order_num like "%${param1}%"
+				</if>
+				<if test="param2!=null and param2!=''">
+					and ji.weituo_time &gt;=#{param2}
+				</if>
+				<if test="param3!=null and param3!=''">
+					and ji.weituo_time &lt;=#{param3}
+				</if>
+		
+				<if test="param4!=null and param4!='' and param4 ==4">
+					and ji.shipping_order_state =4
+				</if>
+				<if test="param4==null and param4==0">
+				and ji.shipping_order_state !=5
+				</if>
+				<if test="param5!=null and param5!=''">
+					and (ji.custom_name like "%${param5}%" or ji.customer_id like "%${param5}%")
+				</if>
+				<if test="param6!=null and param6!=''">
+					and ji.receipt like "%${param6}%"
+				</if>
+				<if test="param7!=null and param7!=''">
+					and ji.end_address like "%${param7}%"
+				</if>
+				<if test="param8!=null and param8!=''">
+					and jca.driverid =#{param8}
+				</if>
+				
+		<if test="param9!=null and param9!=''">
+			and ji.shiping_order_id in
+			<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		</if>
+					group by ji.shiping_order_id	
+	</select>
+		<select id="getUpdateCompany"  resultType="Company">
+		SELECT
+		*
+		FROM
+		jy_company 
+		where
+		company_id=#{_parameter}
+	</select>
+	<update id="updatePhone" parameterType="java.util.Arrays">
+	update jy_shiping_order <set> time_appointment= #{param2} , appointment_remarks=#{param3},phone_state=1 </set>
+	 WHERE shiping_order_id in
+	<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+    <!--  保存图片-->
+	<insert id="saveFilename">
+		insert into jy_signorderimages
+		(image_id,order_id,imageUrl) values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.image_id},
+			#{item.order_id},
+			#{item.imageUrl})
+		</foreach>
+
+	</insert>
+	<!-- 查询图片 -->
+	<select id="getSingShiperOrderImg" resultType="ShipperOrderImg">
+		SELECT * FROM
+		jy_signorderimages
+		WHERE order_id=#{_parameter}
+	</select>
+	<!-- 添加修改记录表 -->
+	<insert id="InsertShippjilu" parameterType="jiLuLiShi">
+	    INSERT INTO 
+	    jy_xiugaijilu 
+	    (
+	    jilu_id,
+	    jilu_lishi,
+	    xiugainame,
+	    xiugaitime,
+	    shiping_order_id
+	    )
+	    VALUES 
+	    (
+	    #{jilu_id},
+	    #{jilu_lishi},
+	    #{xiugainame},
+	    SYSDATE(),
+	    #{shiping_order_id}
+	    )
+	</insert>
+</mapper>

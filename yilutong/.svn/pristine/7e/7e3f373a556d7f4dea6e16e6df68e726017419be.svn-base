@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jy.dao.KickbackDao">
+	<select id="getKickbackInfo" resultType="ShippingOrder">
+		SELECT
+		shiping_order_id,
+		shiping_order_num,
+		send_station,
+		end_address,
+		send_time,
+		receipt,
+		receipt_tel,
+		receipt_phone,
+		receipt_address,
+		goods_name,
+		goods_packing,
+		goods_num,
+		goods_weight,
+		goods_vol,
+		spe,
+		custom_name,
+		back_fee,
+		kickback,
+		updatetime,
+		kickback_write_remarks,
+		kickbackpeople,
+		kickbackdate,
+		pay_type
+		FROM
+		jy_shiping_order
+		WHERE creat_type='0'
+		<if test="param3 != null and param3 != ''">
+			and shiping_order_num = #{param3}
+		</if>
+		<if test="param4 != null and param4 != ''">
+			and receipt = #{param4}
+		</if>
+		<if test="param5 != null and param5 != ''">
+			and kickbackdate  &gt; #{param5}
+		</if>
+		<if test="param6 != null and param6 != ''">
+			and kickbackdate  &lt;  #{param6}
+		</if>
+		 <choose>
+		 	<when test="param7== '2'.toString()">
+		 	<![CDATA[ 
+		 		and kickback != "null"
+		 	  ]]>
+		 	</when>
+		 	<when test="param7== '1'.toString()">
+		 		and kickback != 3 
+		 	</when>
+		 	<when test="param7== '3'.toString()">
+		 		and kickback = 3 
+		 	</when>
+		 </choose>
+		<if test="param8 != null and param8 != ''">
+			and custom_name  like "%${param8}%"
+		</if>
+		<if test="param9 != null and param9 != ''">
+			and goods_name  like "%${param9}%"
+		</if>
+		<if test="param10 != null and param10 != ''">
+			and goods_num  = #{param10}
+		</if>
+		 <choose>
+		 	<when test="param11== '0'.toString()">
+		 	<![CDATA[ 
+		 		and pay_type = 0
+		 	  ]]>
+		 	</when>
+		 	<when test="param11== '1'.toString()">
+		 		and pay_type = 1
+		 	</when>
+		 	<when test="param11== '2'.toString()">
+		 		and pay_type = 2 
+		 	</when>
+		 	<when test="param11== '3'.toString()">
+		 		and pay_type = 3 
+		 	</when>
+		 </choose>
+		<if test="param12 != null and param12 != ''">
+			and back_fee  =  #{param12}
+		</if>
+		ORDER BY updatetime desc limit #{param1},#{param2}
+	</select>
+	<select id="getKickback" resultType="int">
+		SELECT
+		COUNT(*)
+		FROM
+		jy_shiping_order
+		WHERE creat_type='0'
+		<if test="param1 != null and param1 != ''">
+			and shiping_order_num = #{param1}
+		</if>
+		<if test="param2 != null and param2 != ''">
+			and receipt = #{param2}
+		</if>
+		<if test="param3 != null and param3 != ''">
+			and kickbackdate  &gt; #{param3}
+		</if>
+		<if test="param4 != null and param4 != ''">
+			and kickbackdate  &lt;  #{param4}
+		</if>
+		 <choose>
+		 	<when test="param5== '2'.toString()">
+		 		and kickback !=   &quot;null&quot; 
+		 	</when>
+		 	<when test="param5== '1'.toString()">
+		 		and kickback != 3 
+		 	</when>
+		 	<when test="param5== '3'.toString()">
+		 		and kickback = 3 
+		 	</when>
+		 </choose>
+		 <if test="param6 != null and param6 != ''">
+			and custom_name  like "%${param6}%"
+		</if>
+		<if test="param7 != null and param7 != ''">
+			and goods_name  like "%${param7}%"
+		</if>
+		<if test="param8 != null and param8 != ''">
+			and goods_num  = #{param8}
+		</if>
+		 <choose>
+		 	<when test="param9== '0'.toString()">
+		 	<![CDATA[ 
+		 		and pay_type = 0
+		 	  ]]>
+		 	</when>
+		 	<when test="param9== '1'.toString()">
+		 		and pay_type = 1
+		 	</when>
+		 	<when test="param9== '2'.toString()">
+		 		and pay_type = 2 
+		 	</when>
+		 	<when test="param9== '3'.toString()">
+		 		and pay_type = 3 
+		 	</when>
+		 </choose>
+		<if test="param10 != null and param10 != ''">
+			and back_fee  =  #{param10}
+		</if>
+	</select>
+	<update id="update">
+		UPDATE jy_shiping_order SET kickback=#{param2},
+		kickback_write_remarks=#{param3},
+		kickbackpeople=#{param4},
+		kickbackdate=now()
+		where
+		shiping_order_id = #{param1}
+	</update>
+	
+	<update id="comback">
+		UPDATE jy_shiping_order SET kickback=3,
+		kickback_write_remarks='',
+		kickbackpeople='',
+		kickbackdate=NULL
+		where
+		shiping_order_id = #{param1}
+	</update>
+</mapper>

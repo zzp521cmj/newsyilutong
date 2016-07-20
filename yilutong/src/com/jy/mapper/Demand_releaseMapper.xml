@@ -1,0 +1,435 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jy.dao.Demand_releaseDao" >
+  	<resultMap id="BaseResultMap" type="com.jy.model.Demand_release" >
+	    <result column="demand_release_id" property="demandReleaseId" />
+	    <result column="city_of_loading_id" property="cityOfLoadingId" />
+	    <result column="unloading_city_id" property="unloadingCityId" />
+	    <result column="loading_address" property="loadingAddress" />
+	    <result column="unloading_address" property="unloadingAddress" />
+	    <result column="ranges" property="ranges" />
+	    <result column="weight" property="weight" />
+	    <result column="models" property="models" />
+	    <result column="truck_type_id" property="truckTypeId" />
+	    <result column="publisher" property="publisher" />
+	    <result column="contact_information" property="contactInformation" />
+	    <result column="create_time" property="createTime" />
+	    <result column="state" property="state" />
+	    <result column="remarks" property="remarks" />
+	    <result column="citycode" property="citycode" />
+	    <result column="zhuang" property="zhuang" />
+	    <result column="xie" property="xie" />
+	    <result column="length_id" property="length_id" />
+	    <result column="length_name" property="length_name" />
+	    <result column="price" property="price" />
+	    <result column="userid" property="userid" />
+	    <result column="determine" property="determine" />
+	     <result column="line_id" property="line_id" />
+	     <result column="line_name" property="line_name" />
+	      <result column="zhuangCity" property="zhuangCity" />
+	       <result column="xieCity" property="xieCity" />
+	       <result column="start" property="start" />
+	       <result column="end" property="end" />
+  	</resultMap>
+  	<select id="getDemand_releaseInfo" resultMap="BaseResultMap" >
+		SELECT 
+	    	jdr.*
+	    FROM 
+	    	jy_demand_release jdr
+		where 
+			 DATE_SUB(CURDATE(), INTERVAL 10 DAY) &lt;= jdr.create_time  
+			and jdr.state=0 
+		<if test="param3 != null and param3 != ''">
+			and jdr.start like '%${param3}%'
+		</if>
+		<if test="param4 != null and param4 != ''">
+			and jdr.end like '%${param4}%'
+		</if>
+		<if test="param5 != null and param5 != ''">
+			and jdr.models like '%${param5}%'
+		</if>
+		<if test="param6 != null and param6 != ''">
+			and jdr.truck_type_id like '%${param6}%'
+		</if>
+		<if test="param7 != null and param7 != ''">
+			and jdr.publisher like '%${param7}%'
+		</if>
+		<if test="param8 != null and param8 != ''">
+			and jdr.istrue = ${param8}
+		</if>
+		order by jdr.create_time desc limit #{param1},#{param2} 
+  	</select>
+  	<select id="getDemand_releaseInfoPage" resultMap="BaseResultMap" >
+		SELECT 
+	    	jdr.*
+	    FROM 
+	    	jy_demand_release jdr
+		where 
+			 jdr.state=0  
+		<if test="param3 != null and param3 != ''">
+			and jdr.start like '%${param3}%'
+		</if>
+		<if test="param4 != null and param4 != ''">
+			and jdr.end like '%${param4}%'
+		</if>
+		<if test="param5 != null and param5 != ''">
+			and jdr.models like '%${param5}%'
+		</if>
+		<if test="param6 != null and param6 != ''">
+			and jdr.truck_type_id like '%${param6}%'
+		</if>
+		<if test="param7 != null and param7 != ''">
+			and jdr.publisher like '%${param7}%'
+		</if>
+		<if test="param8 != null and param8 != ''">
+			and jdr.istrue = ${param8}
+		</if>
+		order by jdr.create_time desc limit #{param1},#{param2} 
+  	</select>
+  		<select id="getDemand_releaseInfoAll" resultMap="BaseResultMap" >
+		SELECT 
+	    	DISTINCT  jdr.*,
+	    	jcl.length_id,
+	    	jcl.length_name,
+	    	jci.citycode,
+	    	jci.cityname AS zhuang,
+	    	zz.cityname AS xie,
+			jl.linname AS line_name
+	    FROM 
+	    	jy_demand_release jdr
+	    LEFT JOIN 
+	    	jy_city_info jci ON jdr.city_of_loading_id=jci.citycode
+	    LEFT JOIN 
+	    	jy_city_info zz ON jdr.unloading_city_id=zz.citycode
+	    LEFT JOIN 
+	    	jy_car_length jcl ON jcl.length_id=jdr.models
+		LEFT JOIN
+			jy_linstandard jl on jl.linid=jdr.line_id
+		WHERE 1=1
+		and 
+			jdr.state=0
+		and jdr.istrue=0
+		AND jdr.demand_release_id
+		NOT IN 
+		(
+		SELECT 
+			jva.demand_release_id 
+		FROM 
+			jy_vehicle_auction jva 
+		WHERE 
+			jva.userid=#{param1}
+		)
+		
+		ORDER BY jdr.create_time DESC
+		limit #{param2},#{param3}
+  	</select>
+  		<select id="getLines" resultType="LinStandard" parameterType="String">
+		select
+		 	linid,linname
+		from
+		 	jy_linstandard
+		where 1=1
+		<if test="_parameter!=null">
+		and linname like '%${_parameter}%'
+		</if>
+		
+	</select>
+	<select id="getLineCity" resultType="LinStandard" parameterType="String">
+		select
+		 	*
+		from
+		 	jy_linstandard
+		where linid=#{0}
+		
+	</select>
+  	<select id="getDemand_releaseIndex" resultMap="BaseResultMap" >
+		SELECT jdr.*,
+	    	jci.citycode,
+	    	jci.cityname AS zhuang,
+	    	zz.cityname AS xie
+		FROM
+			jy_demand_release jdr
+		 LEFT JOIN 
+	    	jy_city_info jci ON jdr.city_of_loading_id=jci.citycode
+	    LEFT JOIN 
+	    	jy_city_info zz ON jdr.unloading_city_id=zz.citycode
+		 WHERE jdr.demand_release_id not IN 
+		(SELECT d.demand_release_id
+		FROM
+		jy_demand_release d ,
+		jy_vehicle_auction v
+		WHERE
+		d.demand_release_id = v.demand_release_id and v.determine=1)
+  	</select>
+  	<!-- 获取总行数 -->
+  	<select id="getCount" resultType="int">
+		SELECT 
+			count(*) 
+		FROM 
+			jy_demand_release jdr
+			
+		 LEFT JOIN 
+	    	jy_city_info jci ON jdr.city_of_loading_id=jci.citycode
+	    LEFT JOIN 
+	    	jy_city_info zz ON jdr.unloading_city_id=zz.citycode
+	    <!-- LEFT JOIN 
+	    	jy_car_length jcl ON jcl.length_id=jdr.models
+	    INNER JOIN
+			jy_vehicle_auction jva ON jva.demand_release_id = jdr.demand_release_id	
+		 -->
+		where 
+		 DATE_SUB(CURDATE(), INTERVAL 10 DAY) &lt;= jdr.create_time  
+			and
+			state=0
+		<if test="param1 != null and param1 != ''">
+			and jdr.start like '%${param1}%'
+		</if>
+		<if test="param2 != null and param2 != ''">
+			and jdr.end like '%${param2}%'
+		</if>
+		<if test="param3 != null and param3 != ''">
+			and jdr.models like '%${param3}%'
+		</if>
+		<if test="param4 != null and param4 != ''">
+			and jdr.truck_type_id like '%${param4}%'
+		</if>
+		<if test="param5 != null and param5 != ''">
+			and jdr.publisher like '%${param5}%'
+		</if>	
+		<if test="param6 != null and param6 != ''">
+			and jdr.istrue = ${param6}
+		</if>
+  	</select>
+  	
+  	<!-- 获取装货城市下拉框列表  -->
+  	<select id="getCity_info" resultType="City_info">
+  		<!--  SELECT 
+			*
+		FROM 
+			jy_city_info
+		WHERE
+			1=1
+		<if test="_parameter !=null">
+			AND cityname LIKE '%${_parameter}%' 
+		OR
+			cityzm LIKE '%${_parameter}%'
+		</if>-->
+		SELECT 
+			distinct cityname,citycode
+		FROM 
+			jy_city_info
+		WHERE
+			1=1
+		<if test="_parameter !=null">
+			AND cityname LIKE '%${_parameter}%' 
+			</if>
+			GROUP BY cityname
+			
+  	</select>
+  	<!-- 获取车长的下拉框 -->
+  	<select id="getCar_length" resultType="Car_length">
+  		SELECT 
+			*
+		FROM 
+			jy_car_length
+		WHERE
+			1=1
+  	</select>
+  	
+  	<select id="getSelectDemand_release" parameterType="string" resultMap="BaseResultMap">
+  		SELECT 
+	    	jdr.*,
+	    	jcl.length_id,
+	    	jcl.length_name,
+	    	jci.citycode,
+	    	jci.cityname AS zhuang,
+	    	zz.cityname AS xie,
+	    	jls.linname as line_name
+	    FROM 
+	    	jy_demand_release jdr
+	    LEFT JOIN 
+	    	jy_city_info jci ON jdr.city_of_loading_id=jci.citycode
+	    LEFT JOIN 
+	    	jy_city_info zz ON jdr.unloading_city_id=zz.citycode
+	    LEFT JOIN 
+	    	jy_car_length jcl ON jcl.length_id=jdr.models
+	   	LEFT JOIN 
+	    	jy_linstandard jls ON jls.linid=jdr.line_id
+		where 
+			demand_release_id = #{demandReleaseId}
+  	</select>
+  	<select id="getDetermine" parameterType="string" resultType="int">
+  		select count(*) from jy_vehicle_auction where demand_release_id=#{0} and determine=1
+  	</select>
+  		<select id="getDemendDingdan" parameterType="string" resultType="String">
+  		select shiping_id from jy_shiping_demand where demand_id=#{0} 
+  	</select>
+  	<delete id="delDingdan"  parameterType="String">
+  	delete from jy_shiping_demand where demand_id=#{0}
+  	</delete>
+  	<!-- 新增竞价 -->
+  	<insert id="addDemand_release" parameterType="Demand_release">
+  		INSERT INTO
+			jy_demand_release
+			(
+			demand_release_id,
+			city_of_loading_id,
+			unloading_city_id,
+			loading_address,
+			unloading_address,
+			zhuangCity,
+			xieCity,
+			weight,
+			models,
+			ranges,
+			truck_type_id,
+			publisher,
+			line_id,
+			contact_information,
+			remarks,
+			create_time,
+			state,
+			start,
+			end
+			)
+		VALUES
+			(
+			#{demandReleaseId},
+			#{cityOfLoadingId},
+			#{unloadingCityId},
+			#{loadingAddress},
+			#{unloadingAddress},
+			#{zhuangCity},
+			#{xieCity},
+			#{weight},
+			#{models},
+			#{ranges},
+			#{truckTypeId},
+			#{publisher},
+			#{line_id},
+			#{contactInformation},
+			#{remarks},
+			SYSDATE(),
+			#{state},
+			#{start},
+			#{end}
+			)
+  	</insert>
+  	<insert id="addDingdanid" parameterType="String">
+  		INSERT INTO jy_shiping_demand(
+  		id,
+  		shiping_id,
+  		demand_id
+  		)values(
+  		#{0},
+  		#{1},
+  		#{2}
+  		)
+  	</insert>
+	<!-- 批量删除 -->
+	<update id="deleteDemand_release" parameterType="java.util.Arrays">
+		update 
+			jy_demand_release 
+		set 
+			state=1
+		where
+			demand_release_id 
+		IN
+ 		<foreach collection="array" index="index" item="item" open="(" separator="," close=")">
+ 			#{item}
+ 		</foreach>
+ 	</update>
+ 	<!-- 更新数据 -->
+ 	<update id="updateDemand_release" parameterType="Demand_release">
+		update
+			jy_demand_release 
+		set 
+		start=#{start},
+		end=#{end},
+		city_of_loading_id=#{cityOfLoadingId},
+		unloading_city_id=#{unloadingCityId},
+		loading_address=#{loadingAddress},
+		unloading_address=#{unloadingAddress},
+		zhuangCity = #{zhuangCity},
+		xieCity = #{xieCity},
+		weight=#{weight},
+		models=#{models},
+		ranges=#{ranges},
+		truck_type_id=#{truckTypeId},
+		line_id=#{line_id},
+		contact_information=#{contactInformation},
+		remarks=#{remarks},
+		create_time=SYSDATE()
+		where 
+			demand_release_id=#{demandReleaseId}
+ 	</update>
+ 	<update id="addDemand_release1" parameterType="Demand_release">
+ 		update
+			jy_demand_release 
+		set
+			price=#{price},
+			userid=#{userid}
+		where 
+			demand_release_id=#{demandReleaseId}
+ 	</update>
+ 	<select id="getDingdans" resultType="ShippingOrder">
+	
+		SELECT 
+			ji.*
+		FROM 
+			jy_shiping_order ji
+		where 
+			1=1
+		<if test="param3!=null and param3!=''">
+			and ji.shiping_order_num like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.check_phone like "%${param4}%"
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.end_address like "%${param5}%"
+		</if>
+		<if test="param6!=null and param6!=''">
+			and ji.check_time &gt;=#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">
+			and ji.check_time &lt;=#{param7}
+		</if>
+		<if test="(param6!=null and param6!='') and (param7!=null and param7!='')">
+			and ji.check_time &gt;=#{param6}
+			and ji.check_time &lt;=#{param7}
+		</if>
+			ORDER BY 
+				ji.updatetime
+		DESC
+		limit #{param1},#{param2}
+	</select>
+	<select id="getDingdanNums" resultType="int">
+	
+		SELECT 
+			count(*)
+		FROM 
+			jy_shiping_order ji
+		where 
+			1=1
+		<if test="param1!=null and param1!=''">
+			and ji.shiping_order_num like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and ji.check_phone like "%${param2}%"
+		</if>
+		<if test="param3!=null and param3!=''">
+			and ji.end_address like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.check_time &gt;=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.check_time &lt;=#{param5}
+		</if>
+		<if test="(param4!=null and param4!='') and (param5!=null and param5!='')">
+			and ji.check_time &gt;=#{param4}
+			and ji.check_time &lt;=#{param5}
+		</if>
+	</select>
+</mapper>

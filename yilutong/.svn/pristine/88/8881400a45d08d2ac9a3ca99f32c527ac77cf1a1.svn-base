@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="com.jy.dao.DriverCloseDao">
+    <select id="getDriverCloseRejectInfo" resultType="ShippingOrder">
+		SELECT js.*,jd.*,jc.*
+		FROM   jy_shiping_order js
+		INNER  JOIN jy_agreementtoorder ja ON js.shiping_order_id = ja.order_id
+		LEFT JOIN  jy_create_agreement jc ON ja.agreement_id = jc.agreement_id
+		LEFT join jy_driver_info jd  ON jc.driverid = jd.driver_id 
+		where 1=1
+		<if test="param3 !=null and param3 != ''">
+		AND js.shiping_order_num like "%${param3}%"
+		</if> 	
+        <if test="param4 != null and param4 != ''">
+	    AND js.receipt like "%${param4}%"
+	    </if>	
+	    <if test="param5 != null and param5 != ''">
+	    AND js.driver_close_time &gt;=#{param5}
+	    </if>
+	     <if test="param6 != null and param6 != ''">
+	    AND js.driver_close_time &lt;=#{param6}
+	    </if>
+	    <if test="param7 != null and param7 != ''">
+		AND jc.create_time &gt;=#{param7}
+		</if>
+		<if test="param8 != null and param8 != ''">
+		AND jc.create_time &lt;=#{param8}		
+		</if>
+		<if test="param9 != null and param9 != ''">
+		AND js.settlement_modes = #{param9} 
+		</if>
+		<if test="param10 != null and param10 != ''">	
+		and js.send_station = #{param10}
+		</if>
+		<if test="param11 != null and param11 != ''">
+		AND js.goods_name = #{param11} 
+		</if>	
+		<if test="param12 != null and param12 != ''">
+		AND js.goods_num = 	#{param12}
+		</if>	
+	 	<if test="param13 != null and param13 != ''">		
+		AND js.pay_type = #{param13}
+		</if> 
+		<if test="param14 != null and param14 != ''">
+		AND jd.driver_name = #{param14}
+		</if>
+	
+		GROUP BY js.shiping_order_id 
+	    ORDER BY	
+		jd.driver_name
+		limit
+		#{param2},#{param1}
+    </select>
+    <select id="getDriverCloseRejectCoun" resultType="int">
+	    SELECT COUNT(*) FROM (
+		SELECT js.shiping_order_id
+		FROM   jy_shiping_order js
+		INNER  JOIN jy_agreementtoorder ja ON js.shiping_order_id = ja.order_id
+		LEFT JOIN  jy_create_agreement jc ON ja.agreement_id = jc.agreement_id
+		LEFT join jy_driver_info jd  ON jc.driverid = jd.driver_id where 1=1
+		<if test="param1 !=null and param1 != ''">
+		AND js.shiping_order_num like "%${param1}%"
+		</if> 
+		<if test="param2 != null and param2 != ''">
+	    AND js.receipt like "%${param2}%"
+	    </if>
+	    <if test="param3 != null and param3 != ''">
+	    AND js.driver_close_time &gt;=#{param3}
+	    </if>
+	     <if test="param4 != null and param4 != ''">
+	    AND js.driver_close_time &lt;=#{param4}
+	    </if>
+	    <if test="param5 != null and param5 != ''">
+		AND jc.create_time &gt;=#{param5}
+		</if>
+		<if test="param6 != null and param6 != ''">
+		AND jc.create_time &lt;=#{param6}		
+		</if>		
+	    <if test="param7 != null and param7 != ''">
+		AND js.settlement_modes = #{param7} 
+		</if> 
+		<if test="param8 != null and param8 != ''">	
+		and js.send_station = #{param8}
+		</if>
+		<if test="param9 != null and param9 != ''">			
+		AND js.goods_name = #{param9} 
+		</if>
+	    <if test="param10 != null and param10 != ''">
+		AND js.goods_num = 	#{param10}
+		</if>
+ 		<if test="param11 != null and param11 != ''">
+		AND js.pay_type = #{param11}
+		</if> 
+		<if test="param12 != null and param12 != ''">
+		AND jd.driver_name = #{param12}
+		</if>
+		GROUP BY js.shiping_order_id ) AS pp
+    </select>
+    
+    <update id="UpdeteClose" parameterType="ShippingOrder">
+	    UPDATE jy_shiping_order 
+	    <set> 
+	    paid_deliver_fee = #{paid_deliver_fee},
+	    paid_ground_fee = #{paid_ground_fee},
+	    paid_upstairs_fee= #{paid_upstairs_fee}, 
+	    paid_adorn_fee = #{paid_adorn_fee}
+	    </set>  
+	    WHERE shiping_order_id = #{shiping_order_id}
+    </update>
+    
+    <update id="UdateDriverClose" parameterType="java.util.Arrays">
+        UPDATE jy_shiping_order 
+        <set> 
+        settlement_modes = #{param1},
+        driver_close_remarks = #{param2}, 
+        driver_stata = 1,
+        driver_close_time = SYSDATE(),
+        driver_close_naem = #{param3},
+        driver_close_stata = 0,
+        trial_stata = 0,
+        driv_sige_name = #{param4},
+     
+       oil_card = #{param5},
+        driv_bank = #{param6},
+   
+        oil_card = #{param7},
+       
+        oil_card_name= #{param8}
+        </set>
+        where shiping_order_id  in
+        <foreach collection="array" index="index" item="item" open="("
+				separator="," close=")">
+			#{item}
+		</foreach>
+    </update>
+    <update id="getArraignedDriverClose" parameterType="java.util.Arrays">
+		UPDATE jy_shiping_order 
+		<set> 
+		trial_time =SYSDATE(),
+		trial_name = #{param4},
+		trial_department = #{param3},
+		trial_remarks = #{param2},
+		driver_close_stata =1,
+		trial_stata = 1
+		</set>
+		WHERE shiping_order_id  in
+		<foreach collection="array" index="index" item="item" open="("
+				separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	<select id="getDriverChecked" resultType="ShippingOrder">
+	    SELECT
+	    SUM(js.paid_upstairs_fee) AS paid_upstairs_fee,
+	    SUM(js.paid_deliver_fee)  AS paid_deliver_fee,
+        SUM(js.paid_ground_fee)  AS paid_ground_fee,
+        SUM(js.paid_adorn_fee)  AS paid_adorn_fee,
+        SUM(js.paid_upstairs_fee+js.paid_adorn_fee+js.paid_ground_fee+js.paid_deliver_fee)  AS paid_total_fee,
+        SUM(js.send_fee)  AS send_fee,
+        SUM(js.payble_coolie)  AS payble_coolie,
+        SUM(js.pay_upstairs_fee)  AS pay_upstairs_fee,
+		jd.*,jc.*
+		FROM  jy_driver_info jd  INNER join jy_create_agreement jc ON jd.driver_id = jc.driverid 
+		LEFT JOIN jy_agreementtoorder ja ON ja.agreement_id = jc.agreement_id
+		LEFT JOIN jy_shiping_order js ON js.shiping_order_id = ja.order_id 
+		where 1=1 AND 	js.driver_close_stata != 0
+		<if test="param3 !=null and param3 != ''">
+		AND jd.driver_name like "%${param3}%"
+		</if> 
+			<if test="param4 !=null and param4 != ''">
+		AND jc.car_number1 like "%${param4}%"
+		</if>
+		<if test="param5 != null and param5 != ''">
+	    AND js.driver_close_time &gt;=#{param5}
+	    </if>
+	     <if test="param6 != null and param6 != ''">
+	    AND js.driver_close_time &lt;=#{param6}
+	    </if>
+		<if test="param7 != null and param7 != ''">
+		AND jc.create_time &gt;=#{param7}
+		</if>
+		<if test="param8 != null and param8 != ''">
+		AND jc.create_time &lt;=#{param6}		
+		</if>
+		GROUP BY jc.driverid 
+		limit
+		#{param1},#{param2}
+	</select>
+	<select id="getDriverCheckedCount" resultType="int">
+		select COUNT(*)FROM ( SELECT 
+		jd.driver_id
+		FROM  jy_driver_info jd  LEFT join jy_create_agreement jc ON jd.driver_id = jc.driverid 
+		LEFT JOIN jy_agreementtoorder ja ON ja.agreement_id = jc.agreement_id
+		LEFT JOIN jy_shiping_order js ON js.shiping_order_id = ja.order_id
+		where 1=1 AND 	js.driver_close_stata != 0
+		<if test="param1 !=null and param1 != ''">
+		AND jd.driver_name like "%${param1}%"
+		</if> 
+	    <if test="param2 !=null and param2 != ''">
+		AND jc.car_number1 like "%${param2}%"
+		</if>
+		<if test="param3 != null and param3 != ''">
+	    AND js.driver_close_time &gt;=#{param3}
+	    </if>
+	     <if test="param4 != null and param4 != ''">
+	    AND js.driver_close_time &lt;=#{param4}
+	    </if>
+		<if test="param5 != null and param5 != ''">
+		AND jc.create_time &gt;=#{param5}
+		</if>
+		<if test="param6 != null and param6 != ''">
+		AND jc.create_time &lt;=#{param6}		
+		</if>
+		GROUP BY jc.driverid ) AS qq
+	</select>
+	<select id="getDriverShipping" resultType="ShippingOrder">	    
+		SELECT jd.*,js.*,jc.agreement_number,jc.driverid,ja.order_id
+		FROM   jy_shiping_order js
+		INNER  JOIN jy_agreementtoorder ja ON js.shiping_order_id = ja.order_id
+		LEFT JOIN  jy_create_agreement jc ON ja.agreement_id = jc.agreement_id
+		LEFT join jy_driver_info jd  ON jc.driverid = jd.driver_id 
+		WHERE 1=1  and 	js.driver_close_stata != 0  and 	js.driver_close_stata !=3 
+		AND jd.driver_id = #{param3}
+	
+		GROUP BY js.shiping_order_id
+		limit
+		#{param1},#{param2}
+		
+	</select>
+	<select id="getDriverShippingCount" resultType="int">	    
+	select count(*) from (SELECT js.shiping_order_id
+		FROM   jy_shiping_order js 
+		INNER  JOIN jy_agreementtoorder ja ON js.shiping_order_id = ja.order_id
+		LEFT JOIN  jy_create_agreement jc ON ja.agreement_id = jc.agreement_id
+		LEFT join jy_driver_info jd  ON jc.driverid = jd.driver_id 
+		WHERE 1=1  and 	js.driver_close_stata != 0  and 	js.driver_close_stata !=3 
+		AND jd.driver_id = #{param1}
+		GROUP BY js.shiping_order_id ) as qq
+	</select>
+	<select id="getShippingDriver" resultType="ShippingOrder">
+         SELECT * FROM jy_shiping_order where 1=1 
+		<if test="_parameter !=null and _parameter != ''">
+		AND  shiping_order_id = #{_parameter}
+		</if> 
+	   
+	</select>
+	
+	<select id="getDriverCheckedShipp" resultType="ShippingOrder">	    
+		SELECT jd.*,js.*,jc.agreement_number,jc.driverid,ja.order_id
+		FROM   jy_shiping_order js
+		INNER  JOIN jy_agreementtoorder ja ON js.shiping_order_id = ja.order_id
+		LEFT JOIN  jy_create_agreement jc ON ja.agreement_id = jc.agreement_id
+		LEFT join jy_driver_info jd  ON jc.driverid = jd.driver_id 
+		WHERE 1=1 
+		AND jd.driver_id = #{_parameter}
+		<!-- and js.driver_close_stata !=0 
+        and js.trial_stata =1 -->
+		GROUP BY js.shiping_order_id
+	</select>
+	<update id="UpdateCheckedShipp" parameterType="int">
+		UPDATE jy_shiping_order 
+		<set>  
+		driver_close_stata = 2 ,
+		check_dariver_time = SYSDATE(),
+		check_dariver_name = #{param1},
+		close_recheck_remarks = #{param3}
+		</set> 
+		WHERE 
+	    shiping_order_id = #{param2}
+		</update>
+		<update id="UpdateCheckedReject" parameterType="int">
+		UPDATE jy_shiping_order 
+		<set>  
+		driver_close_stata = 3 ,
+		check_dariver_time = SYSDATE(),
+		check_dariver_name = #{param1},
+		close_recheck_remarks = #{param3}
+		</set> 
+		WHERE 
+	    shiping_order_id = #{param2}
+	</update>
+	<insert id="insertDriverClose" parameterType="java.util.List">
+	    INSERT INTO jy_cost_summary 
+		(
+		cost_summary_id,
+		custom_id,
+		customer_id,
+		shiping_order_id,
+		shiping_order_num,
+		paid_upstairs_fee,
+		paid_deliver_fee,
+		paid_ground_fee,
+		paid_adorn_fee,
+		send_fee,
+		pay_upstairs_fee,
+		
+		payble_other,
+		payble_coolie,
+		ascription_stata,
+		cost_summary_time
+		)
+		VALUES
+		<foreach collection="list" index="index" item="item"
+			separator=",">
+		(
+		#{item.cost_summary_id},
+		#{item.custom_id},
+		#{item.customer_id},
+		#{item.shiping_order_id},
+		#{item.shiping_order_num},
+		#{item.paid_upstairs_fee},
+		#{item.paid_deliver_fee},
+		#{item.paid_ground_fee},
+		#{item.paid_adorn_fee},
+		#{item.send_fee},
+		#{item.pay_upstairs_fee},		
+		#{item.payble_other},
+		#{item.payble_coolie},
+		3,
+		SYSDATE()
+		)
+		</foreach>
+	</insert>
+</mapper>

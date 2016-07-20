@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jy.dao.ReceiptDao">
+	<resultMap type="com.jy.model.invoice" id="iovoiceList">
+
+		<result property="order_id" column="shiping_order_id" />
+		<result property="shiping_order_num" column="shiping_order_num" />
+		<result property="goods_name" column="goods_name" />
+		<result property="receipt" column="receipt" />
+		<result column="custom_name" property="custom_name" />
+		<result column="invoice_state" property="invoice_state" />
+		<result column="invoice_type" property="invoice_type" />
+		<result column="receipt_dime" property="receipt_dime" />
+		<result column="receipt_number" property="receipt_number" />
+		<result column="receipt_remark" property="receipt_remark" />
+			<result column="transport_pay" property="transport_pay" />
+		
+	</resultMap>
+
+
+	<select id="selectReceipt" resultMap="iovoiceList">
+
+	select * from  jy_shiping_order jso  LEFT join jy_order_custom joc on joc.custom_id=jso.custom_id left join jy_receipt jr on
+		jso.shiping_order_id
+		=jr.order_id
+			where 	joc.customer_id=#{param8}
+				and jso.invoice_state=0
+		<if test="param3!=null and param3!=''">
+			and jr.receipt_dime &gt;=#{param3}
+		</if>
+		<if test="param4!=null and param4!=''">
+			and jr.receipt_dime &lt;=#{param4}
+		</if>
+		<if test="(param3!=null and param3!='') and (param4!=null and param4!='')">
+			and jr.receipt_dime &gt;=#{param3}
+			and jr.receipt_dime
+			&lt;=#{param4}
+		</if>
+
+		<if test="param5!=null and param5!=''">
+			and jso.shiping_order_num   like "%${param5}%"
+		</if>
+		<!-- <if test="param6!=null and param6!=''">
+			and jso.invoice_state =#{param6}
+		</if> -->
+		<if test="param7!=null and param7!='' ">
+			and jso.invoice_type=#{param7}
+		</if>
+		
+		limit #{param1},#{param2}
+	</select>
+
+	<select id="selectReceiptlist" resultType="int">
+
+		SELECT count(*) from(
+		select jso.shiping_order_id from  jy_shiping_order jso 
+		 LEFT join jy_order_custom joc on joc.custom_id=jso.custom_id left join jy_receipt jr on
+		jso.shiping_order_id
+		=jr.order_id
+			where
+			joc.customer_id=#{param6}
+				and jso.invoice_state=0
+		<if test="param1!=null and param1!=''">
+			and jr.receipt_dime &gt;=#{param1}
+		</if>
+		<if test="param2!=null and param2!=''">
+			and jr.receipt_dime &lt;=#{param2}
+		</if>
+		<if test="(param1!=null and param1!='') and (param2!=null and param2!='')">
+			and jr.receipt_dime &gt;=#{param1}
+			and jr.receipt_dime
+			&lt;=#{param2}
+		</if>
+
+		<if test="param3!=null and param3!=''">
+			and jso.shiping_order_num  like "%${param3}%"
+		</if>
+	<!-- 	<if test="param4!=null and param4!=''">
+			and jso.invoice_state =#{param4}
+		</if> -->
+		 <if test="param5!=null and param5!=''">
+			and jso.invoice_type=#{param5}
+		</if>
+			<!-- <if test="param5!=null and param5!='' and param5==0">
+			and jr.whether =0
+		</if>
+			<if test="param5!=null and param5!='' and param5==1">
+			and jso.shiping_order_id not in (select order_id from  jy_receipt   )
+		</if> -->
+	
+		)
+		as a
+		
+	</select>
+	<!-- 处理发票 -->
+	<insert id="disposereceipt" parameterType="Receipt">
+		insert into jy_receipt (
+		receipt_id,
+		order_id,
+		receipt_number,
+		receipt_remark,
+		receipt_dime)
+		values(
+		#{receipt_id},
+		#{order_id},
+		#{receipt_number},
+		#{receipt_remark},
+		#{receipt_dime}
+		)
+	</insert>
+	<select id="selectreceipt" resultType="int">
+	select datediff(now(),receipt_dime)as b  from jy_receipt where order_id = #{id}
+	</select>
+	<!-- 查询客户 -->
+	<select id="getRemarks"  resultType="Customer">
+		SELECT 
+		SUM(jso.transport_pay) as shouldmoney,
+		sum(if(jso.invoice_type=0,jso.transport_pay,0)) as netmoney,
+		count(jso.invoice_state=0) as wholepoll,
+		SUM(jso.invoice_type=0)as startpoll,
+		SUM(jso.invoice_type=1) as netpoll,
+		jc.* 
+		FROM
+			jy_customer jc
+		LEFT JOIN jy_order_custom joc ON joc.customer_id = jc.customer_id
+		LEFT JOIN jy_shiping_order jso ON joc.custom_id = jso.custom_id
+	
+ 		where 1=1  
+  		and jso.invoice_state=0
+	<if test="param3 !=null and param3 != ''">
+		 	AND jc.customer_name=#{param3}
+	</if>
+	<if test="param4 !=null and param4 != ''">
+		 	AND jso.shiping_order_num=#{param4}
+	</if>
+	<if test="param5 != null and param5 != ''">
+		   and jso.order_time &gt;=#{param5}
+	  </if>
+	 <if test="param6 != null and param6 != ''">
+		   and jso.order_time &lt;=#{param6}
+	</if>   
+			GROUP BY jc.customer_id
+	limit #{param1},#{param2} 
+	</select>
+	<!--  -->
+	<select id="getCount" resultType="int">
+	select count(*) from(select jc.customer_id from jy_customer jc 
+LEFT JOIN jy_order_custom joc ON joc.customer_id = jc.customer_id
+LEFT JOIN jy_shiping_order jso ON joc.custom_id = jso.custom_id
+ where 1=1  
+ and jso.invoice_state=0
+	<if test="param1 !=null and param1 != ''">
+		 	AND jc.customer_name=#{param1}
+	</if>
+	<if test="param2 !=null and param2!= ''">
+		 	AND jso.shiping_order_num=#{param2}
+	</if>
+	<if test="param3 != null and param3 != ''">
+		   and jso.order_time &gt;=#{param3}
+	  </if>
+	 <if test="param4!= null and param4 != ''">
+		   and jso.order_time &lt;=#{param4}
+	</if>   
+	GROUP BY jc.customer_id) as aa
+	</select>
+	
+	
+		<delete id="updatereceipt" parameterType="java.util.Arrays">
+	delete from jy_receipt where order_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	
+	<update id="updatetype"  parameterType="int">
+		update jy_shiping_order
+		 <set>  
+		 invoice_type=0
+		  </set>  
+		where shiping_order_id =#{param1}
+	</update>
+	<update id="offupdatetype"  parameterType="int">
+		update jy_shiping_order
+		 <set>  
+		 invoice_type=1
+		  </set>  
+		where shiping_order_id in 
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	
+	
+	<select id="getRemarkdc"  resultType="Customer">
+		SELECT 
+		SUM(jso.transport_pay) as shouldmoney,
+		sum(if(jso.invoice_type=0,jso.transport_pay,0)) as netmoney,
+		count(jso.invoice_state=0) as wholepoll,
+		SUM(jso.invoice_type=0)as startpoll,
+		SUM(jso.invoice_type=1) as netpoll,
+		jc.* 
+		FROM
+			jy_customer jc
+		LEFT JOIN jy_order_custom joc ON joc.customer_id = jc.customer_id
+		LEFT JOIN jy_shiping_order jso ON joc.custom_id = jso.custom_id
+ 		where 1=1  
+  		and jso.invoice_state=0
+	<if test="param1 !=null and param1 != ''">
+		 	AND jc.customer_name=#{param1}
+	</if>
+	<if test="param2 !=null and param2 != ''">
+		 	AND jso.shiping_order_num=#{param2}
+	</if>
+	<if test="param3 != null and param3 != ''">
+		   and jso.order_time &gt;=#{param3}
+	  </if>
+	 <if test="param4 != null and param4 != ''">
+		   and jso.order_time &lt;=#{param4}
+	</if>
+	<if test="param5!=null and param5!=''">
+			and jc.customer_id in
+			<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+			</if>   
+			GROUP BY jc.customer_id
+	</select>
+	<select id="selectinvoices" resultMap="iovoiceList">
+
+		select * from  jy_shiping_order jso  LEFT join jy_order_custom joc on joc.custom_id=jso.custom_id left join jy_receipt jr on
+		jso.shiping_order_id
+		=jr.order_id
+			where 	
+			joc.customer_id=#{param6}
+			and	 jso.invoice_state=0
+		<if test="param1!=null and param1!=''">
+			and jr.receipt_dime &gt;=#{param1}
+		</if>
+		<if test="param2!=null and param2!=''">
+			and jr.receipt_dime &lt;=#{param2}
+		</if>
+		<if test="(param1!=null and param1!='') and (param2!=null and param2!='')">
+			and jr.receipt_dime &gt;=#{param1}
+			and jr.receipt_dime
+			&lt;=#{param2}
+		</if>
+
+		<if test="param3!=null and param3!=''">
+			and jso.shiping_order_num   like "%${param3}%"
+		</if>
+
+		<if test="param5!=null and param5!='' ">
+			and jso.invoice_type=#{param5}
+		</if>
+		<if test="param7!=null and param7!='' ">
+		and  jso.shiping_order_id in
+			<foreach collection="array" index="index" item="item" open="("
+					 separator="," close=")">
+			#{item}
+		</foreach>	
+		</if>
+	</select>
+	
+	
+</mapper>

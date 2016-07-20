@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jy.dao.TaskonlineimportDao">
+	<select id="getallLin" resultType="Taskonlineimport">
+		select
+		*
+		from
+		jy_taskonlineimport
+		where
+		1=1
+		<if test="param3!=null and param3!=''">
+			and linno like "${param3}"
+		</if>
+		<if test="param4!=null and param4!=''">
+		<![CDATA[
+			and lintime >= "${param4}"
+			]]>     
+		</if>
+		<if test="param5!=null and param5!=''">
+		<![CDATA[
+			AND lintime <= "${param5}"
+			]]>     
+		</if>
+		ORDER BY lintime
+		limit #{param1},#{param2}
+	</select>
+	<select id="getallLinCount" resultType="int">
+		select
+		count(*)
+		from
+		jy_taskonlineimport
+		where
+		1=1
+		<if test="param1!=null and param1!=''">
+			and linno like "${param1}"
+		</if>
+		<if test="param2!=null and param2!=''">
+		<![CDATA[
+			and lintime >= "${param2}"
+			]]>     
+		</if>
+		<if test="param3!=null and param3!=''">
+		<![CDATA[
+			AND lintime <= "${param3}"
+			]]>     
+		</if>
+	</select>
+	<insert id="saveimp" parameterType="java.util.List">
+		INSERT INTO
+		jy_taskonlineimport (
+		linnumber,
+		linname,
+		lincarno,
+		lincartype,
+		lincarowner,
+		linmoney,
+		linno,
+		lintime
+		)
+		VALUES
+		<foreach collection="list" index="index" item="item"
+			separator=",">
+			(
+			#{item.linnumber},
+			#{item.linname},
+			#{item.lincarno},
+			#{item.lincartype},
+			#{item.lincarowner},
+			#{item.linmoney},
+			#{item.linno},
+			NOW()
+			)
+		</foreach>
+	</insert>
+
+	<select id="getLinName" resultType="Taskonlineimport">
+		<if test="_parameter !=null">
+			select linno,linname from jy_taskonlineimport where
+			linname
+			like
+			'%${_parameter}%'
+		</if>
+	</select>
+
+	<select id="getallLinss" resultType="Taskonlineimport">
+		select * from jy_taskonlineimport where 1=1
+		<if test="_parameter !=null  and _parameter!=''">
+			and linname='${_parameter}';
+		</if>
+	</select>
+	<select id="getlinplanplanbyid" resultType="Taskonlineimport">
+		<if test="_parameter !=null and _parameter!=''">
+			select * from jy_taskonlineimport where linno=
+			'${_parameter}'
+		</if>
+	</select>
+
+	<update id="updatelinplan" parameterType="Taskonlineimport" >
+		update jy_taskonlineimport
+		set
+		<if test="linnumber != null and linnumber!=''">
+			linnumber = '${linnumber}' ,
+		</if>
+		<if test="linname != null and linname!=''">
+			linname = '${linname}' ,
+		</if>
+		<if test="lincarno != null and lincarno!=''">
+			lincarno = '${lincarno}' ,
+		</if>
+		<if test="lincartype != null and lincartype!=''">
+			lincartype = '${lincartype}' ,
+		</if>
+		<if test="lincarowner != null and lincarowner!=''">
+			lincarowner = '${lincarowner}' ,
+		</if>
+		<if test="linmoney != null and linmoney!=''">
+			linmoney = #{linmoney},
+		</if>
+		<if test="linno != null and linno!=''">
+			linno = '${linno}'
+		</if>
+		<if test="lintime != null and lintime!=''">
+			lintime = '${lintime}'
+		</if>
+		<if test="_parameter!=null and _parameter!=''">
+			where
+			linno = '${_parameter}'
+		</if>
+	</update>
+	<delete id="deletebyid" parameterType="java.util.Arrays">
+		DELETE
+		FROM
+		jy_taskonlineimport
+		where
+		linno IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	<select id="getcartype" parameterType="String" resultType="String">
+		SELECT
+		car_model
+		FROM
+		jy_travel_card
+		<if test="_parameter!=null and _parameter!=''">
+			WHERE plate_number='${_parameter}'
+		</if>
+	</select>
+	<select id="getcarow" parameterType="String" resultType="String">
+		SELECT
+		a.car_owner_name
+		FROM
+		jy_car_owner_info a JOIN jy_travel_card b ON a.car_id=b.travel_card_id
+
+		<if test="_parameter!=null and _parameter!=''">
+			WHERE b.plate_number='${_parameter}'
+		</if>
+	</select>
+
+</mapper>

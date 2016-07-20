@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jy.dao.CreatAgreeChangeDao">
+
+	
+	<select id="getCreateAgreementInfo" resultType="CreateAgreement">
+		SELECT 
+		
+			ji.*,
+			js.send_type,
+			js.end_address,
+			MAX(js.shipping_order_state) AS order_state
+		FROM 
+			jy_create_agreement ji 
+			
+			LEFT JOIN 
+			jy_agreementtoorder ja ON ja.agreement_id=ji.agreement_id
+			LEFT JOIN
+			jy_shiping_order js ON js.shiping_order_id=ja.order_id
+			WHERE 
+			agreement_type=0
+			AND 
+			js.shipping_order_state=2
+			and 
+			isagain=0
+			
+		<if test="param3!=null and param3!=''">
+			and ji.agreement_number like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.create_time &gt;=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.create_time &lt;=#{param5}
+		</if>
+		<if test="(param5!=null and param5!='') and (param4!=null and param4!='')">
+			and ji.create_time &gt;=#{param4}
+			and ji.create_time &lt;=#{param5}
+		</if>
+		<if test="param6!=null and param6!=''">
+			and ji.ldp_id &gt;=#{param6}
+		</if>
+			GROUP BY ji.agreement_id
+			ORDER BY 
+				ji.create_time
+			DESC 
+				limit
+			 #{param1},#{param2}
+	</select>
+	<select id="searchCreateAgreement" resultType="int">
+		select 
+			count(*) 
+		from 
+			jy_create_agreement 
+		<!-- LEFT JOIN 
+			jy_travel_card jtc ON jtc.travel_card_id = ji.car_id -->
+		where 
+			jtc.travel_card_id =#{param2} 
+	</select>
+	<select id="getCreateAgreement" resultType="int">
+		SELECT 
+		
+			count(*)
+		FROM 
+			jy_create_agreement ji 
+			
+			LEFT JOIN 
+			jy_agreementtoorder ja ON ja.agreement_id=ji.agreement_id
+			LEFT JOIN
+			jy_shiping_order js ON js.shiping_order_id=ja.order_id
+			
+
+			WHERE 
+			agreement_type=0
+			AND 
+			js.shipping_order_state=2
+			and 
+			isagain=0
+		<if test="param1!=null and param1!=''">
+			and agreement_number like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and create_time &gt;=#{param2}
+		</if>
+		<if test="param3!=null and param3!=''">
+			and create_time &lt;=#{param3}
+		</if>
+		<if test="(param2!=null and param2!='') and (param3!=null and param3!='') ">
+			and create_time &gt;=#{param2}
+			and create_time &lt;=#{param3}
+		</if>
+
+	</select>
+	<!--导出  -->
+	<select id="getCreateAgreementAll" resultType="CreateAgreement">
+		SELECT 
+			ji.*,
+			CASE WHEN ji.agreement_type='0' THEN '班线'
+			WHEN ji.agreement_type='1' THEN '配送'
+			WHEN ji.agreement_type='2' THEN '转运'
+			END AS agreementtype
+		FROM 
+			jy_create_agreement ji
+		<!-- LEFT JOIN 
+			jy_travel_card jtc ON jtc.travel_card_id = ji.car_id -->
+		where 
+			1=1
+		<if test="param1!=null and param1!=''">
+			and ji.agreement_number like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and DATE_ADD(ji.create_time,INTERVAL 1 DAY) &gt;=#{param2}
+		</if>
+		<if test="param3!=null and param3!=''">
+			and DATE_SUB(ji.create_time,INTERVAL 1 DAY) &lt;=#{param3}
+		</if>
+		<if test="(param2!=null and param2!='') and (param3!=null and param3!='') ">
+			and DATE_ADD(ji.create_time,INTERVAL 1 DAY) &gt;=#{param2}
+			and DATE_SUB(ji.create_time,INTERVAL 1 DAY) &lt;=#{param3}
+		</if>
+
+			ORDER BY 
+				ji.create_time
+		DESC 
+	
+	</select>
+	<!-- 接收时候修改协议状态 -->
+	<update id="delCreateAgreement" parameterType="java.util.Arrays">
+		update 
+			jy_create_agreement
+			<set>
+			isagain=1
+			</set>
+		where
+			agreement_id IN
+			<foreach collection="array" index="index" item="item" open="("
+				separator="," close=")">
+				#{item}
+			</foreach>
+	</update>
+	<!-- 详细表页面的订单号查询 -->
+	<select id="getXXCreateAgreement" resultType="GuanlianCA">
+		SELECT * FROM jy_agreementtoorder
+		<if test="_parameter!=null">
+			where agreement_id=#{_parameter}
+		</if>
+	
+	</select>
+	<!-- 删除时候查询订单号 -->
+	<select id="orderNumber" parameterType="java.util.Arrays" resultType="GuanlianCA">
+		select * from
+			jy_agreementtoorder
+		where
+			agreement_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	
+	<!--协议删除关联表的数据  -->
+	<delete id="deleToOder"  parameterType="java.util.Arrays">
+		delete from
+			jy_agreementtoorder
+		where
+			agreement_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>	
+	</delete>
+	
+	<!-- 删除时，修改订单状态-->
+	<update id="delState" parameterType="java.util.List">
+		update 
+			jy_shiping_order
+			<set>
+			shipping_order_state=3
+			</set>
+			where
+			shiping_order_id IN
+			<foreach collection="list" index="index" item="item" open="("
+			separator="," close=")">
+			#{item.order_id}
+			</foreach>
+	</update>
+	<!--  协议和订单表的关联保存-->
+	<insert id="saveAgreementToorder" parameterType="java.util.List">
+		
+		INSERT INTO jy_agreementtoorder (id,agreement_id,order_id) 
+		VALUES
+		<foreach collection="list" index="index" item="item"
+			separator=",">
+			(
+			#{item.id},
+			#{item.agreement_id},
+			#{item.order_id}
+			)
+		</foreach>
+	</insert>
+	
+	<insert id="saveCreateAgreement" parameterType="CreateAgreement" >
+		insert into 
+			jy_create_agreement
+		 (
+        agreement_id,
+        agreement_number,
+        agreement_type,
+        ndp_id,
+        ldp_id,
+        car_number,
+        car_id,
+        car_name,
+        all_money,
+        phone_number,
+        remarks,
+        create_time,
+        create_user,
+        number
+        )
+    values (
+        #{agreement_id},
+        #{agreement_number},
+        #{agreement_type},
+        #{ndp_id},
+        #{ldp_id},
+        #{car_number},
+        #{car_id},
+        #{car_name},
+        #{all_money},
+        #{phone_number},
+        #{remarks},
+        #{create_time},
+        #{create_user},
+        #{number}
+         )
+    
+	</insert>
+	<!--  制作协议修改订单状态-->
+	<update id="updateState" parameterType="java.util.Arrays">
+		update 
+			jy_shiping_order
+			<set>
+			shipping_order_state=1
+			</set>
+			where
+			shiping_order_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	
+	</update>
+	<select id="getUpdateCreateAgreement" 
+		resultType="CreateAgreement">
+		SELECT 
+			ji.*
+			<!-- jtc.travel_card_id,
+			jtc.plate_number -->
+		FROM 
+			jy_create_agreement ji
+		<!-- LEFT JOIN 
+			jy_travel_card jtc ON jtc.travel_card_id = ji.car_id -->
+		where 
+			ji.agreement_id=#{agreement_id} 
+	</select>
+
+	<update id="updateCreateAgreement" parameterType="CreateAgreement">
+		update 
+			jy_shiping_order
+			
+		<set>
+	      shiping_order_num=#{shiping_order_num},
+	        start_address=#{start_address},
+	         end_address=#{end_address},
+	        check_time=#{check_time},
+	       checkp=#{checkp},
+	        check_tel=#{check_tel},
+	        check_phone= #{check_phone},
+	         receipt=#{receipt},
+	         receipt_tel=#{receipt_tel},
+	         receipt_phone=#{receipt_phone},
+	         receipt_address=#{receipt_address},
+	        goods_name= #{goods_name},
+	         goods_packing= #{goods_packing},
+	         goods_num=#{goods_num},
+	         goods_weight=#{goods_weight},
+	         goods_vol=#{goods_vol},
+	        car_id=#{car_id},
+	        spe= #{spe},
+	          take_fee=#{take_fee},
+	        send_fee= #{send_fee},
+	         adorn_fee=#{adorn_fee},
+	         trunk_fee=#{trunk_fee},
+	         insurance=#{insurance},
+	         pay_type=#{pay_type},
+	         transport_pay= #{transport_pay},
+	         remarks=#{remarks},
+	       check_type= #{check_type},
+	         send_type=#{send_type},
+	          shipping_order_state=#{shipping_order_state},
+	          change_address=#{change_address},
+	          trade_agency=#{trade_agency},
+	         creat_type=#{creat_type},
+	         updatetime=#{updatetime},
+	          shipping_order=#{shipping_order}
+		</set>
+		where shiping_order_id = #{shiping_order_id}
+	</update>
+	<select id="getNumber" resultType="CreateAgreement">
+		select  
+			*
+		from 
+			jy_shiping_order
+		<if test="_parameter!=null">
+			where shiping_order_num=#{_parameter}
+		</if>
+	</select>
+	<!-- <select id="getPlateNumberLength" resultType="ShippingOrder">
+		select  
+			 shiping_order_id, shiping_order_num
+		from 
+			jy_shiping_order
+		<if test="_parameter!=null">
+			where shiping_order_num like "%${_parameter}%"
+		</if>
+	</select> -->
+		<select id="getPlateNumberLength" resultType="CreateAgreement">
+		SELECT
+			DISTINCT travel_card_id,plate_number 
+		FROM 
+			jy_travel_card jtc
+		WHERE
+			travel_card_id NOT IN(
+		SELECT
+			DISTINCT travel_card_id
+		FROM 
+			jy_travel_card jtc
+		INNER JOIN 
+			jy_shiping_order ji ON ji.car_id=jtc.travel_card_id 
+			)
+		<if test="_parameter!=null">
+			and plate_number like "%${_parameter}%"
+		</if>
+	</select>
+</mapper>

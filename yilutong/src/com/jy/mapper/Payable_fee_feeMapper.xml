@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jy.dao.Payable_fee_feeDAO">		
+	<update id="updateShippingOrdersFee" parameterType="ShippingOrder">
+		update
+		jy_shiping_order
+		<set>
+		<if test="delivery_fee1!=null and delivery_fee1!=''">
+			delivery_fee1=#{delivery_fee1},
+		</if>
+			fee_remarks1 = #{fee_remarks1}
+		</set>
+		where shiping_order_id = #{shiping_order_id}
+	</update>
+
+<select id="getDeliveryfeeCount" resultType="int">
+		select count(*) from 
+ 			 jy_shiping_order left join 
+ 			jy_agreementtoorder 
+ 			on
+ 			jy_shiping_order.shiping_order_id = jy_agreementtoorder.order_id
+			left join jy_create_agreement ON jy_create_agreement.agreement_id=jy_agreementtoorder.agreement_id
+			left join jy_order_custom on jy_shiping_order.custom_id = jy_order_custom.custom_id
+			where 
+			jy_shiping_order.creat_type = 0
+	<if test="param1!=null and param1!=''">
+			and jy_shiping_order.send_station like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and jy_shiping_order.end_address like "%${param2}%"
+		</if>
+		<if test="param3!=null and param3!=''">
+			and jy_shiping_order.send_time like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			
+				and jy_create_agreement.car_name=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			and jy_shiping_order.send_date_fee like "%${param5}%"
+		</if>
+		<if test="param6!=null and param6!=''">
+			and jy_create_agreement.create_time like "%${param6}%"
+		</if>
+		<if test="param7!=null and param7!=''">
+			and jy_shiping_order.fee_writeoff like "%${param7}%"
+		</if>
+	</select>
+		<update id="delfee" parameterType="String">
+                update jy_shiping_order   
+                <set>  
+                	<if test="param2!=null and param2!=''">
+                  fee_writeoff=#{param2},
+                   send_date_fee=#{param3},
+                   people_jie=#{param4},
+                  	</if>
+                </set>  
+                where shiping_order_id = #{param1}
+	</update>
+	<update id="update" parameterType="String">
+                update jy_shiping_order   
+                <set>  
+                	<if test="param2!=null and param2!=''">
+                  fee_writeoff=#{param2},
+                  	</if>
+                  	<if test="param3!=null and param3!=''">
+                  fee_remarks1=#{param3},
+                  	</if>
+                  
+                  	<if test="param4!=null and param4!=''">
+                 	 send_date_fee=#{param4},
+                  	</if>
+                  		<if test="param5!=null and param5!=''">
+                 	 people_jie=#{param5},
+                  	</if>
+                </set>  
+                where shiping_order_id = #{param1}
+	</update>
+<select id="getDeliveryfeeList" resultType="ShippingOrder">
+	SELECT *
+ 			from 
+ 			jy_shiping_order left join 
+ 			jy_agreementtoorder 
+ 			on
+ 			jy_shiping_order.shiping_order_id = jy_agreementtoorder.order_id
+			left join jy_create_agreement ON jy_create_agreement.agreement_id=jy_agreementtoorder.agreement_id
+			left join jy_order_custom on jy_shiping_order.custom_id = jy_order_custom.custom_id
+			where 
+			jy_shiping_order.creat_type = 0
+	<if test="param3!=null and param3!=''">
+			and jy_shiping_order.send_station like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and jy_shiping_order.end_address like "%${param4}%"
+		</if>
+		<if test="param5!=null and param5!=''">
+			and jy_shiping_order.send_time like "%${param5}%"
+		</if>
+		<if test="param6!=null and param6!=''">
+		and jy_create_agreement.car_name=#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">
+			and jy_shiping_order.send_date_fee like "%${param7}%"
+		</if>
+		<if test="param8!=null and param8!=''">
+			and jy_create_agreement.create_time like "%${param8}%"
+		</if>
+		<if test="param9!=null and param9!=''">
+			and jy_shiping_order.fee_writeoff like "%${param9}%"
+		</if>
+		<if test="param10!=null and param10!=''">
+			and jy_shiping_order.receipt like "%${param10}%"
+		</if>
+		<if test="param11!=null and param11!=''">
+			and jy_shiping_order.goods_name like "%${param11}%"
+		</if>
+		<if test="param12!=null and param12!=''">
+			and jy_shiping_order.goods_num like "%${param12}%"
+		</if>
+		<if test="param13!=null and param13!=''">
+			and jy_shiping_order.pay_type like "%${param13}%"
+		</if>
+		<if test="param14!=null and param14!=''">
+			and jy_shiping_order.delivery_fee like "%${param14}%"
+		</if>
+		ORDER BY
+		jy_shiping_order.updatetime
+		DESC
+		limit
+		#{param1},#{param2}
+	</select>
+	<insert id="addSettlement" parameterType="java.util.List"  >
+	insert into 
+	jy_write_project
+	(	
+	
+	write_project,
+	write_data,
+	write_money,
+	write_people,
+	shiping_order_num,
+	write_id,
+	write_fangshi
+	
+	)
+	values
+	<foreach collection="list" item="item" index="index" separator="," >  
+	(		
+			
+			#{item.write_project},
+			#{item.write_data},
+			#{item.write_money},
+			#{item.write_people},
+			#{item.shiping_order_num},
+			#{item.write_id},
+			#{item.write_fangshi}
+			
+			
+	)
+		</foreach>
+	</insert>
+</mapper>

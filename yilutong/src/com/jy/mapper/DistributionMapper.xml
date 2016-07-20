@@ -1,0 +1,1296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jy.dao.DistributionDao">
+	<!-- 协议查询 -->
+	<select id="getCustomerSetYf" resultType="CreateAgreement">
+		SELECT
+		case when ji.pay_type=1 then ji.all_money
+		end as df,
+		case when
+		ji.pay_type=2 then ji.all_money
+		end as xf,
+		case when ji.pay_type=0 then
+		ji.all_money
+		end as yf,
+		IF ((ji.payment_method!=0 and
+		ji.payment_tz!=1),jsj.settl_times,NULL) AS
+		settlyf_time,
+		IF
+		((ji.payment_method!=0 and
+		ji.payment_tz!=1),jsj.settl_notes,NULL) AS
+		settlyf_remaks,
+		IF (ji.payment_sh!=0 ,jst.settlyf_time,NULL) AS
+		settlyf_th_times,
+		IF
+		((ji.payment_sh!=0 OR
+		ji.payment_sh!=1),jss.settlyf_time,NULL) AS
+		settlyf_sh_times,
+		IF
+		(ji.payment_sh!=0 ,jst.settlyf_remaks,NULL) AS
+		settlyf_th_remaks,
+		IF
+		((ji.payment_sh!=0 OR
+		ji.payment_sh!=1),jss.settlyf_remaks,NULL) AS
+		settlyf_sh_remaks,
+		IF
+		((ji.payment_method!=0 and ji.payment_tz!=1)
+		,ju.username,NULL) AS
+		username,
+		IF (ji.payment_sh!=0,ju1.username,NULL)
+		AS usernameth,
+		ji.*,
+		jt.department_name,
+		jdp.department_name as dn,
+		IF(ji.receivable_fee IS NULL,0,ji.receivable_fee)
+		AS receivable_fee,
+		ji.all_money-(IF(ji.receivable_fee IS
+		NULL,0,ji.receivable_fee)) AS
+		trade_cha
+		FROM
+		jy_create_agreement ji
+		LEFT JOIN jy_department jt ON jt.department_id=ji.ndp_id
+		LEFT
+		JOIN jy_delivery_clearing jsj ON jsj.order_id = ji.agreement_id
+		AND
+		jsj.settl_order = 0
+		AND jsj.settl_times = (
+		SELECT
+		MAX(jsj1.settl_times)
+		FROM
+		jy_delivery_clearing jsj1
+		WHERE
+		jsj1.settl_order = 0
+		AND
+		jsj.order_id
+		= jsj1.order_id
+
+		)
+		LEFT JOIN jy_delivery_audit jst ON jst.orderids =
+		ji.agreement_id
+		AND jst.settlyf_sf = 0
+		AND jst.settlyf_type = 0
+		AND
+		jst.settlyf_time = (
+		SELECT
+		MAX(jst1.settlyf_time)
+		FROM
+		jy_delivery_audit
+		jst1
+		WHERE
+		jst1.orderids = jst.orderids
+		AND jst1.settlyf_type = 0
+		AND
+		jst1.settlyf_sf = 0
+		)
+		LEFT JOIN jy_delivery_audit jss ON jss.orderids =
+		ji.agreement_id
+		AND jss.settlyf_sf = 0
+		AND jss.settlyf_type = 1
+		AND
+		jss.settlyf_time = (
+		SELECT
+		MAX(jss1.settlyf_time)
+		FROM
+		jy_delivery_audit
+		jss1
+		WHERE
+		jss1.orderids = jss.orderids
+		AND jss1.settlyf_type = 1
+		AND
+		jss1.settlyf_sf = 0
+		)
+		LEFT JOIN jy_user ju ON jsj.settl_user = ju.id
+		LEFT JOIN jy_user ju1 ON jst.settlyf_user = ju.id
+        LEFT JOIN jy_department jdp ON jdp.department_id=ji.payment_th_did
+		WHERE
+		ji.agreement_type=1
+		<if test="param3!=null and param3!=''">
+			and ji.agreement_number like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			<choose>
+				<when test="param4=='0'.toString()">
+					and (ji.payment_method like "%${param4}%" or
+					ji.payment_tz =1)
+				</when>
+				<otherwise>
+					and (ji.payment_method like "%${param4}%" and
+					ji.payment_tz !=1)
+				</otherwise>
+			</choose>
+		</if>
+		<if test="param5!=null and param5!=''">
+		<choose>
+			<when test="param5=='0'.toString()">
+					and ((ji.all_money-(IF(ji.receivable_fee IS NULL,0,ji.receivable_fee))) !=0 or  ji.payment_method =0  or  ji.payment_tz =1)
+			</when>
+				<when test="param5=='1'.toString()">
+					and (ji.all_money-(IF(ji.receivable_fee IS NULL,0,ji.receivable_fee))) =0 	and  ji.payment_method !=0  AND  ji.payment_tz !=1
+			</when>
+		</choose>	
+			</if>	
+		<if test="param6!=null and param6!=''">
+			and jsj.settl_times &gt;=#{param6} and
+			(ji.payment_method!=0 and ji.payment_tz!=1)
+		</if>
+		<if test="param7!=null and param7!=''">
+			and jsj.settl_times &lt;=#{param7} and
+			(ji.payment_method!=0 and ji.payment_tz!=1)
+		</if>
+		<if test="param8!=null and param8!=''">
+			and ji.create_time &gt;=#{param8} and
+			(ji.payment_method!=0 and ji.payment_tz!=1)
+		</if>
+		<if test="param9!=null and param9!=''">
+			and ji.create_time &lt;=#{param9} and
+			(ji.payment_method!=0 and ji.payment_tz!=1)
+		</if>
+		<if test="param14!=null and param14!=''">
+					and ji.car_name like "%${param14}%"
+		</if>
+		GROUP BY ji.agreement_id		
+		<choose>
+			<when test="param12!=null and param12!=''">
+			ORDER BY ${param12}  ${param13}	,MAX(jsj.settl_times) DESC,
+				ji.create_time
+			DESC				
+			</when>
+			<otherwise>
+			ORDER BY  trade_cha desc,MAX(jsj.settl_times) DESC,
+				ji.create_time
+				DESC
+			</otherwise>
+		</choose>	
+		limit
+		#{param1},#{param2}
+	</select>
+
+	<select id="getCustomerSetYfs" resultType="int">
+		<!-- SELECT COUNT(*) FROM((select ji.* from jy_create_agreement ji INNER 
+			JOIN jy_agreementtoorder jo ON ji.agreement_id=jo.agreement_id inner join 
+			jy_shiping_order jso on jo.order_id=jso.shiping_order_id <if test="param1!=null 
+			and param1!=''"> and ji.agreement_number like "%${param1}%" </if> <if test="param2!=null 
+			and param2!=''"> and ji.agreement_type like "%${param2}%" </if> GROUP BY 
+			ji.agreement_id)) AS tt -->
+		SELECT COUNT(*) FROM(SELECT
+		ji.agreement_id
+		FROM
+		jy_create_agreement ji
+
+		LEFT JOIN jy_delivery_clearing jsj ON jsj.order_id = ji.agreement_id
+		AND jsj.settl_order = 0
+		AND jsj.settl_times = (
+		SELECT
+		MAX(jsj1.settl_times)
+		FROM
+		jy_delivery_clearing jsj1
+		WHERE
+		jsj1.settl_order = 0
+		AND
+		jsj.order_id = jsj1.order_id
+
+		)
+		LEFT JOIN
+		jy_delivery_audit jst ON jst.orderids = ji.agreement_id
+		AND
+		jst.settlyf_sf = 0
+		AND jst.settlyf_type = 0
+		AND jst.settlyf_time = (
+		SELECT
+		MAX(jst1.settlyf_time)
+		FROM
+		jy_delivery_audit jst1
+		WHERE
+		jst1.orderids = jst.orderids
+		AND jst1.settlyf_type = 0
+		AND
+		jst1.settlyf_sf = 0
+		)
+		LEFT JOIN jy_delivery_audit jss ON jss.orderids =
+		ji.agreement_id
+		AND jss.settlyf_sf = 0
+		AND jss.settlyf_type = 1
+		AND
+		jss.settlyf_time = (
+		SELECT
+		MAX(jss1.settlyf_time)
+		FROM
+		jy_delivery_audit
+		jss1
+		WHERE
+		jss1.orderids = jss.orderids
+		AND jss1.settlyf_type = 1
+		AND
+		jss1.settlyf_sf = 0
+		)
+		LEFT JOIN jy_user ju ON jsj.settl_user = ju.id
+		LEFT JOIN jy_user ju1 ON jst.settlyf_user = ju.id
+
+		WHERE
+		ji.agreement_type=1
+		<if test="param1!=null and param1!=''">
+			and ji.agreement_number like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			<choose>
+				<when test="param2=='0'.toString()">
+					and (ji.payment_method like "%${param2}%" or
+					ji.payment_tz =1)
+				</when>
+				<otherwise>
+					and (ji.payment_method like "%${param2}%" and
+					ji.payment_tz !=1)
+				</otherwise>
+			</choose>
+		</if>
+		<if test="param3!=null and param3!=''">
+			and ji.payment_sh like "%${param3}%"
+		</if>
+
+		<if test="param4!=null and param4!=''">
+			and jsj.settl_times &gt;=#{param4} and
+			(ji.payment_method!=0 and ji.payment_tz!=1)
+		</if>
+		<if test="param5!=null and param5!=''">
+		<choose>
+			<when test="param5=='0'.toString()">
+					and ((ji.all_money-(IF(ji.receivable_fee IS NULL,0,ji.receivable_fee))) !=0 or  ji.payment_method =0  or  ji.payment_tz =1)
+			</when>
+				<when test="param5=='1'.toString()">
+					and (ji.all_money-(IF(ji.receivable_fee IS NULL,0,ji.receivable_fee))) =0 	and  ji.payment_method !=0  AND  ji.payment_tz !=1
+			</when>
+		</choose>	
+			</if>
+		<if test="param6!=null and param6!=''">
+			and ji.create_time &gt;=#{param6} and
+			(ji.payment_method!=0 and ji.payment_tz!=1)
+		</if>
+		<if test="param7!=null and param7!=''">
+			and ji.create_time &lt;=#{param7} and
+			(ji.payment_method!=0 and ji.payment_tz!=1)
+		</if>
+		<if test="param12!=null and param12!=''">
+					and ji.car_name like "%${param12}%"
+		</if>
+		GROUP BY ji.agreement_id
+		)AS tt
+
+	</select>
+
+	<!-- 协议导出 -->
+	<select id="getCustomerSetYfout" resultType="CreateAgreement">
+		SELECT
+
+		IF (
+		(
+		ji.payment_method != 0
+		AND ji.payment_tz != 1
+		),
+		jsj.settl_times,
+		NULL
+		) AS settlyf_time,
+
+		IF (
+		(
+		ji.payment_method != 0
+		AND
+		ji.payment_tz != 1
+		),
+		jsj.settl_notes,
+		NULL
+		) AS settlyf_remaks,
+
+		IF (
+		ji.payment_sh != 0,
+		jst.settlyf_time,
+		NULL
+		) AS settlyf_th_times,
+
+		IF (
+		(
+		ji.payment_sh != 0
+		OR ji.payment_sh != 1
+		),
+		jss.settlyf_time,
+		NULL
+		) AS
+		settlyf_sh_times,
+
+		IF (
+		ji.payment_sh != 0,
+		jst.settlyf_remaks,
+		NULL
+		) AS
+		settlyf_th_remaks,
+
+		IF (
+		(
+		ji.payment_sh != 0
+		OR ji.payment_sh != 1
+		),
+		jss.settlyf_remaks,
+		NULL
+		) AS settlyf_sh_remaks,
+
+		IF (
+		(
+		ji.payment_method
+		!= 0
+		AND ji.payment_tz != 1
+		),
+		ju.username,
+		NULL
+		) AS username,
+
+		IF (
+		ji.payment_sh != 0,
+		ju1.username,
+		NULL
+		) AS usernameth,
+		ji.agreement_number,
+		jd.department_name,
+		ji.end_address,
+		ji.send_station,
+		ji.car_number1,
+		ji.car_name,
+		ji.agreement_id,
+		ji.create_time,
+		ji.payment_fu,
+		ji.payment_method AS paytypes,
+		ji.payment_bz,
+		jdp.department_name as dn,
+		CASE
+		WHEN
+		ji.pay_type = 0 THEN
+		ji.all_money
+		END AS yf,
+		CASE
+		WHEN ji.pay_type = 1
+		THEN
+		ji.all_money
+		END AS df,
+		CASE
+		WHEN ji.pay_type = 2 THEN
+		ji.all_money
+		END AS hf,
+		CASE
+		WHEN ji.pay_type = 0 THEN
+		'预付'
+		WHEN ji.pay_type = 1 THEN
+		'到付'
+		WHEN ji.pay_type = 2 THEN
+		'回付'
+		END AS pay_type,
+		CASE
+		WHEN
+		ji.payment_sh = 0 THEN
+		'未审核'
+		WHEN ji.payment_sh = 1 THEN
+		'已提审'
+		WHEN
+		ji.payment_sh = 2 THEN
+		'审核通过'
+		WHEN ji.payment_sh = 3 THEN
+		'审核驳回'
+		WHEN
+		ji.payment_sh = 4 THEN
+		'未调整'
+		END AS payment_sh, 
+		CASE
+		WHEN
+		ji.payment_method = 0 THEN
+		'未结算'
+		WHEN ji.payment_method = 1 THEN
+		'现金'
+		WHEN ji.payment_method = 2 THEN
+		'油卡'
+		WHEN ji.payment_method = 3 THEN
+		'转账'
+		END AS payment_method,
+		 CASE
+       WHEN ji.agreement_type = 0 THEN
+	   '班线'
+       WHEN ji.agreement_type = 1 THEN
+	    '配送'
+     WHEN ji.agreement_type = 2 THEN
+	    '转运'
+      END AS lx,
+		CASE
+		WHEN ji.payment_tz != 1
+		AND ji.payment_tz
+		!= 2 THEN
+		'未调整'
+		WHEN ji.payment_tz = 1 THEN
+		'调整未结算'
+		WHEN ji.payment_tz = 2
+		THEN
+		'调整已结算'
+		END AS payment_tz,
+		
+		ji.all_money,
+
+		IF (
+		ji.receivable_fee IS
+		NULL,
+		0,
+		ji.receivable_fee
+		) AS receivable_fee,
+		ji.all_money - (
+
+		IF (
+		ji.receivable_fee IS NULL,
+		0,
+		ji.receivable_fee
+		)
+		) AS trade_cha
+		FROM
+		jy_create_agreement ji
+		LEFT JOIN jy_delivery_clearing jsj ON
+		jsj.order_id = ji.agreement_id
+		AND
+		jsj.settl_order = 0
+		AND
+		jsj.settl_times = (
+		SELECT
+		MAX(jsj1.settl_times)
+		FROM
+		jy_delivery_clearing jsj1
+		WHERE
+		jsj1.order_id = jsj.order_id
+		AND
+		jsj1.settl_order = 0
+		)
+		LEFT JOIN jy_delivery_audit jst ON jst.orderids
+		=
+		ji.agreement_id
+		AND jst.settlyf_sf = 0
+		AND jst.settlyf_type = 0
+		AND
+		jst.settlyf_time = (
+		SELECT
+		MAX(jst1.settlyf_time)
+		FROM
+		jy_delivery_audit
+		jst1
+		WHERE
+		jst1.orderids = jst.orderids
+		AND jst1.settlyf_type = 0
+		AND
+		jst1.settlyf_sf = 0
+		)
+		LEFT JOIN jy_delivery_audit jss ON jss.orderids =
+		ji.agreement_id
+		AND jss.settlyf_sf = 0 AND jss.settlyf_type =1
+		AND
+		jss.settlyf_time = (
+		SELECT
+		MAX(jss1.settlyf_time)
+		FROM
+		jy_delivery_audit
+		jss1
+		WHERE
+		jss1.orderids = jss.orderids
+		AND jss1.settlyf_type =0
+		AND
+		jss1.settlyf_sf = 1
+		)
+		LEFT JOIN jy_user ju ON jsj.settl_user = ju.id
+		LEFT JOIN jy_user ju1 ON
+		jst.settlyf_user = ju.id
+		LEFT JOIN
+		jy_department jd ON jd.department_id
+		= ji.ndp_id
+		LEFT JOIN jy_department jdp ON jdp.department_id=ji.payment_th_did
+		WHERE
+		ji.agreement_type=1
+		<if test="param1!=null and param1!=''">
+			and ji.agreement_id like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			<choose>
+				<when test="param2=='0'.toString()">
+					and (ji.payment_method like "%${param2}%" or
+					ji.payment_tz =1)
+				</when>
+				<otherwise>
+					and (ji.payment_method like "%${param2}%" and
+					ji.payment_tz !=1)
+				</otherwise>
+			</choose>
+		</if>
+		<if test="param3!=null and param3!=''">
+			and ji.payment_sh like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and jsj.settl_times &gt;=#{param4} and
+			(ji.payment_method!=0 and ji.payment_tz!=1)
+		</if>
+		<if test="param5!=null and param5!=''">
+			and jsj.settl_times &lt;=#{param5} and
+			(ji.payment_method!=0 and ji.payment_tz!=1)
+		</if>
+		<if test="param6!=null and param6!=''">
+			and ji.create_time &gt;=#{param6} and
+			(ji.payment_method!=0 and ji.payment_tz!=1)
+		</if>
+		<if test="param7!=null and param7!=''">
+			and ji.create_time &lt;=#{param7} and
+			(ji.payment_method!=0 and ji.payment_tz!=1)
+		</if>
+			<if test="param10!=null and param10!=''">
+					and ji.car_name like "%${param10}%"
+		</if>
+		<if test="array!=null and array!=''">
+			and ji.agreement_id in
+			<foreach collection="array" index="index" item="item" open="("
+				separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		GROUP BY ji.agreement_id
+		ORDER BY jsj.settl_times DESC,
+		ji.create_time
+		DESC
+	</select>
+
+	<!-- 结算订单查询 -->
+	<select id="getSettlementYfInfo" resultType="ShippingOrder">
+		SELECT
+		ji.send_time,
+		ji.shiping_order_num,
+		ji.custom_name,
+		ji.send_shouji,
+		ji.goods_name,
+		ji.goods_num,
+		ji.goods_weight,
+		ji.goods_vol,
+		ji.shiping_order_id,
+		ji.send_phone,
+		ji.settlds_fu,
+		ji.order_time,
+		ji.is_settleds AS paytypes,
+		ji.send_station,
+		ji.end_address,
+		ji.receipt,
+		ji.receipt_tel,
+		ji.receipt_phone
+		FROM
+		jy_shiping_order ji
+		LEFT JOIN jy_agreementtoorder jao ON
+		jao.order_id=ji.shiping_order_id
+		WHERe
+		jao.agreement_id=#{param5}
+		<if test="param3!=null and param3!=''">
+			and ji.shiping_order_num like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.custom_name like "%${param4}%"
+		</if>
+		ORDER BY
+		ji.updatetime
+		DESC
+		limit
+		#{param1},#{param2}
+	</select>
+	<!-- 订单总条 -->
+	<select id="getSettlementYf" resultType="int">
+		SELECT
+		COUNT(ji.shiping_order_id)
+		FROM
+		jy_shiping_order ji
+		INNER JOIN
+		jy_agreementtoorder jr ON
+		ji.shiping_order_id=jr.order_id
+		where
+		jr.agreement_id=#{param3}
+
+		<if test="param1!=null and param1!=''">
+			and ji.shiping_order_num like "%${param3}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and ji.custom_name like "%${param4}%"
+		</if>
+	</select>
+
+	<!-- 结算修改运费> -->
+	<update id="updateSettlementYf" parameterType="String">
+		update
+		jy_create_agreement
+		<set>
+			create_time=now(),
+			receivable_fee=#{param2},
+			payment_sh=0,
+			payment_tz=1,
+			payment_bz=#{param3}
+		</set>
+		where
+		agreement_id=#{param1}
+	</update>
+	<!-- 运费结算修改> -->
+	<update id="addSettlementYf" parameterType="java.util.Arrays">
+		update
+		jy_create_agreement
+		<set>
+			create_time=now(),
+			payment_method=#{param2},
+			payment_sh=0,
+			payment_tz=2
+		</set>
+		where
+		agreement_id in
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	<!--结算记录保存 -->
+	<insert id="saveSettlchecks" parameterType="java.util.List">
+		insert into
+		jy_delivery_clearing
+		(
+		clearingid,
+		order_id,
+		payment_method,
+		allmoney,
+		settl_money,
+		over_money,
+		settl_user,
+		settl_times,
+		settl_notes,
+		settl_order,
+		settl_zpnum,
+		settl_khbank,
+		settl_username,
+		settl_kahao,
+		settl_state
+		)
+		values
+		<foreach collection="list" index="index" item="item"
+			separator=",">
+			(
+			#{item.clearingid},
+			#{item.order_id},
+			#{item.payment_method},
+			#{item.allmoney},
+			#{item.settl_money},
+			#{item.over_money},
+			#{item.settl_user},
+			now(),
+			#{item.settl_notes},
+			#{item.settl_order},
+			#{item.settl_zpnum},
+			#{item.settl_khbank},
+			#{item.settl_username},
+			#{item.settl_kahao},
+			#{item.settl_state}
+			)
+		</foreach>
+	</insert>
+
+	<update id="saveSettl_fu" parameterType="java.util.List">
+		<foreach collection="list" index="index" item="item"
+			separator=";">
+			update
+			jy_create_agreement
+			set
+			payment_fu=#{item.payment_fu}
+			where
+			agreement_id =#{item.agreement_id}
+		</foreach>
+	</update>
+	<!-- 运费结算记录保存 -->
+	<insert id="saveSettlementYf" parameterType="Delivery_history">
+		insert into
+		jy_delivery_history
+		(
+		historyid,
+		formerfree,
+		formerchange,
+		newfree,
+		order_id,
+		downfree,
+		newchange,
+		changeuser,
+		changetime,
+		changeremark
+		)
+		values
+		<!-- <foreach collection="list" index="index" item="item" separator=","> -->
+		(
+		#{historyid},
+		#{formerfree},
+		#{formerchange},
+		#{newfree},
+		#{order_id},
+		#{downfree},
+		#{newchange},
+		#{changeuser},
+		now(),
+		#{changeremark}
+		)
+		<!-- </foreach> -->
+	</insert>
+	<!--运单导出 -->
+	<select id="getSettlementYfout" resultType="ShippingOrder">
+		SELECT
+		ji.send_time,
+		ji.shiping_order_num,
+		ji.custom_name,
+		ji.send_shouji,
+		ji.goods_name,
+		ji.goods_num,
+		ji.goods_weight,
+		ji.goods_vol,
+		ji.shiping_order_id,
+		ji.send_phone,
+		ji.settlds_fu,
+		ji.order_time,
+		ji.is_settleds AS paytypes,
+		ji.send_station,
+		ji.end_address,
+		ji.receipt,
+		ji.receipt_tel,
+		ji.receipt_phone
+		FROM
+		jy_shiping_order ji
+		LEFT JOIN jy_agreementtoorder jao ON
+		jao.order_id=ji.shiping_order_id
+		where jao.agreement_id=#{param3}
+		<if test="param1!=null and param1!=''">
+			and ji.shiping_order_num like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and ji.custom_name like "%${param2}%"
+		</if>
+		ORDER BY
+		ji.updatetime DESC
+	</select>
+
+	<!-- 运费结算提审 修改订单 -->
+	<update id="delSettlementYf" parameterType="java.util.Arrays">
+		update jy_create_agreement
+		<set>
+			create_time=now(),
+			payment_th_did=#{param2},
+			payment_sh=1
+		</set>
+		where agreement_id in
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+
+	<!--审核记录保存 -->
+	<insert id="saveSettlyfSh" parameterType="java.util.List">
+		insert into
+		jy_delivery_audit
+		(
+		auditId,
+		settlyf_remaks,
+		orderids,
+		settlyf_type,
+		settlyf_time,
+		settlyf_state,
+		settlyf_user,
+		settlyf_sf,
+		settlyf_id,
+		settle_th_did
+		)
+		values
+		<foreach collection="list" index="index" item="item"
+			separator=",">
+			(
+			#{item.auditId},
+			#{item.settlyf_remaks},
+			#{item.orderids},
+			#{item.settlyf_type},
+			now(),
+			#{item.settlyf_state},
+			#{item.settlyf_user},
+			#{item.settlyf_sf},
+			#{item.settlyf_id},
+			#{item.settle_th_did}
+			)
+		</foreach>
+	</insert>
+
+	<!-- 运费结算记录 查看详情 -->
+	<select id="getSettleRc" resultType="Delivery_Clearing">
+		SELECT
+		ji.*,
+		ju.username AS
+		usernamecz,
+		jo.agreement_number as shiping_order_num
+		FROM
+		jy_delivery_clearing ji
+		LEFT JOIN
+		jy_user ju ON ju.id=ji.settl_user
+		LEFT
+		JOIN jy_create_agreement jo ON
+		jo.agreement_id=ji.order_id
+		where
+		ji.order_id=#{param3}
+		and
+		ji.settl_order=#{param4}
+		ORDER BY
+		ji.settl_times
+		DESC
+		limit
+		#{param1},#{param2}
+	</select>
+	<!-- 运费结算记录总条数 -->
+	<select id="getSettleRcs" resultType="int">
+		SELECT
+		count(ji.clearingid)
+		FROM
+		jy_delivery_clearing ji
+		LEFT JOIN jy_user ju ON
+		ju.id=ji.settl_user
+		LEFT JOIN jy_create_agreement jo ON
+		jo.agreement_id=ji.order_id
+		where
+		ji.order_id=#{param1}
+		and
+		ji.settl_order=#{param2}
+	</select>
+	<!-- 调整审核查询 -->
+	<select id="getSettlementYfSHInfo" resultType="CreateAgreement">
+		SELECT
+		ji.*,
+		jt.department_name,
+		IF ((ji.payment_method!=0 and
+		ji.payment_tz!=1),MAX(jsj.settl_times),NULL) AS settlyf_time,
+		IF
+		((ji.payment_method!=0 and ji.payment_tz!=1),jsj.settl_notes,NULL) AS
+		settlyf_remaks,
+		IF (ji.payment_sh!=0 ,MAX(jst.settlyf_time),NULL) AS
+		settlyf_th_times,
+		IF ((ji.payment_sh!=0 OR
+		ji.payment_sh!=1),MAX(jss.settlyf_time),NULL)
+		AS settlyf_th_remaks,
+		IF
+		(ji.payment_sh!=0 ,jst.settlyf_remaks,NULL) AS
+		settlyf_th_times,
+		IF
+		((ji.payment_sh!=0 OR
+		ji.payment_sh!=1),jss.settlyf_remaks,NULL) AS
+		settlyf_sh_remaks,
+		IF
+		((ji.payment_method!=0 and ji.payment_tz!=1)
+		,ju.username,NULL) AS
+		username,
+		IF (ji.payment_sh!=0,ju1.username,NULL)
+		AS usernameth,
+		ji.all_money-(IF(ji.receivable_fee IS
+		NULL,0,ji.receivable_fee)) AS
+		trade_cha,
+		ji.end_address,ji.send_station,
+		CASE WHEN ji.pay_type=0 THEN
+		ji.all_money
+		END AS yf,
+		CASE WHEN ji.pay_type=1 THEN ji.all_money
+		END AS
+		df,
+		CASE WHEN ji.pay_type=2 THEN ji.all_money
+		END AS Sf,
+		CASE WHEN
+		ji.pay_type='0' THEN '预付'
+		WHEN ji.pay_type='1' THEN '到付'
+		WHEN
+		ji.pay_type='2' THEN '回付'
+		END AS pay_type
+		FROM
+		jy_create_agreement ji
+		LEFT JOIN jy_department jt ON jt.department_id=ji.ndp_id
+		LEFT JOIN jy_delivery_clearing jsj ON jsj.order_id=ji.agreement_id AND
+		jsj.settl_order=0
+		AND jsj.settl_times=(SELECT MAX(jsj1.settl_times)
+		FROM jy_delivery_clearing jsj1
+		WHERE jsj1.order_id=jsj.order_id AND
+		jsj1.settl_order=0)
+		LEFT JOIN jy_delivery_audit jst ON
+		jst.orderids=ji.agreement_id AND jst.settlyf_sf=0 AND
+		jst.settlyf_type=0
+		LEFT JOIN jy_delivery_audit jss ON
+		jss.orderids=ji.agreement_id AND jss.settlyf_sf=0 AND
+		jss.settlyf_type=1
+		LEFT JOIN jy_user ju ON jsj.settl_user=ju.id
+		LEFT
+		JOIN jy_user ju1 ON jst.settlyf_user=ju.id
+		WHERE
+		ji.payment_sh!=0 and
+		agreement_type=1
+		<if test="param3!=null and param3!=''">
+			and ji.agreement_number like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.custom_name like "%${param4}%"
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.payment_sh like "%${param5}%"
+		</if>
+		<if test="param6!=null and param6!=''">
+			and jsj.settl_times &gt;=#{param6} and
+			(ji.payment_method!=0 and ji.payment_tz!=1)
+		</if>
+		<if test="param7!=null and param7!=''">
+			and jsj.settl_times &lt;=#{param7} and
+			(ji.payment_method!=0 and ji.payment_tz!=1)
+		</if>
+		<if test="param8!=null and param8!=''">
+			and ji.create_time &gt;=#{param8} and
+			(ji.payment_method!=0 and ji.payment_tz!=1)
+		</if>
+		<if test="param9!=null and param9!=''">
+			and ji.create_time &lt;=#{param9} and
+			(ji.payment_method!=0 and ji.payment_tz!=1)
+		</if>
+		<if test="param10!=null and param10!=''">
+		   and ji.payment_th_did like "%${param10}%"
+		</if>
+		GROUP BY ji.agreement_id
+		ORDER BY MAX(jst.settlyf_time) DESC,
+		ji.create_time
+		DESC
+		limit
+		#{param1},#{param2}
+	</select>
+
+	<select id="getSettlementYfSH" resultType="int">
+		SELECT
+		COUNT(*)
+		FROM(SELECT
+		ji.agreement_id
+		FROM
+		jy_create_agreement ji
+		LEFT JOIN jy_delivery_clearing jsj ON
+		jsj.order_id=ji.agreement_id AND
+		jsj.settl_order=0
+		AND
+		jsj.settl_times=(SELECT MAX(jsj1.settl_times) FROM
+		jy_delivery_clearing jsj1
+		WHERE jsj1.order_id=jsj.order_id AND
+		jsj1.settl_order=0)
+		LEFT JOIN jy_delivery_audit jst ON
+		jst.orderids=ji.agreement_id AND jst.settlyf_sf=0 AND
+		jst.settlyf_type=0
+		LEFT JOIN jy_delivery_audit jss ON
+		jss.orderids=ji.agreement_id AND jss.settlyf_sf=0 AND
+		jss.settlyf_type=1
+		LEFT JOIN jy_user ju ON jsj.settl_user=ju.id
+		LEFT
+		JOIN jy_user ju1 ON jst.settlyf_user=ju.id
+		WHERE
+		1=1
+		<if test="param1!=null and param1!=''">
+			and ji.agreement_number like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and ji.custom_name like "%${param2}%"
+		</if>
+		<if test="param3!=null and param3!=''">
+			and ji.payment_sh like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and jsj.settl_times &gt;=#{param4} and
+			(ji.payment_method!=0 and ji.payment_tz!=1)
+		</if>
+		<if test="param5!=null and param5!=''">
+			and jsj.settl_times &lt;=#{param5} and
+			(ji.payment_method!=0 and ji.payment_tz!=1)
+		</if>
+		<if test="param6!=null and param6!=''">
+			and ji.create_time &gt;=#{param6} and
+			(ji.payment_method!=0 and ji.payment_tz!=1)
+		</if>
+		<if test="param7!=null and param7!=''">
+			and ji.create_time &lt;=#{param7} and
+			(ji.payment_method!=0 and ji.payment_tz!=1)
+		</if>
+		GROUP BY ji.agreement_id
+		ORDER BY MAX(jst.settlyf_time) DESC,
+		ji.create_time
+		DESC
+		)as tt
+	</select>
+
+	
+	<!--运费结算审核记录查询 -->
+	<select id="getSettleShRc" resultType="Delivery_Audit">
+		SELECT
+		ji.*,
+		ju.username AS usernamecz,
+		jo.agreement_number as
+		shiping_order_num,
+		jdp.department_name
+		FROM
+		jy_delivery_audit ji
+		LEFT JOIN jy_user ju ON
+		ju.id=ji.settlyf_user
+		LEFT
+		JOIN jy_create_agreement jo ON
+		jo.agreement_id=ji.orderids
+		LEFT JOIN jy_department jdp ON jdp.department_id=ji.settle_th_did
+		where
+		ji.orderids=#{param5}
+		and
+		ji.settlyf_sf=0
+		<if test="param3!=null and param3!=''">
+			and ji.settlyf_time &gt;=#{param3}
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.settlyf_time &lt;=#{param4}
+		</if>
+		ORDER BY
+		ji.settlyf_time
+		DESC
+		limit
+		#{param1},#{param2}
+	</select>
+	
+	<!-- 运费结算审核修改订单 -->
+	 <update id="shSettlementYf" parameterType="java.util.Arrays">
+		update jy_create_agreement
+		<set>
+			create_time=now(),
+			payment_sh=#{param2}
+		</set>
+		where agreement_id in
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</update> 
+
+	<select id="getSettleShRcs" resultType="int">
+		SELECT
+		count(*)
+		FROM
+		jy_delivery_audit ji
+		LEFT JOIN jy_user ju ON
+		ju.id=ji.settlyf_user
+		LEFT
+		JOIN jy_create_agreement jo ON
+		jo.agreement_id=ji.orderids
+		where
+		ji.orderids=#{param3}
+		and
+		ji.settlyf_sf=0
+		<if test="param1!=null and param1!=''">
+			and ji.settlyf_time &gt;=#{param1}
+		</if>
+		<if test="param2!=null and param2!=''">
+			and ji.settlyf_time &lt;=#{param2}
+		</if>
+		ORDER BY
+		ji.settlyf_time
+		DESC
+
+	</select>
+	<!-- 审核导出 -->
+	<select id="getSettlementYfSHout" resultType="CreateAgreement">
+	 SELECT
+		CASE WHEN ji.pay_type=0 THEN ji.all_money
+		END AS yf,
+		CASE WHEN
+		ji.pay_type=1
+		THEN ji.all_money
+		END AS df,
+		CASE WHEN ji.pay_type=2 THEN
+		ji.all_money
+		END AS sf,
+		CASE WHEN ji.pay_type=3 THEN ji.all_money
+		END AS
+		hdqf,
+		CASE
+		WHEN ji.pay_type=4 THEN ji.all_money
+		END AS fhyj,
+		CASE WHEN
+		ji.pay_type=5 THEN ji.all_money
+		END AS shyj,
+		CASE WHEN ji.pay_type=6
+		THEN ji.all_money
+		END AS hdfk,
+		ji.all_money,ji.agreement_number,ji.agreement_type,ji.ndp_id,ji.send_station,ji.end_address,
+		ji.car_number1,ji.car_name,ji.all_money,ji.receivable_fee,
+		IF
+		((ji.payment_method!=0 and ji.payment_tz!=1),jsj.settl_times,NULL) AS
+		settlyf_time,
+		IF ((ji.payment_method!=0 and
+		ji.payment_tz!=1),jsj.settl_notes,NULL) AS settlyf_remaks,
+		IF
+		(ji.payment_sh!=0 ,jst.settlyf_time,NULL) AS settlyf_th_times,
+		IF
+		((ji.payment_sh!=0 OR ji.payment_sh!=1),jss.settlyf_time,NULL) AS
+		settlyf_sh_times,
+		IF (ji.payment_sh!=0 ,jst.settlyf_remaks,NULL) AS
+		settlyf_th_remaks,
+		IF ((ji.payment_sh!=0 OR
+		ji.payment_tz!=1),jss.settlyf_remaks,NULL) AS settlyf_sh_remaks,
+		IF
+		((ji.payment_method!=0 and ji.payment_tz!=1) ,ju.username,NULL) AS
+		username,
+		CASE WHEN ji.pay_type=0 THEN ji.all_money
+		END AS yf,
+		CASE WHEN
+		ji.pay_type=1 THEN ji.all_money
+		END AS df,
+		CASE WHEN ji.pay_type=2 THEN
+		ji.all_money
+		END AS Sf,
+		CASE WHEN ji.pay_type='0' THEN '预付'
+		WHEN
+		ji.pay_type='1' THEN '到付'
+		WHEN
+		ji.pay_type='2' THEN '回付'
+		END AS pay_type,
+		CASE WHEN ji.payment_sh=0
+		THEN '未审核'
+		WHEN ji.payment_sh=1 THEN '已提审'
+		WHEN ji.payment_sh=2 THEN '审核通过'
+		WHEN ji.payment_sh=3 THEN '审核驳回'
+		WHEN
+		ji.payment_sh=4 THEN '未调整'
+		END AS payment_sh,
+		CASE WHEN
+		ji.payment_method=0 THEN '未结算'
+		WHEN ji.payment_method=1 THEN '现金'
+		WHEN
+		ji.payment_method=2 THEN '油卡'
+		WHEN ji.payment_method=3 THEN '转账'
+		END AS
+		payment_method,
+        CASE
+        WHEN ji.agreement_type = 0 THEN
+	    '班线'
+        WHEN ji.agreement_type = 1 THEN
+	    '配送'
+        WHEN ji.agreement_type = 2 THEN
+	    '转运'
+        END AS lx,
+		ji.all_money-(IF(ji.receivable_fee IS
+		NULL,0,ji.receivable_fee)) AS
+		trade_cha
+		FROM
+		jy_create_agreement ji
+		LEFT
+		JOIN jy_delivery_clearing jsj
+		ON jsj.order_id=ji.agreement_id AND
+		jsj.settl_order=0
+		AND
+		jsj.settl_times=(SELECT MAX(jsj1.settl_times) FROM
+		jy_delivery_clearing jsj1
+		WHERE jsj1.order_id=jsj.order_id AND
+		jsj1.settl_order=0)
+		LEFT JOIN jy_delivery_audit jst ON
+		jst.orderids=ji.agreement_id AND jst.settlyf_sf=0 AND
+		jst.settlyf_type=0
+		AND jst.settlyf_time=(SELECT MAX(jst1.settlyf_time)
+		FROM jy_delivery_audit jst1
+		WHERE jst1.orderids=jst.orderids AND
+		jst1.settlyf_type=0 AND jst1.settlyf_sf=0)
+		LEFT JOIN jy_delivery_audit
+		jss ON jss.orderids=ji.agreement_id AND
+		jss.settlyf_sf=0 AND
+		jss.settlyf_type=1
+		AND jss.settlyf_time=(SELECT
+		MAX(jss1.settlyf_time)
+		FROM jy_delivery_audit jss1
+		WHERE
+		jss1.orderids=jss.orderids AND
+		jss1.settlyf_type=1 AND
+		jss1.settlyf_sf=0)
+		LEFT JOIN jy_user ju ON
+		jsj.settl_user=ju.id
+		LEFT
+		JOIN jy_user ju1 ON jst.settlyf_user=ju.id 
+		WHERE
+		ji.payment_sh!=0 and
+		agreement_type=1
+		<if test="param1!=null and param1!=''">
+			and ji.agreement_number like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and ji.payment_sh like "%${param2}%"
+		</if>
+		<if test="param3!=null and param3!=''">
+			and ji.payment_th_did like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.send_time &gt;=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.send_time &lt;=#{param5}
+		</if>
+		<if test="(param4!=null and param4!='') and (param5!=null and param5!='') ">
+			and ji.send_time &gt;=#{param4}
+			and ji.send_time
+			&lt;=#{param5}
+		</if>
+		<if test="param6!=null and param6!=''">
+			and jst.settlyf_time &gt;=#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">
+			and jst.settlyf_time &lt;=#{param7}
+		</if>
+		<if test="param8!=null and param8!=''">
+			and jsj.settl_times &gt;=#{param8} and
+			(ji.payment_method!=0 and
+			ji.payment_tz!=1)
+		</if>
+		<if test="param9!=null and param9!=''">
+			and jsj.settl_times &lt;=#{param9} and
+			(ji.payment_method!=0 and
+			ji.payment_tz!=1)
+		</if>
+		<if test="param10!=null and param10!=''">
+			and ji.custom_name like "%${param10}%"
+		</if>
+		<if test="param11!=null and param11!=''">
+			and ji.agreement_id in
+			<foreach collection="array" index="index" item="item" open="("
+				separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+
+		GROUP BY ji.agreement_id
+		ORDER BY jst.settlyf_time DESC
+	</select>
+	
+		<!--  结算历史表修改查询>-->
+	<select  id="getupdateSettle"   resultType="Delivery_Clearing">
+		SELECT 
+			jsj.*
+		FROM
+		 ${param1} AS jsj
+		WHERE jsj.settl_order=0
+		and 
+			 jsj.order_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		AND jsj.settl_times=(SELECT MAX(jsj1.settl_times) FROM  ${param1} AS  jsj1 WHERE jsj1.order_id=jsj.order_id 
+		AND  jsj1.settl_order=0)
+		GROUP BY jsj.order_id
+	</select>
+	
+		<!--  结算历史表审核状态修改>-->
+ 	<update id="updateSettle"  parameterType="java.util.List">
+	<foreach collection="list" index="index" item="item"
+			separator=" ;">	
+				update 
+					${param2}
+					<set>
+					settl_times=now(),
+					settl_state=${param3}
+					</set>
+				where
+				 clearingid=#{item.clearingid}
+		</foreach>
+	</update>
+
+</mapper>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jy.dao.LoginDao">
+	<select id="checkUser" resultType="int" parameterType="User">
+		SELECT
+		COUNT(*) FROM jy_USER WHERE Username=#{username} AND
+		password=#{password} AND state=1
+	</select>
+	<!-- 注册 -->
+	<!-- <insert id="addUser" parameterType="User"> INSERT INTO jy_user VALUES 
+		(#{},#{password},#{realName},#{did},SYSDATE()) </insert> -->	<!-- 用户所有信息 -->
+	<select id="getUserInfo" resultType="User" parameterType="User">
+		select
+		*
+		from
+		jy_user
+		where
+		username=#{username}
+		and password=#{password}
+
+	</select>
+	<!-- 查询用户权限 -->
+	<select id="getUserRote" resultType="Integer">
+		select user_role_rid from
+		jy_user_role where user_role_uid=#{0}
+	</select>
+	<select id="getRoles" resultType="String">
+		select r.role_name
+		from
+		jy_user_role ur,jy_role r where ur.user_role_rid=r.role_id and
+		user_role_uid=#{0}
+	</select>
+	<select id="checkPas" resultType="int">
+		select
+		count(*)
+		from
+		jy_user
+		where
+		id=#{0}
+		and password=#{1}
+	</select>
+	<!-- 更新密码 -->
+	<!-- <update id="updatePas"> update jy_user set user_password=#{1} where 
+		user_id=#{0} </update> -->
+	<!-- 更新登录时间 -->
+	<update id="updateUserTime">
+		update jy_user set lasttime=SYSDATE() where id=#{0}
+	</update>
+
+	<!-- 判断是否有固定车辆信息 -->
+	<select id="getCarCount" parameterType="string" resultType="string">
+		select
+		travel_card_id
+		from
+		jy_travel_card
+		where
+		user_id=#{id}
+	</select>
+	<!-- 更新app标识 -->
+
+	<update id="updatechannelId">
+		update
+		jy_user
+		set
+		channelId=#{param1},
+		device_type=#{param2}
+		where
+		id=#{param3}
+	</update>
+	<select id="appGetUserInfo" resultType="User" parameterType="User">
+		select
+		ju.*,jtc.plate_number,jdi.driver_name,jc.customer_name AS
+		costomers,jdi.reviewed_state
+		from
+		jy_user ju LEFT JOIN jy_driver_info jdi ON
+		jdi.driver_id=ju.driver_id
+		LEFT JOIN
+		jy_travel_card jtc ON
+		jtc.travel_card_id = jdi.car_id
+		LEFT JOIN jy_customer jc ON jc.customer_id=ju.costomersid
+		where
+		username=#{username}
+		and password=#{password}
+	</select>
+	<select id="appCheckUser" resultType="int" parameterType="User">
+		SELECT
+		COUNT(*) FROM jy_USER WHERE Username=#{username} AND
+		password=#{password}
+	</select>
+</mapper>

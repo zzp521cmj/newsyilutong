@@ -1,0 +1,11 @@
+eclipse.preferences.version=1
+encoding//WebRoot/WEB-INF/views/layout/north.jsp=UTF-8
+encoding//WebRoot/WEB-INF/views/layout/south.jsp=UTF-8
+encoding//WebRoot/WEB-INF/views/map/map.jsp=UTF-8
+encoding//WebRoot/sk/js/jquery.js=UTF-8
+encoding//WebRoot/sk/js/lrtk.js=UTF-8
+encoding//src/com/jy/common/DateUtils.java=UTF-8
+encoding//src/com/jy/common/MD5.java=UTF-8
+encoding//src/com/jy/service/impl/LoginUserServiceImpl.java=UTF-8
+encoding//src/com/jy/service/impl/UserInfoServiceImpl.java=UTF-8
+encoding/<project>=UTF-8

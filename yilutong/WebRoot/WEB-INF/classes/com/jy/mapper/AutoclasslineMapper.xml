@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="com.jy.dao.AutoclasslineDao">
+	
+	<select id="getAutoclasslineInfo" resultType="Taskonlineimport">
+		select 
+			* 
+		from 
+			jy_autoclassline
+		where
+			1=1 
+ 		<if test="param3!=null and param3!=''">
+ 			  and linname like "%${param3}%" 
+ 		</if>
+ 		<if test="param4!=null and param4!=''"> 
+ 			and lincarno like "%${param4}%"
+		</if> 	
+		 <if test="param5!=null and param5!=''">
+			and create_time &gt;=#{param5}
+		</if>
+		<if test="param6!=null and param6!=''">
+			and create_time &lt;=#{param6}
+		</if>
+		<if test="(param5!=null and param5!='') and (param6!=null and param6!='')">
+			and create_time &gt;=#{param5}
+			and create_time &lt;=#{param6}
+		</if>
+		ORDER BY create_time DESC
+		limit #{param1},#{param2}
+	</select>
+	
+	<select id="getAutoclassline" resultType="int">
+		select 
+			count(*) 
+		from 
+			jy_autoclassline 
+		where
+			1=1 
+ 		<if test="param1!=null and param1!=''">
+ 			  and linname like "%${param1}%" 
+ 		</if>
+ 		<if test="param2!=null and param2!=''"> 
+ 			and lincarno like "%${param2}%"
+		</if> 
+		<if test="param3!=null and param3!=''">
+			and create_time &gt;=#{param3}
+		</if>
+		<if test="param4!=null and param4!=''">
+			and create_time &lt;=#{param4}
+		</if>
+		<if test="(param3!=null and param3!='') and (param4!=null and param4!='')">
+			and create_time &gt;=#{param3}
+			and create_time &lt;=#{param4}
+		</if>
+	</select>
+	<select id="getAutoclasslineAll" resultType="Taskonlineimport">
+		select 
+			* 
+		from 
+			jy_autoclassline 
+		where
+			1=1 
+ 		<if test="param1!=null and param1!=''">
+ 			  and linname like "%${param1}%" 
+ 		</if>
+ 		<if test="param2!=null and param2!=''"> 
+ 			and lincarno like "%${param2}%"
+		</if> 
+		<if test="param3!=null and param3!=''">
+			and create_time &gt;=#{param3}
+		</if>
+		<if test="param4!=null and param4!=''">
+			and create_time &lt;=#{param4}
+		</if>
+		<if test="(param3!=null and param3!='') and (param4!=null and param4!='')">
+			and create_time &gt;=#{param3}
+			and create_time &lt;=#{param4}
+		</if>
+		ORDER BY create_time DESC	
+	</select>
+<!-- 	<delete id="deleteDriverl" parameterType="Driver"> -->
+<!-- 		delete from driver_info where driver_id=#{driver_id} -->
+<!-- 	</delete> -->
+	
+	<delete id="deleteAutoclassline" parameterType="java.util.Arrays">
+		delete from 
+			jy_autoclassline
+		 where 
+		 	linnumber IN
+		<foreach collection="array" index="index" item="item" open="(" separator="," close=")">   
+	        #{item}   
+	    </foreach>  
+	</delete>
+	
+	<insert id="saveAutoclassline" parameterType="Taskonlineimport">
+		 insert into 
+		 	jy_autoclassline
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+     <if test="linnumber != null" >
+        linnumber,
+      </if>
+       <if test="linname != null" >
+        linname,
+      </if>
+       <if test="lincarno != null" >
+        lincarno,
+      </if>
+       <if test="lincartype != null" >
+        lincartype,
+      </if>
+      <if test="lincarowner != null" >
+        lincarowner,
+      </if>
+      <if test="linmoney != null" >
+        linmoney,
+      </if>
+      <if test="linno != null" >
+        linno,
+      </if>
+      <if test="linId != null" >
+        linId,
+      </if>
+       <if test="car_id != null" >
+        car_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="linnumber != null" >
+        #{linnumber},
+      </if>
+      <if test="linname != null" >
+        #{linname},
+      </if>
+      <if test="lincarno != null" >
+        #{lincarno},
+      </if>
+      <if test="lincartype != null" >
+        #{lincartype},
+      </if>
+      <if test="lincarowner != null" >
+        #{lincarowner},
+      </if>
+      <if test="linmoney != null" >
+        #{linmoney},
+      </if>
+      <if test="linno != null" >
+        #{linno},
+      </if>
+      <if test="linId != null" >
+        #{linId},
+      </if>
+      <if test="car_id != null" >
+        #{car_id},
+      </if>
+      </trim>
+	</insert>
+	<select id="getUpdateAutoclassline"   resultType="Taskonlineimport">
+		 SELECT 
+			ja.*,
+			jtc.plate_number ,
+			jtc.travel_card_id,
+			jc.classline_id,
+			jc.classline_name
+		FROM 
+			jy_autoclassline ja
+		
+		INNER JOIN
+			jy_travel_card jtc ON jtc.travel_card_id = ja.car_id
+			INNER JOIN
+			jy_classline jc ON jc.classline_id = ja.linId
+		where 
+			linnumber=#{linnumber} 
+	</select>
+	<select id="getUpdateAutoclasslineNo"   resultType="Taskonlineimport">
+		 SELECT 
+			*
+		FROM 
+			jy_autoclassline 
+		where 
+			linnumber=#{linnumber} 
+	</select>
+	<update id="updateAutoclassline" parameterType="Taskonlineimport">
+		 update 
+		 	jy_autoclassline
+	   	 <set >
+	      <if test="linname != null" >
+	        linname = #{linname},
+	      </if>
+	      <if test="lincarno != null" >
+	        lincarno = #{lincarno},
+	      </if>
+	      <if test="lincartype != null" >
+	        lincartype = #{lincartype},
+	      </if>
+	      <if test="lincarowner != null" >
+	        lincarowner = #{lincarowner},
+	      </if>
+	      <if test="linmoney != null" >
+	        linmoney = #{linmoney},
+	      </if>
+	      <if test="linno != null" >
+	        linno = #{linno},
+	      </if>
+	      <if test="linId != null" >
+	        linId = #{linId},
+	      </if>
+	      <if test="car_id != null" >
+	        car_id = #{car_id},
+	      </if>
+	      
+	    </set>
+   		 where linnumber = #{linnumber}
+	</update>
+	<select id="getCar_idLength" resultType="Taskonlineimport">
+		SELECT
+			travel_card_id,plate_number 
+		FROM 
+			jy_travel_card
+		<if test="_parameter!=null">
+			where plate_number like "%${_parameter}%"
+		</if>
+	</select>
+	<select id="getClassLineLength" resultType="Taskonlineimport">
+		SELECT
+			classline_id,
+			classline_name
+		FROM 
+			jy_classline
+		<if test="_parameter!=null">
+			where classline_name like "%${_parameter}%"
+		</if>
+	</select>
+</mapper>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="com.jy.dao.MenuDao">
+	
+	<select id="getnoteId"  resultType="Menu" parameterType="int">
+		select * from jy_menu m,jy_menu_role r where r.menu_role_mid=m.id AND r.menu_role_rid=#{id} AND m.fid=0 order by m.sid
+	</select>
+	<select id="getFMenuids"  resultType="Menu" parameterType="java.util.Arrays">
+		select distinct m.id,m.text,m.iconCls,m.pageurl,m.fid,m.sid from jy_menu m,jy_menu_role r where r.menu_role_mid=m.id AND m.fid=0 AND r.menu_role_rid IN 
+		  <foreach collection="array" index="index" item="item" open="(" separator="," close=")">   
+	        #{item}   
+	    </foreach>
+	    order by m.sid
+	</select>
+	<select id="getIdMenu" resultType="Integer" parameterType="int">
+		SELECT menu_role_mid FROM jy_menu_role where menu_role_rid=#{id}
+	</select>
+	<select id="getMenu"  resultType="Menu">
+		select * from jy_menu m,jy_menu_role r where r.menu_role_mid=m.id AND m.fid=#{0} AND r.menu_role_rid=#{1} order by m.sid
+	</select>
+	<select id="getcMenus"  resultType="Menu" parameterType="java.util.Arrays">
+		select distinct m.id,m.text,m.iconCls,m.pageurl,m.fid,m.sid from jy_menu m,jy_menu_role r where r.menu_role_mid=m.id AND m.fid=#{0} AND r.menu_role_rid IN 
+		 <foreach collection="array" index="index" item="item" open="(" separator="," close=")">   
+	        #{item}   
+	    </foreach>
+	    order by m.sid
+	</select>
+	<select id="getRoleMenus"  resultType="Menu" parameterType="java.util.Arrays">
+		select distinct m.id,m.text,m.iconCls,m.state,m.pageurl,m.fid,m.sid from jy_menu m,jy_menu_role r where r.menu_role_mid=m.id AND r.menu_role_rid IN 
+		 <foreach collection="array" index="index" item="item" open="(" separator="," close=")">   
+	        #{item}   
+	    </foreach>
+	    order by m.sid
+	</select>
+	<select id="getMenus" resultType="Menu">
+		select * from jy_menu m order by sid
+	</select>
+	<select id="getMenuFunction" resultType="Function">
+		select * from jy_function where function_menuid=#{0}
+	</select>
+	
+	<select id="getnoteAll" resultType="Menu">
+		select * from jy_menu m where  m.fid=0 order by m.sid
+	</select>
+	
+	<!-- 获取所有菜单 -->
+	<select id="getMenuAll"  resultType="Menu">
+		select * from jy_menu m where m.fid=#{0} order by m.sid
+	</select>
+	
+	<!-- 指定菜单查询 -->
+	<select id="getupdateMenuInfo" resultType="Menu">
+		select * from jy_menu where id=#{0}
+	</select>
+	
+	<!-- 更新菜单 -->
+	<update id="updateMenu" parameterType="Menu">
+		update jy_menu set text=#{text},iconCls=#{iconCls},pageurl=#{pageurl},menuDescribe=#{menuDescribe} WHERE id=#{id}
+	</update>
+	
+	<!-- 删除菜单 -->
+	<delete id="deleteMenu" parameterType="int">
+		delete from jy_menu WHERE id=#{id}
+	</delete>
+	
+	<!-- 添加菜单 -->
+	<insert id="addMenu" parameterType="Menu">
+		INSERT INTO
+			JY_MENU
+			(text,iconCls,pageurl,fid,sid,menuDescribe)
+		VALUES
+               (#{text},#{iconCls},#{pageurl},#{fid},#{sid},#{menuDescribe})
+	</insert>
+	
+</mapper>

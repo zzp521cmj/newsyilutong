@@ -1,0 +1,214 @@
+﻿Object Report
+	Version='6.0.0.6'
+	Title='你的报表标题'
+	AlignToGrid=F
+	PrintAsDesignPaper=F
+	Object Font
+		Name='宋体'
+		Size=108000,0
+		Weight=400
+		Charset=134
+	End
+	BackImageFile=' '
+	ConnectionString='Provider=MSDASQL.1;Persist Security Info=False;User ID=root;Data Source=localhost;Extended Properties="DSN=localhost;UID=root;";Initial Catalog=surmaxdata'
+	Object Printer
+		Size=256
+		Width=8
+		Height=2.5
+		LeftMargin=0
+		TopMargin=0
+		RightMargin=0
+		BottomMargin=0
+	End
+	Object DetailGrid
+		Object Font
+			Name='宋体'
+			Size=84000,0
+			Weight=400
+			Charset=134
+		End
+		CenterView=T
+		BorderPrintType=Content
+		Object Border
+			Styles=[]
+			Object Pen
+				Width=0
+				Color=White
+			End
+		End
+		Object ColLine
+			Width=0
+			Color=White
+		End
+		Object RowLine
+			Width=0
+			Color=White
+		End
+		Object Recordset
+			ConnectionString='Provider=MSDASQL.1;Persist Security Info=False;User ID=root;Data Source=mysql_odbc;Extended Properties="DSN=mysql_odbc;UID=root;";Initial Catalog=surmaxdata'
+			QuerySQL='select shiping_order_num,receipt,receipt_tel,receipt_address from jy_shiping_order'
+			Items Field
+				Item
+					Name='shiping_order_num'
+				End
+				Item
+					Name='receipt'
+				End
+				Item
+					Name='receipt_tel'
+				End
+				Item
+					Name='receipt_address'
+				End
+			End
+		End
+		Items Column
+			Item
+				Name='Column1'
+				Width=8.001
+			End
+		End
+		Object ColumnContent
+			KeepTogether=F
+			Height=2.4765
+			RowsPerPage=1
+			Items ColumnContentCell
+				Item
+					Column='Column1'
+					FreeCell=T
+					Items Control
+						Item
+							Type=Barcode
+							Name='Barcode1'
+							Left=0.5715
+							Top=0.0846667
+							Width=6.985
+							Height=1.10067
+							BarcodeType=Code128Auto
+							Text='[#shiping_order_num#]'
+							Object Font
+								Name='宋体'
+								Size=96000,0
+								Bold=T
+								Charset=134
+							End
+						End
+						Item
+							Type=MemoBox
+							Name='MemoBox1'
+							Left=0.910167
+							Top=1.24883
+							Width=1.397
+							Height=0.529167
+							Object Font
+								Name='宋体'
+								Size=78000,0
+								Weight=400
+								Charset=134
+							End
+							Text='订单号：'
+						End
+						Item
+							Type=MemoBox
+							Name='MemoBox5'
+							Left=2.45533
+							Top=1.22767
+							Width=2.20133
+							Height=0.508
+							Object Font
+								Name='宋体'
+								Size=78000,0
+								Weight=400
+								Charset=134
+							End
+							Text='[#shiping_order_num#]'
+						End
+						Item
+							Type=MemoBox
+							Name='MemoBox2'
+							Left=0.910167
+							Top=1.7145
+							Width=1.43933
+							Height=0.613833
+							Object Font
+								Name='宋体'
+								Size=78000,0
+								Weight=400
+								Charset=134
+							End
+							Text='收货电话：'
+						End
+						Item
+							Type=MemoBox
+							Name='MemoBox8'
+							Left=2.49767
+							Top=1.7145
+							Width=2.20133
+							Height=0.5715
+							Object Font
+								Name='宋体'
+								Size=78000,0
+								Weight=400
+								Charset=134
+							End
+							Text='[#receipt_tel#]'
+						End
+						Item
+							Type=MemoBox
+							Name='MemoBox3'
+							Left=4.67783
+							Top=1.22767
+							Width=1.10067
+							Height=0.508
+							Object Font
+								Name='宋体'
+								Size=78000,0
+								Weight=400
+								Charset=134
+							End
+							Text='收货人：'
+						End
+						Item
+							Type=MemoBox
+							Name='MemoBox4'
+							Left=5.79967
+							Top=1.22767
+							Width=2.20133
+							Height=0.5715
+							Object Font
+								Name='宋体'
+								Size=78000,0
+								Weight=400
+								Charset=134
+							End
+							Text='[#receipt#]'
+						End
+					End
+					BorderCustom=T
+					Object Border
+						Styles=[]
+					End
+				End
+			End
+		End
+		Object ColumnTitle
+			Visible=F
+			Height=0
+			Items ColumnTitleCell
+				Item
+					GroupTitle=F
+					Column='Column1'
+					Text='Column1'
+				End
+			End
+		End
+	End
+	Items ReportHeader
+		Item
+			Name='ReportHeader1'
+			KeepTogether=F
+			Height=0
+			NewPage=Before
+		End
+	End
+End

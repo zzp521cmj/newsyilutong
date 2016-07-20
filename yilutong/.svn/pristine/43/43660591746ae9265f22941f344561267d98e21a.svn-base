@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="com.jy.dao.WarehouseDao">
+	<select id="getRemark" resultType="Warehouse">
+		select * from jy_warehouse where warehouse_id=#{0}
+	</select>
+	<select id="checkName" resultType="int">
+		select count(*) from jy_remark where remark_name=#{0}
+	</select>
+	<select id="checkRemark" resultType="int">
+		select count(*) from jy_classline_info where remarkId=#{0}
+	</select>
+	<select id="getRemarkName" resultType="Remark">
+		select * from jy_Remark r
+		<if test="param2=='name'">
+			where r.remark_name like '%${param1}%'
+		</if>
+		<if test="param2=='tel'">
+			where r.remark_tel like '%${param1}%%'
+		</if>
+		<if test="param2=='address'">
+			where r.remark_address like '%${param1}%%'
+		</if>
+	</select>
+	<insert id="addRemark" parameterType="Warehouse">
+		insert jy_warehouse(
+		warehouse_id,
+		warehouse_num,
+		warehouse_name,
+		warehouse_address,
+		warehouse_type,
+		warehouse_point,
+		warehouse_createtime
+		)values(
+		#{warehouse_id},
+		#{warehouse_num},
+		#{warehouse_name},
+		#{warehouse_address},
+		#{warehouse_type},
+		#{warehouse_point},
+		SYSDATE())
+	</insert>
+	<select id="getRemarks" resultType="Warehouse">
+	SELECT *
+	from jy_warehouse a
+	where 1=1
+	<if test="param3 !=null and param3 != ''">
+		 	AND a.warehouse_name like '%${param3}%'
+	</if>
+	<if test="param4 !=null and param4 != ''">
+		 	AND a.warehouse_type ={param4}
+	</if>
+	<if test="param5 !=null and param5 != ''">
+		 	AND a.warehouse_address like '%${param5}%'
+	</if>
+	order by a.warehouse_createtime desc
+	limit #{param1},#{param2} 
+	</select>
+	<update id="updateRemark" parameterType="Warehouse">
+	update jy_warehouse set 
+	warehouse_num=#{warehouse_num},
+	warehouse_name=#{warehouse_name},
+	warehouse_address=#{warehouse_address},
+	warehouse_type=#{warehouse_type},
+	warehouse_point=#{warehouse_point}
+	where warehouse_id=#{warehouse_id}
+	
+	</update>
+	<select id="getCount" resultType="int">
+	SELECT count(*)
+	from jy_warehouse a
+	where 1=1
+	<if test="param1 !=null">
+		 	AND a.warehouse_id like '%${param1}%'
+	</if>
+	<if test="param2 !=null">
+		 	AND a.warehouse_type ={param2}
+	</if>
+	<if test="param3 !=null">
+		 	AND a.warehouse_address like '%${param3}%'
+	</if>
+	
+	</select>
+	<select id="getModifyPeople" resultType="String">
+		SELECT user_name FROM jy_user where id=#{0} 
+	</select>
+	<delete id="deleteRemark">
+	delete from jy_warehouse where warehouse_id =#{0}
+	</delete>
+</mapper>

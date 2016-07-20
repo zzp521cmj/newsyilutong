@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="com.jy.dao.AlarmDao">
+	<select id="getMaps" resultType="com.jy.model.Maps">
+		select * from jy_monitor_data
+	</select>
+	<select id="getCarnumber">
+		select plate_number from jy_travel_card where travel_card_id=#{id}
+	</select>
+	<select id="getLine" parameterType="String" resultType="String">
+		select linnumber from jy_taskonlineimport where lincarno=#{0}
+	</select>
+	<select id="getlinePosition" parameterType="String" resultType="com.jy.model.LinStandard">
+		select * from jy_linstandard where linbh=#{0}
+	</select>
+	<select id="getSiteState" parameterType="String" resultType="int">
+		select count(*) from jy_site_state where car_id=#{0} and (line_id_this = #{1} or Line_id_last =#{1})
+	</select>
+	<select id="getThisSiteState1" parameterType="com.jy.model.SiteState" resultType="int">
+		select count(*) from jy_site_state where car_id=#{car_id} and line_id_this = #{line_id_this} 
+		and site_flag_this=#{site_flag_this} and siteorder_this = #{siteorder_this}
+	</select>
+	<select id="getMileTime" parameterType="com.jy.model.SiteMilesTime" resultType="int">
+		select count(*) from jy_site_miles_time where car_number=#{car_number} and line_id = #{line_id} 
+		and site_flag=#{site_flag} and siteorder = #{siteorder} and site_state=#{site_state}
+	</select>
+	<select id="getMileTimeModel" parameterType="com.jy.model.SiteMilesTime" resultType="com.jy.model.SiteMilesTime">
+		select * from jy_site_miles_time where car_number=#{car_number} and line_id = #{line_id} 
+		and site_flag=#{site_flag} and siteorder = #{siteorder} and site_state=#{site_state}
+	</select>
+	<select id="getStartSite" parameterType="com.jy.model.SiteMilesTime" resultType="com.jy.model.SiteMilesTime">
+		select * from jy_site_miles_time where car_number=#{car_number} and line_id = #{line_id} 
+		and site_flag=1 and site_state=0
+	</select>
+	<select id="getOneSiteState" parameterType="String" resultType="com.jy.model.SiteState">
+		select * from jy_site_state where car_id=#{0} and (line_id_this = #{1} or Line_id_last =#{1})
+	</select>
+	<select id="getMonitorSet" resultType="com.jy.model.MonitorSet">
+		select * from jy_monitor_set 
+	</select>
+	<select id="getshijiMiles" parameterType="String" resultType="String">
+		select sum(siteLength) from jy_classline_info where classline_Id=#{0}
+	</select>
+	<select id="getClass_line" parameterType="String" resultType="String">
+		select departure_time from jy_classline where classline_id=#{0}
+	</select>
+	<select id="getPlanTime" parameterType="String" resultType="Integer">
+		select sum(siteTime)+sum(siteStayTime) from jy_classline_info where classline_Id=#{0}
+	</select>
+	<select id="getPhoneId" parameterType="String" resultType="User">
+		select * from jy_user where id=#{0}
+	</select>
+	<select id="getUserId" parameterType="String" resultType="String">
+		select user_id from jy_travel_card where travel_card_id=#{0}
+	</select>
+	<delete id="delSiteMilesTime" parameterType="com.jy.model.SiteMilesTime" >
+	delete from jy_site_miles_time where car_number=#{car_number} and line_id = #{line_id}
+	</delete>
+	<select id="getSite" parameterType="String" resultType="com.jy.model.SiteLine">
+		select
+		 cf.*,
+		 r.remark_state,
+		 r.remark_point,
+		 r.remark_address,
+		 rr.remark_range_name as remark_range_name 
+		 from 
+		jy_classline_info cf
+		left join jy_remark r on cf.remarkId=r.remark_id
+		left join jy_remark_range rr on r.remark_range=rr.remark_range_id
+		 where cf.classline_Id=#{0}
+	</select>
+	<select id="getSiteStayTime" parameterType="com.jy.model.SiteLine" resultType="com.jy.model.SiteLine">
+		select
+		*
+		 from 
+		jy_classline_info
+		 where classline_Id=#{classline_Id} and siteFlag=#{siteFlag} and siteorder=#{siteorder}
+	</select>
+	<update id="updateSiteState" parameterType="com.jy.model.SiteState">
+		update  jy_site_state set
+		site_state_this = #{site_state_this},
+		site_flag_this = #{site_flag_this},
+		siteorder_this = #{siteorder_this},
+		site_time_this = #{site_time_this},
+		site_id_this = #{site_id_this},
+		site_state_last = #{site_state_last},
+		site_flag_last = #{site_flag_last},
+		siteorder_last = #{siteorder_last},
+		site_time_last = #{site_time_last},
+		site_id_last = #{site_id_last},
+		line_id_this = #{line_id_this},
+		line_id_last = #{line_id_last}
+		where id=#{id}
+	</update>
+	<insert id="addMileTime" parameterType="com.jy.model.SiteMilesTime">
+	INSERT INTO jy_site_miles_time(
+	id,
+	car_id,
+	car_number,
+	site_flag,
+	siteorder,
+	site_state,
+	miles,
+	time,
+	line_id
+	)values(
+	#{id},
+	#{car_id},
+	#{car_number},
+	#{site_flag},
+	#{siteorder},
+	#{site_state},
+	#{miles},
+	#{time},
+	#{line_id}
+	)
+	</insert>
+	<insert id="addLineMonitor" parameterType="com.jy.model.MonitorRuning">
+	INSERT INTO jy_monitor_runing(
+	monitor_id,
+	car_id,
+	equipment_id,
+	department_id,
+	monitor_type,
+	monitor_time,
+	monitor_address,
+	monitor_plan_range,
+	monitor_real_range,
+	out_of_range,
+	monitor_state,
+	not_to_site
+	) values(
+	#{monitor_id},
+	#{car_id},
+	#{equipment_id},
+	#{department_id},
+	#{monitor_type},
+	#{monitor_time},
+	#{monitor_address},
+	#{monitor_plan_range},
+	#{monitor_real_range},
+	#{out_of_range},
+	#{monitor_state},
+	#{not_to_site}
+	)
+	</insert>
+	
+	<insert id="addStayTimeMonitor" parameterType="com.jy.model.JITMonitor">
+	INSERT INTO jy_monitor_jit(
+	jmonitor_id,
+	car_id,
+	equipment_id,
+	department_id,
+	jmonitor_type,
+	jmonitor_time,
+	jmonitor_state,
+	time_real,
+	time_plan,
+	time_beyond,
+	time_stay_real,
+	time_stay_plan) values(
+	#{jmonitor_id},
+	#{car_id},
+	#{equipment_id},
+	#{department_id},
+	#{jmonitor_type},
+	#{jmonitor_time},
+	#{jmonitor_state},
+	#{time_real},
+	#{time_plan},
+	#{time_beyond},
+	#{time_stay_real},
+	#{time_stay_plan}
+	)
+	
+	</insert>
+	<insert id="addSiteState" parameterType="com.jy.model.SiteState">
+	INSERT INTO jy_site_state(
+	id,
+	car_id,
+	car_number,
+	site_state_this,
+	site_flag_this,
+	siteorder_this,
+	site_time_this,
+	site_id_this,
+	site_state_last,
+	site_flag_last,
+	siteorder_last,
+	site_time_last,
+	site_id_last,
+	line_id_this,
+	line_id_last)values(
+	#{id},
+	#{car_id},
+	#{car_number},
+	#{site_state_this},
+	#{site_flag_this},
+	#{siteorder_this},
+	#{site_time_this},
+	#{site_id_this},
+	#{site_state_last},
+	#{site_flag_last},
+	#{siteorder_last},
+	#{site_time_last},
+	#{site_id_last},
+	#{line_id_this},
+	#{line_id_last}
+	)
+	</insert>
+</mapper>

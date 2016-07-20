@@ -1,0 +1,1123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- /** * 固定车辆信息 * @author lx */ -->
+<mapper namespace="com.jy.dao.TravelCardDao">
+	<resultMap id="BaseResultMap" type="com.jy.model.TravelCard">
+		<id column="travel_card_id" property="travelCardId" />
+		<result column="plate_number" property="plateNumber" />
+		<result column="car_owner" property="carOwner" />
+		<result column="tels" property="tels" />
+		<result column="telstoo" property="telstoo" />
+		<result column="user_idcard" property="user_idcard" />
+		<result column="enabled" property="enabled" />
+		<result column="boxType" property="boxType" />
+		<result column="length_name" property="length_name" />
+		<result column="department_id" property="departmentId" />
+		<result column="front" property="front" />
+		<result column="traction_weight" property="tractionWeight" />
+		<result column="equipment_weight" property="equipmentWeight" />
+		<result column="car_weight" property="carWeight" />
+		<result column="car_kind" property="car_kind" />
+		<result column="inline_height" property="inlineHeight" />
+		<result column="inline_width" property="inlineWidth" />
+		<result column="inline_length" property="inlineLength" />
+		<result column="outline_height" property="outlineHeight" />
+		<result column="outline_width" property="outlineWidth" />
+		<result column="outline_length" property="outlineLength" />
+		<result column="approve_weight" property="approveWeight" />
+		<result column="approve_number" property="approveNumber" />
+		<result column="file_number" property="fileNumber" />
+		<result column="travel_certificate_date" property="travelCertificateDate" />
+		<result column="registration_date" property="registrationDate" />
+		<result column="engine_number" property="engineNumber" />
+		<result column="identification_code" property="identificationCode" />
+		<result column="brand" property="brand" />
+		<result column="using_properties" property="usingProperties" />
+		<result column="address" property="address" />
+		<result column="car_type" property="carType" />
+		<result column="car_model" property="carModel" />
+		<result column="notes" property="notes" />
+		<result column="inspection_records" property="inspectionRecords" />
+		<result column="user_id" property="user" />
+		<result column="d" property="d" />
+		<result column="enabled" property="enabled" />
+		<result column="carLength" property="carLength" />
+		<result column="tonnage" property="tonnage" />
+		<result column="next_maintenance_date" property="next_maintenance_date" />
+		<result column="huowuend" property="huowuend" />
+		<result column="shangyeend" property="shangyeend" />
+		<result column="jiaoqiangend" property="jiaoqiangend" />
+		<result column="cars_type" property="cars_type"/>
+		<association property="tran" javaType="TransportCard">
+			<id column="road_transport_card_id" property="roadTransportCardId" />
+			<result column="road_transport_card_number" property="roadTransportCardNumber" />
+			<result column="road_owner" property="roadOwner" />
+			<result column="road_address" property="roadAddress" />
+			<result column="operating_license_number" property="operatingLicenseNumber" />
+			<result column="tonnage" property="tonnage" />
+			<result column="car_length" property="carLength" />
+			<result column="car_width" property="carWidth" />
+			<result column="car_height" property="carHeight" />
+			<result column="business_scope" property="businessScope" />
+			<result column="transport_certificate_date" property="transportCertificateDate" />
+			<result column="issuing_authorities" property="issuingAuthorities" />
+			<result column="records" property="records" />
+			<result column="validity_term" property="validityTerm" />
+		</association>
+		<association property="reg" javaType="Registration">
+			<id column="registration_card_id" property="registrationCardId" />
+			<result column="car_owner" property="carOwner" />
+			<result column="registration_authority" property="registrationAuthority" />
+			<result column="registra_date" property="registration_Date" />
+			<result column="registration_number" property="registrationNumber" />
+			<result column="car_color" property="carColor" />
+			<result column="made" property="made" />
+			<result column="engine_model" property="engineModel" />
+			<result column="fuel_type" property="fuelType" />
+			<result column="car_power" property="carPower" />
+			<result column="manufacturer_name" property="manufacturerName" />
+			<result column="turn_form" property="turnForm" />
+			<result column="track_width" property="trackWidth" />
+			<result column="tires_number" property="tiresNumber" />
+			<result column="tires_specifications" property="tiresSpecifications" />
+			<result column="steel_spring_number" property="steelSpringNumber" />
+			<result column="wheelbase" property="wheelbase" />
+			<result column="hub_number" property="hubNumber" />
+			<result column="car_access" property="carAccess" />
+			<result column="car_manufactured_date" property="carManufacturedDate" />
+			<result column="issuance_date" property="issuanceDate" />
+			<result column="issuance_authority" property="issuanceAuthority" />
+		</association>
+		<association property="invoice" javaType="CarInvoice">
+			<id column="invoice_id" property="invoiceId" />
+			<result column="invoice_date" property="invoiceDate" />
+			<result column="invoice_code" property="invoiceCode" />
+			<result column="invoice_number" property="invoiceNumber" />
+			<result column="buy_units" property="buyUnits" />
+			<result column="id_card" property="idCard" />
+			<result column="origin" property="origin" />
+			<result column="certificate_number" property="certificateNumber" />
+			<result column="inspection_number" property="inspectionNumber" />
+			<result column="import_number" property="importNumber" />
+			<result column="tax_total" property="taxTotal" />
+			<result column="sale_units" property="saleUnits" />
+			<result column="tel" property="tel" />
+			<result column="taxpayer_identification_number" property="taxpayerIdentificationNumber" />
+			<result column="account" property="account" />
+			<result column="opening_address" property="openingAddress" />
+			<result column="opening_bank" property="openingBank" />
+			<result column="vat_rate" property="vatRate" />
+			<result column="vat_amount" property="vatAmount" />
+			<result column="competent_vat_authorities" property="competentVatAuthorities" />
+			<result column="not_include_tax" property="notIncludeTax" />
+		</association>
+		<association property="main" javaType="CarMaintenance">
+			<id column="secondary_maintenance_card_id" property="secondaryMaintenanceCardId" />
+			<result column="maintenance_date" property="maintenanceDate" />
+			<result column="next_maintenance_date" property="nextMaintenanceDate" />
+			<result column="department_seal" property="departmentSeal" />
+
+		</association>
+		<association property="insu" javaType="Insurance">
+			<id column="insurance_id" property="insuranceId" />
+			<result column="insured" property="insured" />
+			<result column="insured_card" property="insuredCard" />
+			<result column="premium_amount_compulsory" property="premiumAmountCompulsory" />
+			<result column="jiaoqiangstart" property="jiaoqiangstart" />
+			<result column="jiaoqiangend" property="jiaoqiangend" />
+			<result column="insurance_period_compulsory" property="insurancePeriodCompulsory" />
+			<result column="car_tax" property="carTax" />
+			<result column="insurance_number_compulsory" property="insuranceNumberCompulsory" />
+			<result column="insurer" property="insurer" />
+			<result column="insurance_category" property="insuranceCategory" />
+			<result column="premium_amount_business" property="premiumAmountBusiness" />
+			<result column="sign_premium" property="signPremium" />
+			<result column="sign_premium_total" property="signPremiumTotal" />
+			<result column="shangyestart" property="shangyestart" />
+			<result column="shangyeend" property="shangyeend" />
+			<result column="insurance_period_business" property="insurancePeriodBusiness" />
+			<result column="insurance_number_business" property="insuranceNumberBusiness" />
+			<result column="premium_amount_cargo" property="premiumAmountCargo" />
+			<result column="huowustart" property="huowustart" />
+			<result column="huowuend" property="huowuend" />
+			<result column="insurance_period_cargo" property="insurancePeriodCargo" />
+			<result column="insurance_number_cargo" property="insuranceNumberCargo" />
+			<result column="add_date" property="addDate" />
+		</association>
+	</resultMap>
+
+	<!-- 查询车辆信息 -->
+	<select id="getTravel" resultMap="BaseResultMap">
+		select datediff(jm.next_maintenance_date,now()) as
+		next_maintenance_date,
+		datediff(jii.huowuend,now()) as huowuend,
+		datediff(jii.jiaoqiangend,now()) as jiaoqiangend,
+		datediff(jii.shangyeend,now()) as shangyeend,
+		j.*,
+		jt.*,
+		jr.*,
+		ji.*,
+		jm.*,
+		jcl.length_name
+		from
+		jy_travel_card j
+		left join
+		jy_transport_card jt on
+		j.travel_card_id=jt.travel_card_id
+		left join
+		jy_registration jr on
+		j.travel_card_id=jr.travel_card_id
+		left join
+		jy_car_invoice ji on
+		j.travel_card_id=ji.travel_card_id
+		left join
+		jy_insurance jii on
+		jii.travel_card_id=j.travel_card_id
+		left join
+		jy_car_maintenance jm on
+		j.travel_card_id=jm.travel_card_id
+		left join jy_driver_info jdi on 
+		jdi.car_id=j.travel_card_id
+		left outer join
+		jy_car_length jcl on
+		jcl.length_id=j.boxType
+		where j.state=1
+		<if test="param3!=null and param3!='' ">
+			and j.travel_card_id like '%${param3}%'
+		</if>
+		<if test="param4!=null  and param4!='' ">
+			and j.department_id = #{param4}
+		</if>
+		<if test="param5!=null and param5!='' ">
+			and j.car_type = #{param5}
+		</if>
+		<if test="param6!=null and param6!='' ">
+			and jdi.driver_id = #{param6}
+		</if>
+		<if test="param7!=null and param7!='' ">
+			and jcl.length_id = #{param7}
+		</if>
+		order by j.createtime desc
+		limit #{param1},#{param2}
+	</select>
+	<!-- 勾选导出 -->
+	<select id="getAllCar" resultMap="BaseResultMap" parameterType="java.util.Arrays">
+		select
+		j.travel_card_id,
+		j.plate_number,
+		j.car_owner,
+		j.user_idcard,
+		d.department_name as department_id,
+		j.tels,
+		j.telstoo,
+		case j.enabled
+		when '0' then '启用'
+		when '1' then '停用' end as enabled,
+		j.address,
+		jt.car_length as carLength,
+		jcl.length_name,
+		jt.tonnage as tonnage,
+		case
+		j.car_type when 'A' then '市内车'
+		when 'B' then '干线车' end as car_type,
+		case j.car_kind when '0' then '自由车辆'
+		when '1' then '外部车辆' end as
+		car_kind
+		from
+		jy_travel_card j
+		left join
+		jy_transport_card jt on
+		j.travel_card_id=jt.travel_card_id
+		left join
+		jy_department d on
+		d.department_id=j.department_id
+		left join
+		jy_car_length jcl on
+		jcl.length_id=j.boxType
+		where j.travel_card_id in
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	<select id="getCars" resultMap="BaseResultMap">
+		select * from jy_travel_card
+		where user_id is null or user_id='' and state=1
+	</select>
+	<select id="getOneCar" resultMap="BaseResultMap">
+		select * from jy_travel_card
+		where travel_card_id=#{0}
+	</select>
+	<!-- 总条数 -->
+	<select id="getCount" resultType="int">
+		select count(*) from jy_travel_card  j
+			left join jy_driver_info jdi on 
+		jdi.car_id=j.travel_card_id 
+			left outer join
+		jy_car_length jcl on
+		jcl.length_id=j.boxType
+		 where state=1
+		<if test="param1!=null and param1!='' ">
+			and travel_card_id like '%${param1}%'
+		</if>
+		<if test="param2!=null and param2!='' ">
+			and department_id = #{param2}
+		</if>
+		<if test="param3!=null and param3!='' ">
+			and car_type = #{param3}
+		</if>
+			<if test="param4!=null and param4!='' ">
+			and jdi.driver_id = #{param4}
+		</if>
+		<if test="param5!=null and param5!='' ">
+			and jcl.length_id = #{param5}
+		</if>
+	</select>
+	<select id="checkTraCarName" resultType="int">
+		select count(*) from
+		jy_travel_card where state=1 and plate_number=#{0}
+
+	</select>
+	<select id="checkTemCarName" resultType="int">
+		select count(*) from
+		jy_temporary_car where state=1 and plate_number=#{0}
+
+	</select>
+
+	<!-- 删除 -->
+	<delete id="deleteTravel" parameterType="java.util.Arrays">
+		delete from
+		jy_travel_card
+		where
+		travel_card_id in
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	<delete id="deletebaoxian" parameterType="java.util.Arrays">
+		delete from
+		jy_insurance
+		where
+		travel_card_id in
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+	<delete id="deleteTran" parameterType="java.util.Arrays">
+		delete from 
+		jy_transport_card
+		where
+		travel_card_id in
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	<select id="checkAgreement" resultType="int">
+		select count(*) from
+		jy_create_agreement
+		where 1=1 and
+		car_id in
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+
+	<delete id="deleteReg" parameterType="java.util.Arrays">
+		delete from 
+		jy_registration
+		where
+		travel_card_id in
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+	<delete id="deleteInvoice" parameterType="java.util.Arrays">
+		delete from
+		jy_car_invoice
+		where
+		travel_card_id in
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+	<delete id="deleteMain" parameterType="java.util.Arrays">
+		delete from
+		jy_car_maintenance
+		where
+		travel_card_id in
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	<!--新增车辆 -->
+	<insert id="addTravel" parameterType="com.jy.model.TravelCard">
+		insert into
+		jy_travel_card
+		(travel_card_id,
+		plate_number,
+		car_owner,
+		tels,
+		telstoo,
+		user_idcard,
+		boxType,
+		department_id,
+		front,
+		traction_weight,
+		equipment_weight,
+		car_weight,
+		inline_height,
+		inline_width,
+		inline_length,
+		outline_height,
+		outline_width,
+		outline_length,
+		approve_weight,
+		approve_number,
+		file_number,
+		enabled,
+		<if test="travelCertificateDate!=null and travelCertificateDate!=''">
+			travel_certificate_date,
+		</if>
+		<if test="registrationDate!=null and registrationDate!=''">
+			registration_date,
+		</if>
+		engine_number,
+		identification_code,
+		brand,
+		using_properties,
+		address,
+		car_type,
+		car_model,
+		notes,
+		inspection_records,
+		car_kind,
+		createtime,
+		huowuend
+
+		)
+		values
+		(#{travelCardId},
+		#{plateNumber},
+		#{carOwner},
+		#{tels},
+		#{telstoo},
+		#{user_idcard},
+		#{boxType},
+		#{departmentId},
+		#{front},
+		#{tractionWeight},
+		#{equipmentWeight},
+		#{carWeight},
+		#{inlineHeight},
+		#{inlineWidth},
+		#{inlineLength},
+		#{outlineHeight},
+		#{outlineWidth},
+		#{outlineLength},
+		#{approveWeight},
+		#{approveNumber},
+		#{fileNumber},
+		#{enabled},
+		<if test="travelCertificateDate!=null and travelCertificateDate!=''">
+			#{travelCertificateDate} ,
+		</if>
+		<if test="registrationDate!=null and registrationDate!=''">
+			#{registrationDate},
+		</if>
+		#{engineNumber},
+		#{identificationCode},
+		#{brand},
+		#{usingProperties},
+		#{address},
+		#{carType},
+		#{carModel},
+		#{notes},
+		#{inspectionRecords},
+		#{car_kind},
+		SYSDATE(),
+		#{huowuend})
+	</insert>
+	<!--新增车辆 -->
+	<insert id="addTran" parameterType="com.jy.model.TransportCard">
+		insert into jy_transport_card
+		(road_transport_card_id,
+		travel_card_id,
+		road_transport_card_number,
+		road_owner,
+		road_address,
+		operating_license_number,
+		tonnage,
+		car_length,
+		car_width,
+		car_height,
+		business_scope,
+		<if test="transportCertificateDate!=null and transportCertificateDate!=''">
+			transport_certificate_date,
+		</if>
+		issuing_authorities,
+		records,
+		validity_term
+		)
+		values
+		(#{roadTransportCardId},
+		#{travelCardId},
+		#{roadTransportCardNumber},
+		#{roadOwner},
+		#{roadAddress},
+		#{operatingLicenseNumber},
+		#{tonnage},
+		#{carLength},
+		#{carWidth},
+		#{carHeight},
+		#{businessScope},
+		<if test="transportCertificateDate!=null and transportCertificateDate!=''">
+			#{transportCertificateDate},
+		</if>
+		#{issuingAuthorities},
+		#{records},
+		#{validityTerm}
+		)
+	</insert>
+	<!--新增车辆 -->
+	<insert id="addReg" parameterType="com.jy.model.Registration">
+		insert into jy_registration
+		(registration_card_id,
+		travel_card_id,
+		registration_authority,
+		<if test="registration_Date!=null and registration_Date!=''">
+			registra_date,
+		</if>
+		registration_number,
+		car_color,
+		made,
+		engine_model,
+		fuel_type,
+		car_power,
+		manufacturer_name,
+		turn_form,
+		track_width,
+		tires_number,
+		tires_specifications,
+		steel_spring_number,
+		wheelbase,
+		hub_number,
+		car_access,
+		<if test="carManufacturedDate!=null and carManufacturedDate!=''">
+			car_manufactured_date,
+		</if>
+		<if test="issuanceDate!=null and issuanceDate!=''">
+			issuance_date,
+		</if>
+		issuance_authority)
+		values
+		(#{registrationCardId},
+		#{travelCardId},
+		#{registrationAuthority},
+		<if test="registration_Date!=null and registration_Date!=''">
+			#{registration_Date},
+		</if>
+		#{registrationNumber},
+		#{carColor},
+		#{made},
+		#{engineModel},
+		#{fuelType},
+		#{carPower},
+		#{manufacturerName},
+		#{turnForm},
+		#{trackWidth},
+		#{tiresNumber},
+		#{tiresSpecifications},
+		#{steelSpringNumber},
+		#{wheelbase},
+		#{hubNumber},
+		#{carAccess},
+		<if test="carManufacturedDate!=null and carManufacturedDate!=''">
+			#{carManufacturedDate},
+		</if>
+		<if test="issuanceDate!=null and issuanceDate!=''">
+			#{issuanceDate},
+		</if>
+		#{issuanceAuthority})
+	</insert>
+	<!--新增车辆 -->
+	<insert id="addInvoice" parameterType="com.jy.model.CarInvoice">
+		insert into
+		jy_car_invoice
+		(invoice_id,
+		travel_card_id,
+		<if test="invoiceDate!=null and invoiceDate!=''">
+			invoice_date,
+		</if>
+		invoice_code,
+		invoice_number,
+		buy_units,
+		id_card,
+		origin,
+		certificate_number,
+		inspection_number,
+		import_number,
+		tax_total,
+		sale_units,
+		tel,
+		taxpayer_identification_number,
+		account,
+		opening_address,
+		opening_bank,
+		vat_rate,
+		vat_amount,
+		competent_vat_authorities,
+		not_include_tax
+		)
+		values
+		(#{invoiceId},
+		#{travelCardId},
+		<if test="invoiceDate!=null and invoiceDate!=''">
+			#{invoiceDate},
+		</if>
+		#{invoiceCode},
+		#{invoiceNumber},
+		#{buyUnits},
+		#{idCard},
+		#{origin},
+		#{certificateNumber},
+		#{inspectionNumber},
+		#{importNumber},
+		#{taxTotal},
+		#{saleUnits},
+		#{tel},
+		#{taxpayerIdentificationNumber},
+		#{account},
+		#{openingAddress},
+		#{openingBank},
+		#{vatRate},
+		#{vatAmount},
+		#{competentVatAuthorities},
+		#{notIncludeTax}
+		)
+	</insert>
+	<!--新增车辆 -->
+	<insert id="addMain" parameterType="com.jy.model.CarMaintenance">
+		insert into
+		jy_car_maintenance
+		(secondary_maintenance_card_id,
+		travel_card_id,
+		<if test="maintenanceDate!=null and maintenanceDate!=''">
+			maintenance_date,
+		</if>
+		<if test="nextMaintenanceDate!=null and nextMaintenanceDate!=''">
+			next_maintenance_date,
+		</if>
+		department_seal)
+		values
+		(#{secondaryMaintenanceCardId},
+		#{travelCardId},
+		<if test="maintenanceDate!=null and maintenanceDate!=''">
+			#{maintenanceDate},
+		</if>
+		<if test="nextMaintenanceDate!=null and nextMaintenanceDate!=''">
+			#{nextMaintenanceDate},
+		</if>
+		#{departmentSeal})
+	</insert>
+
+	<!--获取修改信息 -->
+	<select id="getTra" resultMap="BaseResultMap">
+		select
+		j.*,
+		jt.*,
+		jr.*,
+		ji.*,
+		jm.*,
+		iin.*
+		from
+		jy_travel_card j
+		left join
+		jy_transport_card jt on
+		j.travel_card_id=jt.travel_card_id
+		left join
+		jy_registration jr on
+		j.travel_card_id=jr.travel_card_id
+		left join
+		jy_car_invoice ji on
+		j.travel_card_id=ji.travel_card_id
+		left join
+		jy_car_maintenance jm on
+		j.travel_card_id=jm.travel_card_id
+		left join
+		jy_insurance iin on
+		j.travel_card_id=iin.travel_card_id
+		where
+		j.travel_card_id=#{travelCardId}
+	</select>
+
+	<!-- 修改车辆信息 -->
+	<update id="editTra" parameterType="com.jy.model.TravelCard">
+		update
+		jy_travel_card
+		set
+		plate_number = #{plateNumber,jdbcType=VARCHAR},
+		car_owner = #{carOwner,jdbcType=VARCHAR},
+		tels =
+		#{tels,jdbcType=VARCHAR},
+		telstoo = #{telstoo,jdbcType=VARCHAR},
+		user_idcard = #{user_idcard,jdbcType=VARCHAR},
+		boxType =
+		#{boxType,jdbcType=VARCHAR},
+		department_id =
+		#{departmentId,jdbcType=INTEGER},
+		front = #{front,jdbcType=INTEGER},
+		traction_weight = #{tractionWeight,jdbcType=VARCHAR},
+		equipment_weight
+		= #{equipmentWeight,jdbcType=VARCHAR},
+		car_weight =
+		#{carWeight,jdbcType=VARCHAR},
+		inline_height =
+		#{inlineHeight,jdbcType=DOUBLE},
+		inline_width =
+		#{inlineWidth,jdbcType=DOUBLE},
+		inline_length =
+		#{inlineLength,jdbcType=DOUBLE},
+		outline_height =
+		#{outlineHeight,jdbcType=DOUBLE},
+		outline_width =
+		#{outlineWidth,jdbcType=DOUBLE},
+		outline_length =
+		#{outlineLength,jdbcType=DOUBLE},
+		approve_weight =
+		#{approveWeight,jdbcType=VARCHAR},
+		approve_number =
+		#{approveNumber,jdbcType=INTEGER},
+		file_number =
+		#{fileNumber,jdbcType=VARCHAR},
+		<if test="travelCertificateDate != null and travelCertificateDate !=''">
+			travel_certificate_date =
+			#{travelCertificateDate,jdbcType=DATE},
+		</if>
+		<if test="registrationDate != null and registrationDate !=''">
+			registration_date = #{registrationDate,jdbcType=DATE},
+		</if>
+		engine_number = #{engineNumber,jdbcType=VARCHAR},
+		identification_code =
+		#{identificationCode,jdbcType=VARCHAR},
+		brand =
+		#{brand,jdbcType=VARCHAR},
+		using_properties =
+		#{usingProperties,jdbcType=VARCHAR},
+		address =
+		#{address,jdbcType=VARCHAR},
+		car_type = #{carType,jdbcType=VARCHAR},
+		car_model = #{carModel,jdbcType=VARCHAR},
+		notes =
+		#{notes,jdbcType=LONGVARCHAR},
+		inspection_records =
+		#{inspectionRecords,jdbcType=LONGVARCHAR},
+		car_kind =
+		#{car_kind,jdbcType=VARCHAR}
+		where
+		travel_card_id =
+		#{travelCardId,jdbcType=VARCHAR}
+	</update>
+	<!-- 修改车辆信息 -->
+	<update id="editTran" parameterType="com.jy.model.TransportCard">
+		update
+		jy_transport_card
+		set
+		road_transport_card_number =
+		#{roadTransportCardNumber,jdbcType=VARCHAR},
+		road_owner =
+		#{roadOwner,jdbcType=VARCHAR},
+		road_address =
+		#{roadAddress,jdbcType=VARCHAR},
+		operating_license_number =
+		#{operatingLicenseNumber,jdbcType=VARCHAR},
+		tonnage =
+		#{tonnage,jdbcType=VARCHAR},
+		car_length = #{carLength},
+		car_width =
+		#{carWidth,jdbcType=DOUBLE},
+		car_height = #{carHeight,jdbcType=DOUBLE},
+		business_scope = #{businessScope,jdbcType=VARCHAR},
+		<if
+			test="transportCertificateDate != null and transportCertificateDate !=''">
+			transport_certificate_date =
+			#{transportCertificateDate,jdbcType=DATE},
+		</if>
+		issuing_authorities = #{issuingAuthorities,jdbcType=VARCHAR},
+		records =
+		#{records,jdbcType=VARCHAR},
+		validity_term =
+		#{validityTerm,jdbcType=VARCHAR}
+		where
+		travel_card_id =
+		#{travelCardId,jdbcType=VARCHAR}
+	</update>
+	<update id="usercar">
+		update
+		jy_travel_card
+		set user_id = #{1}
+		where
+		travel_card_id = #{0}
+	</update>
+	<update id="delusercar">
+		update
+		jy_travel_card
+		set user_id = ''
+		where
+		user_id =
+		#{0}
+	</update>
+	<select id="getUserTemCar" parameterType="string" resultMap="BaseResultMap">
+		select
+		*
+		from
+		jy_travel_card
+		where
+		user_id = #{0}
+	</select>
+	<select id="getCar_Num" resultMap="BaseResultMap">
+		select
+		travel_card_id,plate_number
+		from
+		jy_travel_card
+		where state=1
+		<if test="param1!=null">
+			and plate_number like '%${param1}%'
+		</if>
+		<if test="param2!=null">
+			and (user_id is null or user_id='')
+		</if>
+	</select>
+	<!-- 修改车辆信息 -->
+	<update id="editReg" parameterType="com.jy.model.Registration">
+		update
+		jy_registration
+		set
+		registration_authority =
+		#{registrationAuthority,jdbcType=VARCHAR},
+		<if test="registration_Date != null and registration_Date !=''">
+			registra_date = #{registration_Date,jdbcType=DATE},
+		</if>
+		registration_number = #{registrationNumber,jdbcType=VARCHAR},
+		car_color = #{carColor,jdbcType=VARCHAR},
+		made =
+		#{made,jdbcType=INTEGER},
+		engine_model =
+		#{engineModel,jdbcType=VARCHAR},
+		fuel_type =
+		#{fuelType,jdbcType=VARCHAR},
+		manufacturer_name =
+		#{manufacturerName,jdbcType=VARCHAR},
+		turn_form =
+		#{turnForm,jdbcType=VARCHAR},
+		track_width =
+		#{trackWidth,jdbcType=DOUBLE},
+		tires_number =
+		#{tiresNumber,jdbcType=INTEGER},
+		tires_specifications =
+		#{tiresSpecifications,jdbcType=VARCHAR},
+		steel_spring_number =
+		#{steelSpringNumber,jdbcType=INTEGER},
+		wheelbase =
+		#{wheelbase,jdbcType=DOUBLE},
+		hub_number =
+		#{hubNumber,jdbcType=INTEGER},
+		car_access =
+		#{carAccess,jdbcType=VARCHAR},
+		<if test="carManufacturedDate != null and carManufacturedDate !=''">
+			car_manufactured_date =
+			#{carManufacturedDate,jdbcType=DATE},
+		</if>
+		<if test="issuanceDate != null and issuanceDate !=''">
+			issuance_date = #{issuanceDate,jdbcType=DATE},
+		</if>
+		issuance_authority = #{issuanceAuthority,jdbcType=VARCHAR}
+		where
+		travel_card_id = #{travelCardId,jdbcType=VARCHAR}
+	</update>
+	<!-- 修改车辆信息 -->
+	<update id="editInvoice" parameterType="com.jy.model.CarInvoice">
+		update
+		jy_car_invoice
+		set
+		<if test="invoiceDate != null and invoiceDate !=''">
+			invoice_date = #{invoiceDate,jdbcType=DATE},
+		</if>
+		invoice_code = #{invoiceCode,jdbcType=VARCHAR},
+		invoice_number =
+		#{invoiceNumber,jdbcType=VARCHAR},
+		buy_units =
+		#{buyUnits,jdbcType=VARCHAR},
+		id_card = #{idCard,jdbcType=VARCHAR},
+		origin = #{origin,jdbcType=VARCHAR},
+		certificate_number =
+		#{certificateNumber,jdbcType=VARCHAR},
+		inspection_number =
+		#{inspectionNumber,jdbcType=VARCHAR},
+		import_number =
+		#{importNumber,jdbcType=VARCHAR},
+		tax_total =
+		#{taxTotal,jdbcType=VARCHAR},
+		sale_units =
+		#{saleUnits,jdbcType=VARCHAR},
+		tel = #{tel,jdbcType=BIGINT},
+		taxpayer_identification_number =
+		#{taxpayerIdentificationNumber,jdbcType=VARCHAR},
+		account =
+		#{account,jdbcType=BIGINT},
+		opening_address =
+		#{openingAddress,jdbcType=VARCHAR},
+		opening_bank =
+		#{openingBank,jdbcType=VARCHAR},
+		vat_rate =
+		#{vatRate,jdbcType=VARCHAR},
+		vat_amount =
+		#{vatAmount,jdbcType=VARCHAR},
+		competent_vat_authorities =
+		#{competentVatAuthorities,jdbcType=VARCHAR},
+		not_include_tax =
+		#{notIncludeTax,jdbcType=DECIMAL}
+		where
+		travel_card_id =
+		#{travelCardId,jdbcType=VARCHAR}
+	</update>
+	<!-- 修改车辆信息 -->
+	<update id="editMain" parameterType="com.jy.model.CarMaintenance">
+		update
+		jy_car_maintenance
+		set
+		<if test="maintenanceDate != null and maintenanceDate !=''">
+			maintenance_date = #{maintenanceDate,jdbcType=DATE},
+		</if>
+		<if test="nextMaintenanceDate != null and nextMaintenanceDate !=''">
+			next_maintenance_date =
+			#{nextMaintenanceDate,jdbcType=DATE},
+		</if>
+		department_seal = #{departmentSeal,jdbcType=VARCHAR}
+		where
+		travel_card_id = #{travelCardId,jdbcType=VARCHAR}
+	</update>
+	<select id="dangyueTravelCard" resultMap="BaseResultMap">
+		SELECT
+		j.*,
+		DATE_FORMAT(j.registration_date,'%d') AS d
+		FROM
+		jy_travel_card j
+		WHERE
+		j.state=1
+		AND DATE_FORMAT(j.registration_date,'%Y')=#{param1}
+		AND
+		DATE_FORMAT(j.registration_date,'%m')=#{param2}
+
+	</select>
+	<select id="dangyueTravelCardtwo" resultMap="BaseResultMap">
+		SELECT
+		j.*,
+		jt.plate_number
+		FROM
+		jy_travel_card jt
+		INNER JOIN
+		jy_car_maintenance j ON
+		j.travel_card_id=jt.travel_card_id
+		WHERE
+		j.state=1 AND jt.state=1
+
+		AND
+		DATE_FORMAT(j.next_maintenance_date,'%Y')=#{param1}
+		AND
+		DATE_FORMAT(j.next_maintenance_date,'%m')=#{param2}
+
+	</select>
+	<!-- 根据userid查询固定车辆id -->
+	<select id="getUserTravel" resultMap="BaseResultMap">
+		SELECT
+		*
+		FROM
+		jy_travel_card
+		WHERE user_id=#{_parameter}
+	</select>
+	<!-- 导出全部 -->
+	<select id="getAllCarlist" resultMap="BaseResultMap">
+		select
+		j.travel_card_id,
+		j.plate_number,
+		j.car_owner,
+		j.user_idcard,
+		d.department_name as department_id,
+		j.tels,
+		j.telstoo,
+		case j.enabled
+		when '0' then '启用'
+		when '1' then '停用' end as enabled,
+		j.address,
+		jt.car_length as carLength,
+		jcl.length_name,
+		jt.tonnage as tonnage,
+		case
+		j.car_type when 'A' then '市内车'
+		when 'B' then '干线车' end as car_type,
+		case j.car_kind when '0' then '自由车辆'
+		when '1' then '外部车辆' end as
+		car_kind
+
+		from
+		jy_travel_card j
+		left join
+		jy_transport_card jt on
+		j.travel_card_id=jt.travel_card_id
+		left join
+		jy_department d on
+		d.department_id=j.department_id
+		left join
+		jy_car_length jcl on
+		jcl.length_id=j.boxType
+		left join jy_driver_info jdi on 
+		jdi.car_id=j.travel_card_id
+		where j.state=1
+		<if test="param1!=null and param1!='' ">
+			and j.travel_card_id like '%${param1}%'
+		</if>
+		<if test="param2!=null and param2!='' ">
+			and j.department_id = #{param2}
+		</if>
+		<if test="param3!=null and param3!='' ">
+			and jdi.driver_id = #{param3}
+		</if>
+		<if test="param4!=null and param4!='' ">
+			and j.car_type = #{param4}
+		</if>
+		<if test="param5!=null and param5!='' ">
+			and jcl.length_id = #{param5}
+		</if>
+		<if test="param6!=null and param6!='' ">
+		and
+			 j.travel_card_id in
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		</if>
+		order by j.createtime desc
+	</select>
+
+
+	<!-- 保存图片 -->
+	<insert id="saveTravelImg">
+		insert into jy_travel_images
+		(image_id,car_id,image_url) values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.image_id},
+			#{item.car_id},
+			#{item.image_url})
+		</foreach>
+
+	</insert>
+	<!-- 查询图片 -->
+	<select id="getTravelImg" resultType="TravelImg">
+		SELECT * FROM
+		jy_travel_images
+		WHERE car_id=#{_parameter}
+	</select>
+	<!--新增车辆 -->
+	<insert id="appAddTravel" parameterType="com.jy.model.TravelCard">
+		insert into
+		jy_travel_card
+		(travel_card_id,
+		plate_number,
+		car_owner,
+		tels,
+		telstoo,
+		user_idcard,
+		boxType,
+		department_id,
+		front,
+		traction_weight,
+		equipment_weight,
+		car_weight,
+		inline_height,
+		inline_width,
+		inline_length,
+		outline_height,
+		outline_width,
+		outline_length,
+		approve_weight,
+		approve_number,
+		file_number,
+		enabled,
+		<if test="travelCertificateDate!=null and travelCertificateDate!=''">
+			travel_certificate_date,
+		</if>
+		<if test="registrationDate!=null and registrationDate!=''">
+			registration_date,
+		</if>
+		engine_number,
+		identification_code,
+		brand,
+		using_properties,
+		address,
+		car_type,
+		car_model,
+		notes,
+		inspection_records,
+		car_kind,
+		createtime,
+		huowuend,
+		cars_type
+
+		)
+		values
+		(#{travelCardId},
+		#{plateNumber},
+		#{carOwner},
+		#{tels},
+		#{telstoo},
+		#{user_idcard},
+		#{boxType},
+		#{departmentId},
+		#{front},
+		#{tractionWeight},
+		#{equipmentWeight},
+		#{carWeight},
+		#{inlineHeight},
+		#{inlineWidth},
+		#{inlineLength},
+		#{outlineHeight},
+		#{outlineWidth},
+		#{outlineLength},
+		#{approveWeight},
+		#{approveNumber},
+		#{fileNumber},
+		#{enabled},
+		<if test="travelCertificateDate!=null and travelCertificateDate!=''">
+			#{travelCertificateDate} ,
+		</if>
+		<if test="registrationDate!=null and registrationDate!=''">
+			#{registrationDate},
+		</if>
+		#{engineNumber},
+		#{identificationCode},
+		#{brand},
+		#{usingProperties},
+		#{address},
+		#{carType},
+		#{carModel},
+		#{notes},
+		#{inspectionRecords},
+		#{car_kind},
+		SYSDATE(),
+		#{huowuend},
+		#{cars_type}
+
+		)
+	</insert>
+</mapper>

@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+ * 临时车辆信息
+ * @author lx
+ */ -->
+<mapper namespace="com.jy.dao.TemporaryCarDao" >
+  <resultMap id="BaseResultMap" type="com.jy.model.TemporaryCar" >
+    <id column="temporary_car_id" property="temporaryCarId"/>
+    <result column="plate_number" property="plateNumber"/>
+    <result column="city" property="city"/>
+    <result column="tel" property="tel"/>
+    <result column="user_name" property="userName"/>
+    <result column="user_idcard" property="user_idcard"/>
+    <result column="cooperation" property="cooperation"/>
+    <result column="registration_type" property="registrationType"/>
+    <result column="source" property="source"/>
+    <result column="source_name" property="sourceName"/>
+    <result column="car_length" property="carLength"/>
+    <result column="length_name" property="length_name"/>
+    <result column="box_type" property="boxType"/>
+    <result column="volume" property="volume"/>
+    <result column="load_s" property="load_s"/>
+    <result column="normal_route" property="normalRoute"/>
+    <result column="route_id" property="route_id"/>
+    <result column="institution_id" property="institutionId"/>
+    <result column="institutionName" property="institutionName"/>
+    <result column="creating_user" property="creatingUser"/>
+    <result column="creating_date" property="creatingDate"/>
+    <result column="on_line" property="onLine"/>
+    <result column="car_type" property="carType"/>
+    <result column="notes" property="notes"/>
+  </resultMap>
+  <!-- 车辆信息一览 -->
+  <select id="getTemCar" resultMap="BaseResultMap" parameterType="String" >
+    select 
+    	j.*,
+    	js.source_name,
+    	jcl.length_name
+    from 
+    	jy_temporary_car j
+    	left outer join jy_source js on j.source=js.source_id
+    	left outer join jy_car_length jcl on jcl.length_id=j.box_type
+    where j.state=1
+    	<if test="param3!=null and param3!=''">
+    		and j.temporary_car_id like '%${param3}%'
+    	</if> 
+    	<if test="param4!=null and param4!=''">
+    		and j.car_length like '%${param4}%'
+    	</if> 
+    	<if test="param5!=null and param5!=''">
+    		and j.volume like '%${param5}%'
+    	</if> 
+    	<if test="param6!=null and param6!=''">
+    		and j.load_s like '%${param6}%'
+    	</if> 
+    	<if test="param7!=null and param7!=''">
+    		and j.source like '%${param7}%'
+    	</if> 
+    	<if test="param8!=null and param8!=''">
+    		and j.car_type like '%${param8}%'
+    	</if> 
+    	<if test="param9!=null and param9!=''">
+    		and j.box_type like '%${param9}%'
+    	</if> 
+    	order by j.creating_date desc
+    limit #{param1},#{param2}
+  </select>
+  <!-- 总条数 -->
+  <select id="getCount" resultType="int">
+  	select 
+  		count(*) 
+  	from 
+    	jy_temporary_car j
+    	left outer join jy_source js on j.source=js.source_id
+    	left outer join jy_car_length jcl on jcl.length_id=j.box_type
+    where j.state=1
+    	<if test="param1!=null and param1!=''">
+    		and j.temporary_car_id like '%${param1}%'
+    	</if> 
+    	<if test="param2!=null and param2!=''">
+    		and j.car_length like '%${param2}%'
+    	</if> 
+    	<if test="param3!=null and param3!=''">
+    		and j.volume like '%${param3}%'
+    	</if> 
+    	<if test="param4!=null and param4!=''">
+    		and j.load_s like '%${param4}%'
+    	</if> 
+    	<if test="param5!=null and param5!=''">
+    		and j.source like '%${param5}%'
+    	</if> 
+    	<if test="param6!=null and param6!=''">
+    		and j.car_type like '%${param6}%'
+    	</if> 
+    	<if test="param7!=null and param7!=''">
+    		and j.box_type like '%${param7}%'
+    	</if> 
+  </select>
+   <select id="getAllCar" resultMap="BaseResultMap" parameterType="String" >
+    select 
+    	j.temporary_car_id,
+    	j.plate_number,
+    	j.tel,
+    	j.user_name,
+    	case j.registration_type when 1 then 'pc'
+    	when '2' then 'app' end as registration_type,
+    	j.car_length,
+    	j.volume,
+    	j.load_s,
+    	case j.car_type when 'A' then '市内车'
+    	when 'B' then '干线车' end as car_type,
+    	j.creating_user,
+    	j.creating_date,
+    	js.source_name as source_name,
+    	d.department_name as institutionId,
+    	jcl.length_name as length_name
+    from 
+    	jy_temporary_car j
+    	left outer join jy_source js on j.source=js.source_id
+    	left outer join jy_department d on d.department_id=j.institution_id
+    	left outer join jy_car_length jcl on jcl.length_id=j.box_type
+    where j.state=1
+    	<if test="param1!=null and param1!=''">
+    		and j.temporary_car_id like '%${param1}%'
+    	</if> 
+    	<if test="param2!=null and param2!=''">
+    		and j.car_length like '%${param2}%'
+    	</if> 
+    	<if test="param3!=null and param3!=''">
+    		and j.volume like '%${param3}%'
+    	</if> 
+    	<if test="param4!=null and param4!=''">
+    		and j.load_s like '%${param4}%'
+    	</if> 
+    	<if test="param5!=null and param5!=''">
+    		and j.source like '%${param5}%'
+    	</if> 
+    	<if test="param6!=null and param6!=''">
+    		and j.car_type like '%${param6}%'
+    	</if> 
+    	<if test="param7!=null and param7!=''">
+    		and j.box_type like '%${param7}%'
+    	</if> 
+    	order by j.creating_date desc
+  </select>
+  <select id="getCars" resultMap="BaseResultMap">
+	select * from jy_temporary_car where creating_user is null or creating_user='' and state=1
+  </select>
+  <select id="getjingjia" resultType="int">
+	select count(*) from jy_vehicle_auction where temporary_car_id =#{0} and state=1
+  </select>
+  <select id="getCarsUser" resultMap="BaseResultMap">
+	select * from jy_temporary_car where creating_user is not null or creating_user!='' and state=1
+  </select>
+  <!-- 批量删除 -->
+	<update id="deleteTemCar" parameterType="java.util.Arrays">
+		update  
+			jy_temporary_car
+		 set state=0
+		 where 
+		 	temporary_car_id in
+		<foreach collection="array" index="index" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	<!-- 新增车辆 -->
+  <insert id="addCar" parameterType="TemporaryCar" >
+    insert into 
+    	jy_temporary_car 
+    	(temporary_car_id, 
+    	 plate_number, 
+    	 city, 
+	     tel, 
+		 user_name, 
+		 user_idcard,
+		 cooperation, 
+		 registration_type, 
+		 source, 
+		 car_length, 
+		 box_type, 
+		 volume, 
+		 load_s, 
+		 normal_route, 
+		 route_id,
+		 institution_id, 
+		 creating_user,
+		 creating_date,
+		 on_line, 
+		 notes,
+		 car_type)
+    values 
+    	(#{temporaryCarId}, 
+    	#{plateNumber}, 
+    	#{city}, 
+        #{tel}, 
+        #{userName}, 
+        #{user_idcard},
+        #{cooperation}, 
+        #{registrationType}, 
+        #{source}, 
+        #{carLength}, 
+        #{boxType}, 
+        #{volume}, 
+        #{load_s}, 
+        #{normalRoute}, 
+        #{route_id}, 
+        #{institutionId}, 
+        #{creatingUser}, 
+        SYSDATE(), 
+        #{onLine}, 
+        #{notes},
+        #{carType})
+  </insert>
+    <!-- 获取修改信息 -->
+  <select id="getEditTemCar" parameterType="string" resultMap="BaseResultMap">
+		select 
+	    	*
+	    from 
+	    	jy_temporary_car
+	    where 
+	    	temporary_car_id = #{temporaryCarId}
+  </select>
+   <select id="getXiang" parameterType="string" resultType="String">
+		select 
+	    	length_name
+	    from 
+	    	jy_car_length
+	    where 
+	    	length_id = #{0}
+  </select>
+   <select id="getUserTemCar" parameterType="string" resultMap="BaseResultMap">
+		select 
+	    	j.*,
+	    	js.source_name,
+	    	jcl.length_name,
+	    	d.department_name as institutionName
+	    from 
+	    	jy_temporary_car j
+	    	left outer join jy_source js on j.source=js.source_id
+	    	left outer join jy_car_length jcl on jcl.length_id=j.box_type
+	    	left outer join jy_department d on d.department_id=j.institution_id
+	    	
+	    where 
+	    	creating_user = #{0}
+  </select>
+  <select id="getOneCar" parameterType="string" resultMap="BaseResultMap">
+		select 
+	    	*
+	    from 
+	    	jy_temporary_car
+	    where 
+	    	temporary_car_id = #{0}
+  </select>
+    <!-- 修改车辆信息 -->
+  <update id="editTemCar" parameterType="TemporaryCar" >
+    update 
+      	  jy_temporary_car
+    set 
+	      plate_number = #{plateNumber},
+	      city = #{city},
+	      tel = #{tel},
+	      user_name = #{userName},
+	      user_idcard = #{user_idcard},
+	      cooperation = #{cooperation},
+	      registration_type = #{registrationType},
+	      source = #{source},
+	      car_length = #{carLength},
+	      box_type = #{boxType},
+	      volume = #{volume},
+	      load_s = #{load_s},
+	      normal_route = #{normalRoute},
+	      route_id=#{route_id},
+	      institution_id = #{institutionId},
+	      creating_date = SYSDATE(),
+	      on_line = #{onLine},
+	      notes = #{notes},
+	      car_type = #{carType}
+    where 
+      	temporary_car_id = #{temporaryCarId}
+  </update>
+    <update id="usercar">
+    update 
+      	  jy_temporary_car
+    set creating_user = #{1}
+    where 
+      	temporary_car_id = #{0}
+  </update>
+  <update id="delusercar">
+    update 
+      	  jy_temporary_car
+    set creating_user = ''
+    where 
+      	creating_user = #{0}
+  </update>
+  <!-- 根据车牌号查询 -->
+	<select id="getCar_Num" resultMap="BaseResultMap">
+		select
+		 	temporary_car_id,plate_number
+		from
+		 	jy_temporary_car
+		where 
+		state=1
+		<if test="param1!=null">
+		and plate_number like '%${param1}%'
+		</if>
+		<if test="param2!=null">
+		and (creating_user is null or creating_user='')
+		</if>
+	</select>
+	<!--获取车辆来源信息  -->
+	<select id="getSource" resultType="Source">
+		select 
+			source_id as sourceId,
+			source_name as sourceName 
+		from 
+			jy_source
+	</select>
+	<!--获取厢型  -->
+	<select id="getLength" resultType="Car_length">
+		select 
+			* 
+		from 
+			jy_car_length 
+	</select>
+	<!-- 获取确认车辆msg -->
+	<select id="getConfirmMsg" resultType="ConfirmMsg">
+		SELECT
+			*
+		FROM
+			jy_confirmvehicle_msg
+		WHERE
+		 	car_id=#{_parameter}
+		ORDER BY
+			msg_time desc
+	</select>
+</mapper>

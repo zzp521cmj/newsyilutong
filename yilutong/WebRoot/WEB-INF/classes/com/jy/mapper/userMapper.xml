@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jy.dao.UserDao">
+	<resultMap type="Role" id="roleResultMap">
+		<id column="Role_id" property="id" />
+		<result column="Role_name" property="name" />
+		<result column="Role_ctime" property="ctime" />
+		<result column="Role_ltime" property="ltime" />
+		<result column="Role_remarks" property="remarks" />
+	</resultMap>
+	<select id="getUser" resultType="User">
+		SELECT * FROM jy_USER u where u.state='1'
+		<if test="param3!=null">
+			AND u.username like '%${param3}%'
+		</if>
+		<if test="param4!=null">
+			AND u.realname like '%${param4}%'
+		</if>
+		<if test="param5!=null">
+			AND u.did=#{param5}
+		</if>
+		order by u.createtime desc
+		limit #{param1},#{param2}
+	</select>
+
+	<select id="getCount" resultType="int">
+		SELECT count(*) FROM jy_USER u where u.state='1'
+		<if test="param1!=null">
+			AND u.username like '%${param1}%'
+		</if>
+		<if test="param2!=null">
+			AND u.realname like '%${param2}%'
+		</if>
+		<if test="param3!=null">
+			AND u.did=#{param3}
+		</if>
+
+	</select>
+	<select id="getFunctions" resultType="String" parameterType="java.util.Arrays">
+		select distinct f.function_name from jy_role_function rf,jy_function f
+		where f.function_id=rf.role_function_functionid AND
+		f.function_menuid=#{0} AND rf.role_function_roleid IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		order by f.function_order
+	</select>
+	<select id="checkUser" resultType="int">
+		SELECT count(*) FROM jy_USER
+		where username=#{0}
+	</select>
+	<update id="modifyUser" parameterType="User">
+		update jy_User set
+		realname=#{realName},did=#{did},flag=#{flag},phone=#{phone},driver_id=#{driver_id}
+		where id=#{id}
+	</update>
+	<update id="modifyPassword">
+		update jy_User set password=#{1} where id=#{0}
+	</update>
+	<update id="resetpassword">
+		update jy_User set
+		password='F379EAF3C831B04DE153469D1BEC345E' where id=#{0}
+	</update>
+	<delete id="delUser">
+		delete from jy_User where id in
+		<foreach collection="array" item="id" index="index" open="("
+			close=")" separator=",">
+			#{id}
+		</foreach>
+	</delete>
+	<insert id="addUser" parameterType="User">
+		insert into jy_User(
+		id,
+		username,
+		password,
+		realname,
+		did,
+		lasttime,
+		state,
+		flag,
+		createtime,
+		channelId,
+		device_type,
+		phone,
+		driver_id,
+		costomersid
+		)
+		values(#{id},#{username},#{password},#{realName},#{did},null,"1",#{flag},SYSDATE(),null,null,#{phone},#{driver_id},#{costomersid})
+	</insert>
+	<select id="getUser1" resultType="User">
+		SELECT u.*,jdi.driver_name,
+		c.customer_name AS costomers
+		FROM jy_User u
+		LEFT JOIN jy_customer c ON
+		u.costomersid=c.customer_id
+		LEFT JOIN jy_driver_info jdi ON u.driver_id
+		= jdi.driver_id
+		where u.id=#{id}
+	</select>
+	<select id="getAllUser" resultType="User">
+		SELECT
+		u.username,
+		u.realname,
+		d.department_name as did,
+		case u.flag
+		when
+		'1' then '司机'
+		when '0' then '其他'
+		when '2' then '客户'
+		end as flag,
+		u.lasttime,
+		u.phone
+		FROM jy_User u
+		left outer join jy_department d on
+		u.did=d.department_id where u.state=1
+		<if test="array!=null and array.length!=0">
+			AND u.id in
+			<foreach collection="array" index="index" item="item" open="("
+				separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="array==null or array.length==0">
+
+			<if test="param1!=''">
+				AND u.username like '%${param1}%'
+			</if>
+			<if test="param2!=''">
+				AND u.realname like '%${param2}%'
+			</if>
+			<if test="param3!=''">
+				AND u.did=#{param3}
+			</if>
+		</if>
+	</select>
+	<select id="getTemUser" resultType="User">
+		SELECT * FROM jy_User
+		u,jy_temporary_car t where u.id=t.creating_user and
+		t.creating_user=#{0} and t.state=1
+	</select>
+	<select id="getTraUser" resultType="User">
+		SELECT * FROM jy_User
+		u,jy_travel_card t where u.id=t.user_id and t.user_id=#{0} and
+		t.state=1
+	</select>
+	<select id="getDepartment" resultType="string">
+		SELECT Department_name
+		FROM jy_Department where Department_id=#{0}
+	</select>
+	<select id="namegetDepartment" resultType="string">
+		SELECT Department_id
+		FROM jy_Department where Department_name=#{0}
+	</select>
+	<select id="getDepartments" resultType="Department">
+		SELECT * FROM
+		jy_Department
+	</select>
+	<select id="getRoles" resultMap="roleResultMap">
+		SELECT * FROM jy_Role
+	</select>
+	<insert id="saveRole">
+		insert jy_user_role
+		value(null,#{param1},#{param2})
+	</insert>
+	<update id="saveRoles">
+		update jy_user_role set
+		User_role_rid=#{param2} where
+		user_role_uid=#{param1}
+	</update>
+	<select id="getUserId" resultType="int">
+		select max(id) from jy_user
+	</select>
+	<delete id="delUserRole">
+		delete from jy_User_role where
+		User_role_uid in
+		<foreach collection="array" item="id" index="index" open="("
+			close=")" separator=",">
+			#{id}
+		</foreach>
+	</delete>
+	<!-- 获取指定用户个人信息app -->
+	<select id="getAppUser" resultType="User">
+		SELECT
+		u.username,
+		u.realname,
+		d.department_name as did,
+		u.flag,
+		u.lasttime,
+		t.plate_number
+		FROM
+		jy_user u
+		LEFT JOIN
+		jy_department d on u.did=d.department_id
+		LEFT JOIN
+		jy_temporary_car t on u.id=t.creating_user
+		WHERE
+		u.state=1
+		AND
+		u.id=#{id}
+	</select>
+
+	<select id="getDepartmentName" resultType="Department">
+		SELECT
+		*
+		FROM
+		jy_department
+		WHERE 1=1
+		AND
+		department_name like "%${_parameter}%"
+	</select>
+	<!-- 获取app版本 -->
+	<select id="getAppVersion" resultType="AppVersion">
+		SELECT
+		*
+		FROM
+		jy_app_version
+
+	</select>
+	<!-- 添加意见信息 -->
+	<insert id="saveAppMessage" parameterType="AppMessage">
+		INSERT INTO
+		jy_app_message
+		(
+		user_id,
+		message,
+		updatetime
+		)
+		VALUES
+		(
+		#{user_id},
+		#{message},
+		SYSDATE()
+		)
+	</insert>
+	<!-- 更新部门 -->
+	<update id="updateDepartment">
+		UPDATE
+		jy_user
+		SET
+		did=#{param2}
+		WHERE
+		1=1
+		AND
+		id=#{param1}
+	</update>
+	<select id="getDrivers" resultType="Driver" parameterType="String">
+		select
+		di.driver_id as driverId,di.driver_name as driverName
+		from
+		jy_driver_info di
+		where di.driver_id NOT in (select
+		distinct(u.driver_id) from jy_user u
+		where u.driver_id IS NOT NULL)
+		<if test="_parameter!=null">
+			and di.driver_name like '%${_parameter}%'
+		</if>
+	</select>
+	<insert id="appAddUser" parameterType="User">
+		insert into jy_User(
+		id,
+		username,
+		password,
+		realname,
+		did,
+		lasttime,
+		state,
+		flag,
+		createtime,
+		channelId,
+		device_type,
+		phone,
+		driver_id,
+		costomersid
+
+		)
+		values(#{id},#{username},#{password},#{realName},#{did},null,#{state},#{flag},SYSDATE(),null,null,#{phone},#{driver_id},#{costomersid})
+	</insert>
+	<insert id="appSaveCustomer" parameterType="Customer">
+		insert jy_customer(
+		customer_id,
+		customer_num,
+		customer_name,
+		customer_address,
+		customer_tel,
+		customer_teltoo,
+		customer_grade,
+		customer_point,
+		customer_createtime,
+		bz,
+		customer_type
+		)values(
+		#{customer_id},
+		#{customer_num},
+		#{customer_name},
+		#{customer_address},
+		#{customer_tel},
+		#{customer_teltoo},
+		#{customer_grade},
+		#{customer_point},
+		SYSDATE(),
+		#{bz},
+		#{customer_type}
+		)
+	</insert>
+	<update id="updateUserState">
+		UPDATE jy_user SET driver_id =#{param2} WHERE id=#{param1}
+	</update>
+</mapper>

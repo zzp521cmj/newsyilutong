@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- zzp 班线管理mapper-->
+<mapper namespace="com.jy.dao.QuartzDao" >
+<resultMap id="BasePostClassline" type="com.jy.model.PostClassline" >
+    <id column="classline_id" property="classlineId"/>
+    <result column="classline_name" property="classlineName"/>
+    <result column="classline_code" property="classlineCode"/>
+    <result column="organization_id" property="organizationId"/>
+    <result column="organizationName" property="organizationName"/>
+    <result column="departure_time" property="departure_time"/>
+    <result column="plate_number" property="plate_number"/>
+    <result column="car_id" property="car_id"/>
+    <result column="regular_type" property="regular_type"/>
+    <result column="days" property="days"/>
+    <result column="repetition_period" property="repetition_period"/>
+    <result column="end_type" property="end_type"/>
+    <result column="end_num" property="end_num"/>
+    <result column="end_date" property="end_date"/>
+    <result column="effective_date" property="effective_date"/>
+    <result column="all_money" property="all_money"/>
+</resultMap>
+	<select id="getPostClassLineInfo" resultMap="BasePostClassline">
+		SELECT 
+			* 
+		FROM
+			jy_classline
+	</select>
+	<select id="getPostLineCodeCount" parameterType="string">
+		SELECT
+			COUNT(*)
+		FROM
+			jy_autoclassline
+		WHERE
+			linId=#{_parameter}
+	</select>
+	<insert id="insertPostClassLineInfo" parameterType="PostClassline">
+		INSERT INTO 
+			jy_autoclassline
+			(
+				linnumber,
+				linname,
+				lincarno,
+				linmoney,
+				linno,
+				linId,
+				car_id,
+				create_time
+			)
+		VALUES(
+			 #{autoId},
+			 #{classlineName},
+			 #{plate_number},
+			 #{all_money},
+			 #{classlineCode},
+			 #{classlineId},
+			 #{car_id},
+			 SYSDATE()
+		)
+	</insert>
+	<!-- INSERT INTO 
+			jy_autoclassline
+			(
+				linnumber,
+				linname,
+				lincarno,
+				lincartype,
+				lincarowner,
+				linmoney,
+				linno,
+				linId
+			)
+		SELECT
+			 #{autoId},
+			 #{classlineName},
+			 #{plate_number},
+			 jtc.car_type,
+			 jco.car_owner_name,
+			 #{all_money},
+			 #{classlineCode},
+			 #{classlineId}
+		FROM
+			jy_travel_card jtc
+		LEFT JOIN 
+			jy_car_owner_info jco ON jco.car_id=#{car_id}
+		WHERE 
+			jtc.travel_card_id=#{car_id} -->
+</mapper>

@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jy.dao.Driver_evaluationDao">
+
+	<!-- 查询司机总条数 -->
+	<select id="drivercount" resultType="int">
+		select count(*) from(
+		SELECT jdi.* from jy_driver_info jdi INNER JOIN jy_create_agreement jca ON
+		jdi.driver_id = jca.driverid
+		LEFT JOIN jy_agreementtoorder ja ON ja.agreement_id=jca.agreement_id LEFT
+		JOIN jy_shiping_order jso ON jso.shiping_order_id=ja.order_id
+		LEFT JOIN jy_evaluate je ON je.shiping_order_id=jso.shiping_order_id
+		where
+		1=1
+		<if test="param1!=null and param1!=''">and driver_name like "%${param3}%"
+		</if>
+		<if test="param2!=null and param2!=''"> and ptype=#{param4}
+		</if>
+		<if test="param3!=null and param3!=''">
+			and je.bouns &gt;=#{param3}
+		</if>
+		<if test="param4!=null and param4!=''">
+			and je.bouns &lt;=#{param4}
+		</if>
+		<if test="(param3!=null and param3!='') and (param4!=null and param4!='')">
+			and je.bouns &gt;=#{param3}
+			and je.bouns &lt;=#{param4}
+		</if>
+		GROUP BY jca.driverid
+	    order by je.grade desc)t
+	</select>
+
+	<!-- 查询所有司机 -->
+	<select id="listdriver" resultType="Driver">
+		SELECT jdi.driver_name as driverName,
+		jdi.phone_number as phoneNumber,
+		jdi.address as address,
+		jdi.ptype as ptype,
+		jdi.driver_id as driverid,
+		jdi.card_number,
+		jca.driverid,
+		je.bouns,
+		sum(IFNULL(je.customer_grade,0)+IFNULL(je.grade,0)+IFNULL(je.receiving_grade,0))
+		as grade,
+		avg(IFNULL(je.customer_grade,0)+IFNULL(je.grade,0)+IFNULL(je.receiving_grade,0))
+		as average
+		from jy_driver_info jdi INNER JOIN jy_create_agreement jca ON
+		jdi.driver_id = jca.driverid
+		LEFT JOIN jy_agreementtoorder ja ON ja.agreement_id=jca.agreement_id LEFT
+		JOIN jy_shiping_order jso ON jso.shiping_order_id=ja.order_id
+		LEFT JOIN jy_evaluate je ON je.shiping_order_id=jso.shiping_order_id
+		where
+		1=1
+		
+		<if test="param3!=null and param3!=''">and driver_name like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''"> and ptype=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			and je.bouns &gt;=#{param5}
+		</if>
+		<if test="param6!=null and param6!=''">
+			and je.bouns &lt;=#{param6}
+		</if>
+		<if test="(param5!=null and param5!='') and (param6!=null and param6!='')">
+			and je.bouns &gt;=#{param5}
+			and je.bouns &lt;=#{param6}
+		</if>
+		GROUP BY jca.driverid
+	    order by je.grade desc
+		limit
+		#{param1},#{param2}
+	</select>
+
+	<!-- 查询订单总条数 -->
+	<select id="count" resultType="int">
+		select COUNT(*) FROM (
+		SELECT
+		je.*,
+		jt.driverid,
+		jd.ratingid,
+		jd.grade,
+		jd.content,
+		jd.bouns
+		FROM
+		jy_agreementtoorder ji
+		INNER JOIN
+		jy_shiping_order je
+		ON
+		ji.order_id=je.shiping_order_id
+		LEFT JOIN
+		jy_evaluate jd
+		ON ji.order_id
+		= jd.shiping_order_id
+		LEFT JOIN
+		jy_create_agreement jt
+		on
+		ji.agreement_id=jt.agreement_id
+		where 1=1
+		and
+		jt.driverid=#{param5}
+		and je.shipping_order_state=4 
+		<if test="param1!=null and param1!=''">and je.shiping_order_num like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''"> and je.goods_name=#{param2}
+		</if>
+		<if test="param3!=null and param3!=''"> and jd.grade=#{param3}
+		</if>
+		<if test="param4!=null and param4!=''">and jd.bouns=#{param4}
+		</if>
+		) AS q
+	</select>
+
+	<!-- 查询订单总数据 -->
+	<select id="inquire" resultType="CreateAgreement">
+		SELECT
+		je.*,
+		jt.driverid,
+		jd.ratingid,
+		jd.grade,
+		jd.content,
+		jd.bouns,
+		jd.receiving_grade,
+		jd.customer_grade
+		FROM
+		jy_agreementtoorder ji
+		INNER JOIN jy_shiping_order je
+		ON
+		ji.order_id=je.shiping_order_id
+		LEFT JOIN jy_evaluate jd
+		ON ji.order_id
+		= jd.shiping_order_id
+		LEFT JOIN jy_create_agreement jt
+		on
+		ji.agreement_id=jt.agreement_id
+		where 1=1
+		and jt.driverid=#{param7}
+		and je.shipping_order_state=4 
+		<if test="param3!=null and param3!=''">and je.shiping_order_num like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''"> and je.goods_name=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''"> and jd.grade=#{param5}
+		</if>
+		<if test="param6!=null and param6!=''">and jd.bouns=#{param6}
+		</if>
+		limit
+		#{param1},#{param2}
+	</select>
+
+	<!-- 查询车牌号 -->
+	<select id="carp" resultType="CreateAgreement">
+		select
+		car_number1
+		from
+		jy_create_agreement
+		where 1=1
+		<if test="_parameter!=null and _parameter!=''">
+			and car_number1 like "%${_parameter}%"
+		</if>
+		GROUP BY ji.agreement_id
+	</select>
+
+	<!-- 添加 -->
+	<insert id="insertinfo" parameterType="Evaluate">
+		insert
+		into
+		jy_evaluate
+		(
+		ratingid,
+		shiping_order_id,
+		grade,
+		content,
+		bouns
+		)
+		value
+		(
+		#{ratingid},
+		#{shiping_order_id},
+		#{grade},
+		#{content},
+		SYSDATE()
+		)ON DUPLICATE KEY UPDATE grade=#{grade},
+		content=#{content},bouns=now()
+		
+	</insert>
+
+	<select id="getjUnqualified" resultType="ShippingOrder">
+		select
+		*
+		from
+		jy_shiping_order
+		where
+		shiping_order_id=#{_parameter}
+	</select>
+
+	<!-- 删除的方法 -->
+	<delete id="deleteTravel" parameterType="java.util.Arrays">
+		delete from
+		jy_create_agreement
+		where
+		agreement_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+	<!-- 导出 -->
+	<select id="exportunqualified" resultType="Driver">
+		SELECT jdi.driver_name as driverName,
+		jdi.phone_number as phoneNumber,
+		jdi.address as address,
+		jdi.ptype as ptype,
+		jdi.driver_id as driverid,
+		jdi.card_number,
+		jca.driverid,
+		je.bouns,
+	    SUM(je.grade) as grade from jy_driver_info jdi INNER JOIN jy_create_agreement jca ON
+		jdi.driver_id = jca.driverid
+		LEFT JOIN jy_agreementtoorder ja ON ja.agreement_id=jca.agreement_id LEFT
+		JOIN jy_shiping_order jso ON jso.shiping_order_id=ja.order_id
+		LEFT JOIN jy_evaluate je ON je.shiping_order_id=jso.shiping_order_id
+		where 1=1
+		<if test="param1!=null and param1!=''">
+			and driverId in
+			<foreach collection="array" index="index" item="item" open="("
+				separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		 GROUP BY jdi.driver_name
+	</select>
+	
+</mapper>

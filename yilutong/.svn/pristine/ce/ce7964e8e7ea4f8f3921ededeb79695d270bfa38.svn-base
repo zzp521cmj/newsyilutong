@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jy.dao.DetailedDAO">		
+<!--  查询-->
+	
+	<select id="getShippingOrder" resultType="ShippingOrder">
+		SELECT      
+		*
+		FROM
+		jy_shiping_order 
+		left join 
+		jy_detailed on
+		jy_shiping_order.shiping_order_id=jy_detailed.shiping_order_id
+		where
+		1=1
+		<if test="param3!=null and param3!=''">
+			and jy_shiping_order.shiping_order_num like "%${param3}%"
+		</if>
+		ORDER BY
+		updatetime
+		DESC
+		limit
+		#{param1},#{param2}
+	</select>
+	
+	<select id="getShippingOrderInfo" resultType="int">
+		select count(*) from jy_shiping_order 
+		left join 
+		jy_detailed on
+		jy_shiping_order.shiping_order_id=jy_detailed.shiping_order_id
+			where
+			1=1
+		
+		<if test="_parameter!=null and _parameter!=''">
+			and jy_shiping_order.shiping_order_num like "%${_parameter}%"
+		</if>
+	</select>
+	<insert id="addDetailed" parameterType="Detailed">
+		insert
+		into
+		jy_detailed
+		(
+		shiping_order_num,
+		shiping_order_id,
+		change_fee10,
+		land_total,
+		send_pay,
+		detailed_id
+		)
+		values (
+		#{shiping_order_num},
+		#{shiping_order_id},
+		#{change_fee10},
+		#{land_total},
+		#{send_pay},
+		#{detailed_id}
+		)
+	</insert>
+	<select id="getUpdateShipOrder" resultType="ShippingOrder">
+		select
+		*
+		from
+		jy_shiping_order
+		<if test="_parameter!=null">
+			where shiping_order_id like "%${_parameter}%"
+		</if>
+	</select>
+	 <!-- 添加后修改状态  -->
+	 	<update id="updateShipOrder" parameterType="string">
+		update
+		jy_shiping_order
+		<set>
+		jy_updateDetailedmapper=1
+		</set>
+		where 
+		shiping_order_id =#{_parameter}	
+	</update>
+		<!-- 删除修改订单状态 -->
+	<update id="updateStateship" parameterType="java.util.Arrays">
+		update
+		jy_shiping_order
+		<set>
+		jy_updateDetailedmapper=0
+		</set>
+		where
+		shiping_order_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	<!--修改前的获取  -->
+		<select id="getUpdateDetailed" 
+		resultType="ShippingOrder">
+		<!-- select * from jy_car_owner_info where car_owner_id=#{carOwnerId} -->
+	SELECT
+		js.*,
+		jd.*
+		FROM
+		jy_shiping_order js 
+		left join
+		jy_detailed jd on
+		js.shiping_order_id = jd.shiping_order_id
+		where
+		js.shiping_order_id=#{_parameter}<!-- SELECT      
+		*
+		FROM
+		jy_shiping_order 
+		left join 
+		jy_detailed on
+		jy_shiping_order.shiping_order_id=jy_detailed.shiping_order_id -->
+	</select>
+		<update id="updateDetailed" parameterType="Detailed">
+		update
+		jy_detailed
+		<set>
+		change_fee10=#{change_fee10},
+		land_total=#{land_total},
+		send_pay=#{send_pay},
+		</set>
+		where detailed_id = #{detailed_id}
+	</update>
+	<select id="searchOrder" resultType="int">
+	  select  count(*) from
+	  jy_detailed
+	  where 
+	  shiping_order_id = #{_parameter}
+	
+	</select>
+</mapper>

@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jy.dao.Car_bid_recordDao" >
+  <resultMap id="BaseResultMap" type="com.jy.model.Car_bid_record" >
+    <id column="vehicle_auction_id" property="vehicleAuctionId" />
+    <result column="demand_release_id" property="demandReleaseId" />
+    <result column="price" property="price" />
+    <result column="determine" property="determine" />
+    <result column="city_of_loading_id" property="cityOfLoadingId" />
+    <result column="unloading_city_id" property="unloadingCityId" />
+    <result column="loading_address" property="loadingAddress" />
+     <result column="loadingAddress" property="loadingAddress" />
+    <result column="unloading_address" property="unloadingAddress" />
+    <result column="unloadingAddress" property="unloadingAddress" />
+    <result column="ranges" property="ranges" />
+    <result column="weight" property="weight" />
+    <result column="models" property="models" />
+    <result column="truck_type_id" property="truckTypeId" />
+    <result column="publisher" property="publisher" />
+    <result column="contact_information" property="contactInformation" />
+    <result column="create_time" property="createTime" />
+    <result column="state" property="state" />
+    <result column="istrue" property="istrue"/>
+    <result column="remarks" property="remarks" />
+    <result column="citycode" property="citycode" />
+    <result column="zhuang" property="zhuang" />
+    <result column="xie" property="xie" />
+     <result column="zhuangCity" property="zhuangCity" />
+    <result column="xieCity" property="xieCity" />
+    <result column="length_id" property="length_id" />
+    <result column="length_name" property="length_name" /> 
+    <result column="userid" property="userid" />
+    <result column="temporary_car_id" property="temporary_car_id" />
+    <result column="plate_number" property="plate_number" />
+    <result column="userName" property="userName" />
+    <result column="plateNumber" property="plateNumber" />
+    <result column="contactInformation" property="contactInformation" />
+    <result column="travel_card_id" property="travel_card_id" />
+    <result column="user_id" property="user_id" />
+    <result column="car_owner" property="car_owner" />
+   <association property="d" javaType="com.jy.model.TemporaryCar">
+    <id column="creating_user" property="creatingUser"/>
+    <result column="plate_number" property="plateNumber"/>
+    <result column="city" property="city"/>
+    <result column="tel" property="tel"/> 
+    <result column="user_name" property="userName"/>
+    <result column="cooperation" property="cooperation"/>
+    <result column="registration_type" property="registrationType"/>
+    <result column="source" property="source"/>
+    <result column="source_name" property="sourceName"/>
+    <result column="car_length" property="carLength"/>
+    <result column="length_name" property="length_name"/>
+    <result column="box_type" property="boxType"/>
+    <result column="volume" property="volume"/>
+    <result column="load_s" property="load_s"/>
+    <result column="normal_route" property="normalRoute"/>
+    <result column="institution_id" property="institutionId"/>
+    <result column="temporary_car_id" property="temporaryCarId"/>
+    <result column="creating_date" property="creatingDate"/>
+    <result column="on_line" property="onLine"/>
+    <result column="car_type" property="carType"/>
+    <result column="notes" property="notes"/> 
+    </association>
+    </resultMap>
+  <select id="getCar_bid_recordInfo" resultMap="BaseResultMap" >
+	SELECT 
+	    	jdr.*,
+	    	jtc.*,
+	    	jci.citycode,
+	    	jci.cityname AS zhuang,
+	    	zz.cityname AS xie,
+	    	jva.*
+	    	
+	    FROM 
+	    	jy_vehicle_auction jva
+	    LEFT JOIN 
+	    	jy_demand_release jdr ON jva.demand_release_id=jdr.demand_release_id
+	    LEFT JOIN 
+	    	jy_city_info jci ON jdr.city_of_loading_id=jci.citycode
+	    LEFT JOIN 
+	    	jy_city_info zz ON jdr.unloading_city_id=zz.citycode
+	     INNER JOIN
+	    	jy_temporary_car jtc ON jtc.creating_user=jva.userid
+	   
+		WHERE 
+			jva.determine=1
+			<if test="param3!=null and param3!=''">
+				and jtc.user_name like "%${param3}%"
+			</if>
+			<if test="param4!=null and param4!=''">
+				and jdr.publisher like "%${param4}%"
+			</if>
+			<if test="param5!=null and param5!=''">
+				and jtc.temporary_car_id like "%${param5}%"
+			</if>
+			order by jva.certain_time desc
+		limit #{param1},#{param2}
+  </select>
+  <select id="getAllCar" resultMap="BaseResultMap" parameterType="String">
+	SELECT 
+			jtc.temporary_car_id,
+			jdr.demand_release_id,
+			jva.vehicle_auction_id,
+	    	jtc.user_name as userName,
+	    	jtc.plate_number as plateNumber,
+	    	jdr.publisher as publisher,
+	    	jdr.contact_information as contactInformation,
+	    	jva.price as price,
+	    	jdr.loading_address as loadingAddress,
+	    	jdr.unloading_address as unloadingAddress,
+	    	jdr.ranges as ranges,
+	    	jdr.weight as weight,
+	    	jci.cityname AS zhuang,
+	    	zz.cityname AS xie,
+	    	jdr.remarks as remarks
+	    FROM 
+	    	jy_vehicle_auction jva
+	    LEFT JOIN 
+	    	jy_demand_release jdr ON jva.demand_release_id=jdr.demand_release_id
+	    	
+	    LEFT JOIN 
+	    	jy_city_info jci ON jdr.city_of_loading_id=jci.citycode
+	    LEFT JOIN 
+	    	jy_city_info zz ON jdr.unloading_city_id=zz.citycode
+	     INNER  JOIN
+	    	jy_temporary_car jtc ON jtc.creating_user=jva.userid
+	    
+		WHERE 
+			jva.determine=1
+			<if test="param1!=null and param1!=''">
+				and jtc.user_name like "%${param1}%"
+			</if>
+			<if test="param3!=null and param3!=''">
+				and jdr.publisher like "%${param3}%"
+			</if>
+			<if test="param2!=null and param2!=''">
+				and jtc.temporary_car_id like "%${param2}%"
+			</if>
+			order by jva.certain_time desc
+		
+  </select>
+  <!-- 获取总行数 -->
+  	<select id="getCar_bid_record" resultType="int">
+		SELECT 
+			COUNT(*)
+		FROM 
+			jy_vehicle_auction jva
+		LEFT JOIN 
+			jy_demand_release jdr ON jva.demand_release_id=jdr.demand_release_id
+		 INNER  JOIN
+			jy_temporary_car jtc ON jtc.creating_user=jva.userid
+		WHERE 
+			jva.determine=1
+			<if test="param1!=null and param1!=''">
+				and jtc.user_name like "%${param1}%"
+			</if>
+			<if test="param2!=null and param2!=''">
+				and jdr.publisher like "%${param2}%"
+			</if>
+			<if test="param3!=null and param3!=''">
+				and jtc.temporary_car_id like "%${param3}%"
+			</if>
+  	</select>
+  	<select id="getCar_idLength" resultMap="BaseResultMap">
+		SELECT
+			temporary_car_id,plate_number 
+		FROM 
+			jy_temporary_car
+		<if test="_parameter!=null">
+			where plate_number like "%${_parameter}%"
+		</if>
+	</select>
+	 <select id="getManuals" resultMap="BaseResultMap" >
+	SELECT 
+			jva.*,
+	    	jdr.*,
+	    	jtc.travel_card_id,
+	    	jtc.user_id,
+	    	jtc.plate_number,
+	    	jtc.car_owner,
+	    	jci.citycode,
+	    	jci.cityname AS zhuang,
+	    	zz.cityname AS xie,
+	    	jls.linname as line_name
+	    FROM 
+	    	jy_vehicle_auction jva
+	    LEFT JOIN 
+	    	jy_demand_release jdr ON jva.demand_release_id=jdr.demand_release_id
+	    INNER JOIN 
+	    	jy_travel_card jtc ON jva.temporary_car_id=jtc.travel_card_id	
+	    LEFT JOIN 
+	    	jy_city_info jci ON jdr.city_of_loading_id=jci.citycode
+	    LEFT JOIN 
+	    	jy_city_info zz ON jdr.unloading_city_id=zz.citycode
+	    LEFT JOIN 
+	    	jy_car_length jcl ON jcl.length_id=jdr.models
+	    LEFT JOIN 
+	    	jy_linstandard jls ON jls.linid=jdr.line_id
+		WHERE 
+			jdr.state=0
+		<if test="param3 != null and param3 != ''">
+			and jdr.city_of_loading_id = ${param3}
+		</if>
+		<if test="param4 != null and param4 != ''">
+			and jdr.unloading_city_id = ${param4}
+		</if>
+		<if test="param5 != null and param5 != ''">
+			and jdr.models like '%${param5}%'
+		</if>
+		<if test="param6 != null and param6 != ''">
+			and jdr.truck_type_id like '%${param6}%'
+		</if>
+		<if test="param7 != null and param7 != ''">
+			and jdr.publisher like '%${param7}%'
+		</if>
+		<if test="param8 != null and param8 != ''">
+			and jdr.istrue = ${param8}
+		</if>
+			order by jdr.create_time desc
+		limit #{param1},#{param2}
+  </select>
+  
+  <!-- 获取总行数 -->
+  	<select id="getManualsCount" resultType="int">
+		SELECT 
+			COUNT(*)
+		FROM 
+			jy_vehicle_auction jva
+		LEFT JOIN 
+			jy_demand_release jdr ON jva.demand_release_id=jdr.demand_release_id
+		LEFT JOIN
+			jy_temporary_car jtc ON jtc.creating_user=jva.userid
+		WHERE 
+			jdr.state=0
+		<if test="param1 != null and param1 != ''">
+			and jdr.city_of_loading_id = ${param1}
+		</if>
+		<if test="param2 != null and param2 != ''">
+			and jdr.unloading_city_id = ${param2}
+		</if>
+		<if test="param3 != null and param3 != ''">
+			and jdr.models like '%${param3}%'
+		</if>
+		<if test="param4 != null and param4 != ''">
+			and jdr.truck_type_id like '%${param4}%'
+		</if>
+		<if test="param5 != null and param5 != ''">
+			and jdr.publisher like '%${param5}%'
+		</if>
+		<if test="param6 != null and param6 != ''">
+			and jdr.istrue = ${param6}
+		</if>
+  	</select>
+  	<select id="getdc" resultType="Car_bid_recordforoutput">
+		SELECT jva.vehicle_auction_id AS vehicleAuctionId, jtc.user_name,jtc.plate_number,jdr.publisher,
+		jdr.contact_information,jdr.create_time AS createTime,jva.price,jdr.loading_address AS loadingAddress,jdr.unloading_address AS unloadingAddress,
+		jdr.ranges,jdr.weight,jci.cityname AS zhuang,jci2.cityname AS xie,jdr.remarks
+		FROM
+		jy_vehicle_auction jva
+		LEFT JOIN
+		jy_demand_release jdr ON jva.demand_release_id=jdr.demand_release_id
+		LEFT JOIN
+		jy_city_info jci ON jdr.city_of_loading_id=jci.citycode
+		LEFT JOIN
+		jy_city_info jci2 ON jdr.unloading_city_id=jci2.citycode
+		LEFT JOIN
+		jy_car_length jcl ON jcl.length_id=jdr.models
+		INNER JOIN
+		jy_temporary_car jtc ON jtc.creating_user=jva.userid
+		LEFT JOIN
+		jy_car_length jcl1 ON jcl1.length_id=jtc.box_type
+		WHERE		
+		jva.determine=1
+		<if test="param1 != null and param1 != ''">
+			and jtc.user_name = '${param1}'
+		</if>
+		<if test="param2 != null and param2 != ''">
+			and  jdr.publisher= '${param2}'
+		</if>
+		<if test="param3 != null and param3 != ''">
+			and jtc.temporary_car_id = '${param3}'
+		</if>
+	</select>
+</mapper>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jy.dao.ClassLineMonitorDao">
+	
+	<select id="getDeparturePlan" resultType="com.jy.model.DeparturePlan">
+	select * from jy_autoclassline 
+	limit #{param1},#{param2} 
+	</select>
+	<!--  查询总条数-->
+	<select id="getCount" resultType="int">
+	select count(*) from jy_autoclassline
+	</select>
+	<select id="getPoshytip" resultType="com.jy.model.MonitorPoshytip">
+	select 
+	ci.*,
+	a.* 
+	from 
+	jy_classline_info ci
+	left join 
+	jy_autoclassline a on a.linId=ci.classline_Id where a.linnumber = #{0} order by ci.siteorder 
+	
+	</select>
+</mapper>

@@ -1,0 +1,82 @@
+/* 
+ 文件名:mapcssforgz.css
+创建人:黄清华
+类型:css-跟踪的css
+创建日期:2015-6-16
+最新修改日期:
+*/
+/*
+	地图默认样式
+*/
+@charset "UTF-8";
+/* CSS Document */
+body {
+	overflow: hidden;
+	font-size: 13px;
+	font-family: 'Microsoft YaHei', 微软雅黑, Arial, Helvetica, sans-serif;
+}
+
+#bigdiv {
+	width: 1125px;
+	height: 535px;
+	overflow: hidden;
+	margin: 10 0 0 15;
+	position: absolute;
+	border: 1px solid #CCCCCC;
+}
+
+#titlediv {
+	width: 1115px;
+	height: 34px;
+	background-color: #FAFAFA;
+	padding: 6 0 0 10;
+	border-bottom: 1px solid #CCCCCC;
+}
+#dituContent{
+	width: 1125px;
+	height: 494px;
+}
+
+.btz {
+	height: 25px;
+	cursor: pointer;
+	padding: 0 22px;
+	color: white;
+	background-color: #296191;
+	border-color: #ccc;
+	border: 1px solid #ccc;
+	font-size:12px;
+	font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+}
+.btz:hover {
+	background-color: #3276B1;
+}
+.btz1 {
+	height: 25px;
+	cursor: pointer;
+	padding: 0 22px;
+	color: black;
+	background-color: #fff;
+	border-color: #ccc;
+	border: 1px solid #ccc;
+	font-size:12px;
+	font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+}
+.btz1:hover {
+	background-color: #3276B1;
+}
+#mins {
+	position: absolute;
+	z-index: 3;
+	background-color: #053158;
+	height: 32px;
+	width: 110px;
+	margin-left: 89%;
+	margin-top: 310px;
+	cursor: pointer;
+	color: white;
+	font-size: 12px;
+	font-family: 微软雅黑;
+	font-weight: bolder;
+	line-height: 30px;
+}

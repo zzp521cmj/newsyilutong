@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- zhaokejin@outlook.com -->
+<mapper namespace="com.jy.dao.EquipmentManDao">
+
+	<select id="getEquipmentMan" resultType="Equipment_info">
+	SELECT 
+		jei.*,
+		jtc.travel_card_id as car_id,
+		jtc.plate_number,
+		jd.Department_Id as institutions_id,
+		jd.Department_Name
+	FROM 
+		jy_equipment_info jei
+	LEFT JOIN ${param7}.jy_travel_info jtc ON jtc.travel_card_id=jei.car_id
+	LEFT JOIN ${param7}.jy_department jd ON jd.Department_Id=jei.institutions_id
+	where jei.state=0
+	<if test="param3 !=null and param3!=''">
+		and jei.equipment_number like '%${param3}%'
+	</if>
+	<if test="param4 !=null and param4!=''">
+		and jei.plate_number like '%${param4}%'
+	</if>
+	<if test="param5 !=null and param5!=''">
+		and jei.institutions_id like '%${param5}%'
+	</if>
+	<if test="param6 !=null and param6!=''">
+		and jei.institutions_id in (${param6})
+	</if>
+	<if test="param8 !=null and param8!=''">
+		and jei.is_binding =#{param8}
+	</if>
+	<if test="param7!='newsproject' and param7!=''">
+		and jei.table_name = #{param7}
+	</if>
+	order by update_time desc
+	limit #{param1},#{param2}
+	</select>
+	
+	<select id="getOutPutEquipment" resultType="Equipment_info">
+	SELECT 
+		jei.equipment_number,
+		jei.plate_number,
+		case
+			when jei.is_binding=1 then '绑定'
+			when jei.is_binding=0 then '未绑定'
+		end as is_binding,
+		jtc.travel_card_id as car_id,
+		jtc.plate_number,
+		jd.Department_Id as institutions_id,
+		jd.Department_Name
+	FROM 
+		jy_equipment_info jei
+	LEFT JOIN ${param5}.jy_travel_info jtc ON jtc.travel_card_id=jei.car_id
+	LEFT JOIN ${param5}.jy_department jd ON jd.Department_Id=jei.institutions_id
+	where jei.state=0
+	<if test="param1 !=null and param3!=''">
+		and jei.equipment_number like '%${param1}%'
+	</if>
+	<if test="param2 !=null and param2!=''">
+		and jei.plate_number like '%${param2}%'
+	</if>
+	<if test="param3 !=null and param3!=''">
+		and jei.institutions_id like '%${param3}%'
+	</if>
+	<if test="param4 !=null and param4!=''">
+		and jei.institutions_id in (${param4})
+	</if>
+	<if test="param6 !=null and param6!=''">
+		and jei.is_binding =#{param6}
+	</if>
+	<if test="param5!='newsproject' and param5!=''">
+		and jei.table_name = #{param5}
+	</if>
+	<if test="array!=null and array.length!=0">
+		and jei.equipment_id in
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</if>
+	order by update_time desc
+	</select>
+	
+	
+	<select id="getUpdateEquipment" resultType="Equipment_info"> 
+ 	SELECT 
+		jei.*,
+		jct.travel_card_id as car_id,
+		<!-- jct.plate_number, -->
+		jd.Department_Id as institutions_id,
+		jd.Department_Name
+	FROM
+		jy_equipment_info jei
+	LEFT JOIN ${param2}.jy_travel_info jct ON jct.travel_card_id=jei.car_id
+	LEFT JOIN ${param2}.jy_department jd ON jd.Department_Id=jei.institutions_id
+	WHERE
+		jei.equipment_id=#{param1}
+		and jei.table_name=#{param2}
+		and jei.state=0
+ 	</select> 
+	
+	<insert id="InfoManAdd" parameterType="Equipment_info">
+		insert into 
+			jy_equipment_info
+			(equipment_id,
+			equipment_number,
+			plate_number,
+			institutions_id,
+			is_binding,
+			end_date,
+			car_id,
+			table_name,
+			update_time
+			)
+		values
+			(#{equi.equipment_id},
+			#{equi.equipment_number},
+			#{equi.plate_number},
+			#{equi.institutions_id},
+			#{equi.is_binding},
+			#{equi.end_date},
+			#{equi.car_id},
+			#{db},
+			SYSDATE()
+			)
+	</insert>
+	
+	<!-- 总条数 -->
+	<select id="getCount" resultType="int">
+		SELECT 
+			count(*)
+		FROM 
+			jy_equipment_info jei
+		LEFT JOIN ${param5}.jy_travel_info jtc ON jtc.travel_card_id=jei.car_id
+		LEFT JOIN ${param5}.jy_department jd ON jd.Department_Id=jei.institutions_id
+		where jei.state=0
+		<if test="param1 !=null and param1!=''">
+			and jei.equipment_number like '%${param1}%'
+		</if>
+		<if test="param2 !=null and param2!=''">
+			and jei.plate_number like '%${param2}%'
+		</if>
+		<if test="param3 !=null and param3!=''">
+			and jei.institutions_id like '%${param3}%'
+		</if>
+		<if test="param4 !=null and param4!=''">
+			and jei.institutions_id in (${param4})
+		</if>
+		<if test="param6 !=null and param6!=''">
+			and jei.is_binding = #{param6}
+		</if>
+		<if test="param5!='newsproject' and param5!=''">
+			and jei.table_name =#{param5}
+		</if>
+	</select>
+	<!-- 获取设备号的名称 -->
+	<select id="getEquipment_number" resultType="Equipment_info">
+		SELECT 
+			equipment_id,
+			equipment_number  
+		FROM 
+			jy_equipment_info
+		WHERE
+			1=1
+			and jei.state=0
+		<if test="_parameter !=null">
+			and equipment_number like '%${_parameter}%'
+		</if>
+	</select>
+	<!-- 获取车牌号的名称下拉框 -->
+	<select id="getCar_id" resultType="Equipment_info">
+		SELECT
+			DISTINCT
+			jt.travel_card_id,
+			jt.plate_number AS plate_number1
+		FROM 
+			jy_travel_info jt
+		INNER JOIN 
+		jy_equipment_info je ON je.car_id=jt.travel_card_id
+		WHERE
+			1=1
+			and jei.state=0
+		<if test="_parameter !=null">
+			and jt.plate_number like '%${_parameter}%'
+		</if>
+	</select>
+	<!-- 修改设备信息 -->
+	
+	<update id="updateEquipment" parameterType="Equipment_info">
+		update 
+			  jy_equipment_info
+		set 
+			equipment_number=#{equipment_number},
+			institutions_id=#{institutions_id},
+			plate_number=#{plate_number},
+			end_date=#{end_date},
+			car_id=#{car_id},
+			update_time=SYSDATE()
+		where
+			equipment_id=#{equipment_id}
+	</update>
+	<update id="updateDepart" parameterType="Equipment_info">
+		update 
+			  jy_equipment_info
+		set 
+			institutions_id=#{institutions_id},
+			update_time=SYSDATE()
+		where
+			equipment_id=#{equipment_id}
+	</update>
+	
+	
+	
+	<!-- 删除设备信息-->
+	<delete id="deleteEquipment" parameterType="java.util.Arrays">
+		update 
+			  jy_equipment_info
+		set 
+			state = 1,
+			update_time=SYSDATE()
+		where
+		equipment_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	<!-- 是否存在 -->
+	<select id="checkEquipment" parameterType="string" resultType="int">
+		SELECT 
+			COUNT(*)
+		FROM 
+			jy_equipment_info
+		WHERE
+			equipment_number=#{param1} and state=0
+			<if test="param2!=null and param2!=''">
+				 and equipment_id!=#{param2}
+			</if>
+	</select>
+	<!-- 是否可修改 -->
+	<select id="checkEquipmentSinger" parameterType="string" resultType="int">
+		SELECT 
+			COUNT(*)
+		FROM 
+			jy_equipment_info
+		WHERE
+			equipment_number=#{param1}
+		AND
+			plate_number=#{param2} and state=0
+	</select>
+	<select id="getCar_idAdd" resultType="Equipment_info">
+	
+		
+		SELECT
+			DISTINCT jtc.travel_card_id,
+			jtc.plate_number AS plate_number1
+		FROM 
+			jy_travel_info jtc
+		WHERE
+			jtc.state=1 and travel_card_id NOT IN(
+		SELECT
+			DISTINCT travel_card_id
+		FROM 
+			jy_travel_info jt
+		INNER JOIN 
+			jy_equipment_info je ON je.car_id=jt.travel_card_id
+			where je.state=0
+			)
+		<if test="_parameter !=null">
+			and jtc.plate_number like '%${_parameter}%'
+		</if>
+	</select>
+	<update id="createEquTable" parameterType="String">
+		CREATE TABLE IF NOT EXISTS ${_parameter} (
+		  `monitorid` varchar(36) NOT NULL COMMENT '监控信息ID',
+		  `lng` varchar(30) DEFAULT NULL COMMENT '地图经度',
+		  `lat` varchar(30) DEFAULT NULL COMMENT '地图纬度',
+		  `carid` varchar(36) DEFAULT NULL COMMENT '所属车辆',
+		  `carno` varchar(10) DEFAULT NULL,
+		  `beidouid` varchar(36) DEFAULT NULL COMMENT '所属北斗设备号',
+		  `nowspace` varchar(255) DEFAULT NULL COMMENT '里程数',
+		  `nowdate` varchar(255) DEFAULT NULL COMMENT '定位时间',
+		  `state` varchar(3) DEFAULT NULL COMMENT '车辆状态：1、行驶 2、静止 3、离线',
+		  `departmentid` varchar(255) DEFAULT NULL COMMENT '部门',
+		  `gpsstate` varchar(20) DEFAULT NULL COMMENT 'gps状态（运行速度或关闭）',
+		  `angle` varchar(50) DEFAULT NULL COMMENT '角度(方向)',
+		  `inssj` varchar(255) DEFAULT NULL COMMENT '创建时间',
+		  `isspeed` int(2) DEFAULT NULL COMMENT '是否超速：0未超速，1已超速',
+		  `originallng` varchar(30) DEFAULT NULL,
+		  `originallat` varchar(30) DEFAULT NULL,
+		  `stopstate` int(2) DEFAULT '0' COMMENT '0、没有计算停留时间   1、已经计算停留时间',
+		  PRIMARY KEY (`monitorid`),
+		  UNIQUE INDEX `monitorid` (`monitorid`) USING BTREE ,
+		  INDEX `carno_2` (carno, nowdate, gpsstate, lng, lat, nowspace, angle, stopstate) USING BTREE 
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	<update id="createTingLiu" parameterType="String">
+		CREATE TABLE IF NOT EXISTS ${_parameter} (
+			`jid`  varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+			`carno`  varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '车号' ,
+			`slowsrart`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '缓行开始时间' ,
+			`slowtimelong`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '缓行持续时间' ,
+			`slowend`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '缓行结束时间' ,
+			`slowminspeed`  double NULL DEFAULT NULL COMMENT '缓行最低速度' ,
+			`slowspeedavg`  double NULL DEFAULT NULL COMMENT '缓行平局速度' ,
+			`slowspeedlong`  double NULL DEFAULT NULL COMMENT '缓行持续时间' ,
+			`stopstart`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '停留开始时间' ,
+			`stoptimelong`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '停留持续时长' ,
+			`stoptimeend`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+			`type`  int(11) NULL DEFAULT NULL COMMENT '0停留，1，缓速' ,
+			`lng`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+			`lat`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+			PRIMARY KEY (`jid`),
+			UNIQUE INDEX `jid` (`jid`) USING BTREE ,
+			INDEX `carno` (`carno`, `stopstart`, `stoptimelong`, `lng`, `lat`, `stoptimeend`) USING BTREE 
+		)
+		ENGINE=InnoDB
+		DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci;
+	</update>
+	<update id="deleteEquTable">
+		drop table ${_parameter}
+	</update>
+	<update id="deleteZuixin">
+		delete from jy_monitor_data where beidouid=#{param1} and carno=#{param2}
+	</update>
+	<update id="jieBang">
+		update jy_equipment_info set is_binding=#{param2} ,car_id='', update_time=SYSDATE() where equipment_id=#{param1}
+	</update>
+	<select id="getCarInfo" resultType="String">
+		select travel_card_id from ${param2}.jy_travel_info
+  		 where plate_number=#{param1}
+	</select>
+	<update id="bangCar">
+		update 
+			  jy_equipment_info
+		set 
+			car_id = #{param1},
+			update_time=SYSDATE()
+		where
+		 	equipment_id = #{param2}
+	</update>
+	<select id="getTrave" resultType="int">
+		select count(1) from jy_equipment_info where plate_number=#{_parameter} and state=0
+	</select>
+	
+</mapper>

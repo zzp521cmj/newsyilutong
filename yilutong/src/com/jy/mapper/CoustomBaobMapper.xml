@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jy.dao.CoustomBaobDao">
+<!--查询当天签收数量 -->
+ <select id="outShi" resultType="int">
+  	 SELECT	
+		COUNT(ji.shiping_order_id)
+		FROM
+		 	jy_shiping_order ji
+		LEFT JOIN jy_agreementtoorder jat ON jat.order_id=ji.shiping_order_id
+		LEFT JOIN jy_create_agreement jca ON jca.agreement_id=jat.agreement_id
+		LEFT JOIN jy_sign_order jso ON jso.order_id=ji.shiping_order_id
+		WHERE
+		DATE_FORMAT(jso.sign_time,'%Y-%m-%d')=#{_parameter}
+		and  ji.shipping_order_state=4
+    </select>
+    <!-- 保存当天签收数据 -->
+    <insert id="addDelivery">
+    	INSERT INTO
+ 			jy_delivery_census
+ 			(censusid,nums,censustimes,times)
+ 			VALUE
+ 			(#{param1},#{param2},#{param3},now())
+    </insert>
+	<!--导出 -->
+    <select id="outCoustomBaob" resultType="ShippingOrder">
+		SELECT
+			 ji.*,jso.*,
+		CASE WHEN ji.pay_type='0' THEN '回付'
+		WHEN ji.pay_type='1' THEN '提付'
+		WHEN ji.pay_type='2' THEN '到付'
+		WHEN ji.pay_type='3' THEN '货到前付'
+		WHEN ji.pay_type='4' THEN '发货方月结'
+		WHEN ji.pay_type='5' THEN '收货方月结'
+		WHEN ji.pay_type='6' THEN '货到付款'
+		END AS paytypes,
+		CASE WHEN jca.agreement_type='0' THEN '班线'
+		WHEN
+		jca.agreement_type='1' THEN '配送'
+		WHEN jca.agreement_type='2' THEN '转运'
+		END AS agreement_type,
+		CASE WHEN ji.send_type='0' THEN '客户自提'
+		WHEN ji.send_type='1'  THEN '专车送货'
+		WHEN ji.send_type='2'  THEN '送货进仓'
+		WHEN ji.send_type='3'  THEN '送货上门'
+		WHEN ji.send_type='4' THEN '送货上楼'		
+		END AS sendtype,	
+		CASE WHEN ji.creat_type='0' THEN '手录'
+		WHEN ji.creat_type='1' THEN 'PC端导入'
+		WHEN ji.creat_type='2' THEN '无缝对接'
+		WHEN ji.creat_type='3' THEN 'APP端导入'
+		WHEN ji.creat_type='4' THEN 'PC端手录'		
+		END AS creattype		
+		FROM
+		 	jy_shiping_order ji
+		LEFT JOIN jy_agreementtoorder jat ON jat.order_id=ji.shiping_order_id
+		LEFT JOIN jy_create_agreement jca ON jca.agreement_id=jat.agreement_id
+		LEFT JOIN jy_sign_order jso ON jso.order_id=ji.shiping_order_id
+		WHERE
+			 ji.shiping_check=1
+		<if test="param1!=null and param1!=''">
+			and ji.shiping_order_num like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and ji.send_station like "%${param2}%"
+		</if>
+		<if test="param3!=null and param3!=''">
+			and jso.sign_time &gt;=#{param3}
+		</if>
+		<if test="param4!=null and param4!=''">
+				and jso.sign_time &lt;=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.order_time &gt;=#{param5}
+		</if>
+		<if test="param6!=null and param6!=''">
+			and ji.order_time &lt;=#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">
+			and ji.pay_type =#{param7}
+		</if>
+		<if test="param8!=null and param8!=''">
+			and ji.custom_name like "%${param8}%"
+		</if>	
+		<if test="param9!=null and param9!=''">
+			and  ji.shiping_order_id in
+		<foreach collection="array" index="index" item="item" open="("
+		
+		 separator="," close=")">
+				#{item}
+		</foreach>	
+		</if>	
+		ORDER BY
+		ji.order_time 
+		DESC
+    </select>
+    <!-- 总数 -->
+	<select id="getCoustomBaobInfo" resultType="ShippingOrder">
+		SELECT
+			 ji.*,jca.agreement_type as agreement_types,jso.*
+		FROM
+		 	jy_shiping_order ji
+		LEFT JOIN jy_agreementtoorder jat ON jat.order_id=ji.shiping_order_id
+		LEFT JOIN jy_create_agreement jca ON jca.agreement_id=jat.agreement_id
+		LEFT JOIN jy_sign_order jso ON jso.order_id=ji.shiping_order_id
+		WHERE
+			 ji.shiping_check=1
+			<if test="param3!=null and param3!=''">
+			and ji.shiping_order_num like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.send_station like "%${param4}%"
+		</if>
+		<if test="param5!=null and param5!=''">
+			and jso.sign_time &gt;=#{param5}
+		</if>
+		<if test="param6!=null and param6!=''">
+			and jso.sign_time &lt;=#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">
+			and ji.order_time &gt;=#{param7}
+		</if>		
+		<if test="param8!=null and param8!=''">
+			and ji.order_time &lt;=#{param8}
+		</if>
+		<if test="param9!=null and param9!=''">
+				and ji.pay_type=#{param9}
+		</if>		
+		<if test="param10!=null and param10!=''">
+			   and ji.custom_name like "%${param10}%"
+		</if>
+		ORDER BY
+		ji.order_time 
+		DESC
+		limit
+		#{param1},#{param2}
+	</select>
+
+	<select id="getCoustomBaob" resultType="int">
+		SELECT    
+				COUNT(*)	
+		FROM
+		 	jy_shiping_order ji
+		LEFT JOIN jy_agreementtoorder jat ON jat.order_id=ji.shiping_order_id
+		LEFT JOIN jy_create_agreement jca ON jca.agreement_id=jat.agreement_id
+		LEFT JOIN jy_sign_order jso ON jso.order_id=ji.shiping_order_id
+		WHERE
+			 ji.shiping_check=1
+		<if test="param1!=null and param1!=''">
+			and ji.shiping_order_num like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and ji.send_station like "%${param2}%"
+		</if>
+		<if test="param3!=null and param3!=''">
+			and jso.sign_time &gt;=#{param3}
+		</if>
+		<if test="param4!=null and param4!=''">
+				and jso.sign_time &lt;=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.order_time &gt;=#{param5}
+		</if>
+		<if test="param6!=null and param6!=''">
+			and ji.order_time &lt;=#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">
+			and ji.pay_type =#{param7}
+		</if>
+		<if test="param8!=null and param8!=''">
+			and ji.custom_name like "%${param8}%"
+		</if>		
+	</select>
+	<!-- 日报表-->
+	<select id="getOrderInfoD"   resultType="ShippingOrder">
+		SELECT 
+              CASE WHEN DAYOFWEEK(ji.order_time)=2 THEN '周一'
+              WHEN DAYOFWEEK(ji.order_time)=3 THEN '周二'
+              WHEN DAYOFWEEK(ji.order_time)=4 THEN '周三'
+              WHEN DAYOFWEEK(ji.order_time)=5 THEN '周四'
+              WHEN DAYOFWEEK(ji.order_time)=6 THEN '周五'
+              WHEN DAYOFWEEK(ji.order_time)=7 THEN '周六'
+              WHEN DAYOFWEEK(ji.order_time)=1 THEN '周七'
+		END AS censustimess,
+	      CASE WHEN  DAYOFWEEK(ji.order_time)=2  THEN SUM(ji.totality)
+              WHEN  DAYOFWEEK(ji.order_time)=3 THEN SUM(ji.totality)
+              WHEN  DAYOFWEEK(ji.order_time)=4 THEN SUM(ji.totality)
+              WHEN  DAYOFWEEK(ji.order_time)=5 THEN SUM(ji.totality)
+              WHEN  DAYOFWEEK(ji.order_time)=6 THEN SUM(ji.totality)
+              WHEN  DAYOFWEEK(ji.order_time)=7 THEN SUM(ji.totality)
+              WHEN  DAYOFWEEK(ji.order_time)=1 THEN SUM(ji.totality)
+		END AS censusnum    
+    FROM   jy_shipment_statistics ji
+    WHERE 
+	   DATE_FORMAT(ji.order_time,'%Y-%m-%d') &gt;=DATE_SUB(#{param2},INTERVAL 7 DAY)
+	    AND DATE_FORMAT(ji.order_time,'%Y-%m-%d') &lt;=#{param2}
+	    <if test="param3!=null and param3!=''">
+			and ji.customer_id =#{param3}
+		</if>
+       GROUP BY censustimess 		
+       ORDER BY censusnum DESC	
+	</select>
+	
+	
+	<!--  月报表-->
+	<select id="getOrderInfoM"   resultType="ShippingOrder">
+		  SELECT 
+             CASE  
+              WHEN DAYOFMONTH(ji.order_time)&lt;=5 THEN '5'
+              WHEN DAYOFMONTH(ji.order_time) &gt;5 AND DAYOFMONTH(ji.order_time)&lt;=10 THEN '10'
+              WHEN DAYOFMONTH(ji.order_time) &gt;10 AND DAYOFMONTH(ji.order_time)&lt;=15 THEN '15'
+              WHEN DAYOFMONTH(ji.order_time) &gt;15 AND DAYOFMONTH(ji.order_time)&lt;=20 THEN '20'
+              WHEN DAYOFMONTH(ji.order_time) &gt;20 AND DAYOFMONTH(ji.order_time)&lt;=25 THEN '25'
+              WHEN DAYOFMONTH(ji.order_time) &gt;25 AND DAYOFMONTH(ji.order_time)&lt;=31 THEN '30'
+		END AS censustimess,
+		 CASE 
+             WHEN DAYOFMONTH(ji.order_time)&lt;=5 THEN SUM(ji.totality)
+              WHEN DAYOFMONTH(ji.order_time)&gt;5 AND DAYOFMONTH(ji.order_time)&lt;=10 THEN SUM(ji.totality)
+              WHEN DAYOFMONTH(ji.order_time)&gt;10 AND DAYOFMONTH(ji.order_time)&lt;=15 THEN SUM(ji.totality)
+              WHEN DAYOFMONTH(ji.order_time)&gt;15 AND DAYOFMONTH(ji.order_time)&lt;=20 THEN SUM(ji.totality)
+              WHEN DAYOFMONTH(ji.order_time)&gt;20 AND DAYOFMONTH(ji.order_time)&lt;=25 THEN SUM(ji.totality)
+              WHEN DAYOFMONTH(ji.order_time)&gt;25 AND DAYOFMONTH(ji.order_time)&lt;=31 THEN SUM(ji.totality)
+		END AS censusnum   
+    FROM   jy_shipment_statistics ji
+    WHERE 
+	     DATE_FORMAT(ji.order_time,'%Y-%m')=#{param2}
+	      <if test="param3!=null and param3!=''">
+			and ji.customer_id =#{param3}
+		</if>
+    GROUP BY censustimess
+    ORDER BY censusnum DESC	
+	</select>
+	
+	<!--  年报表-->
+	<select id="getOrderInfoY" resultType="ShippingOrder">
+	   SELECT 
+             CASE  
+              WHEN QUARTER(ji.order_time)=1 THEN '第一季度'
+              WHEN QUARTER(ji.order_time)=2 THEN '第二季度'
+              WHEN QUARTER(ji.order_time)=3  THEN '第三季度'
+              WHEN QUARTER(ji.order_time)=4  THEN '第四季度'           
+	END AS censustimess,
+		 CASE 
+             WHEN QUARTER(ji.order_time)=1 THEN SUM(ji.totality)
+              WHEN QUARTER(ji.order_time)=2 THEN SUM(ji.totality)
+              WHEN QUARTER(ji.order_time)=3  THEN SUM(ji.totality)
+              WHEN QUARTER(ji.order_time)=4  THEN SUM(ji.totality)           
+		END AS censusnum 
+    FROM   jy_shipment_statistics ji
+	     WHERE  DATE_FORMAT(ji.order_time,'%Y')=#{param2}
+	      <if test="param3!=null and param3!=''">
+			and ji.customer_id =#{param3}
+		</if>
+    GROUP BY censustimess
+    ORDER BY censusnum DESC	
+	</select>
+	
+	
+	<!--  单日报表-->
+	<select id="getOrderInfoT" resultType="ShippingOrder">
+		 SELECT 
+		  CASE
+		    WHEN HOUR(DATE_FORMAT(ji.order_time,'%H:%i:%s')) &lt;=4 
+		    THEN '4' 
+		    WHEN HOUR(DATE_FORMAT(ji.order_time,'%H:%i:%s')) &gt; 4
+		    AND HOUR(DATE_FORMAT(ji.order_time,'%H:%i:%s')) &lt;= 8 
+		    THEN '8' 
+		    WHEN HOUR(DATE_FORMAT(ji.order_time,'%H:%i:%s')) &gt;8
+		    AND HOUR(DATE_FORMAT(ji.order_time,'%H:%i:%s')) &lt;=12
+		    THEN '12' 
+		    WHEN HOUR(DATE_FORMAT(ji.order_time,'%H:%i:%s')) &gt; 12
+		    AND HOUR(DATE_FORMAT(ji.order_time,'%H:%i:%s')) &lt;= 16 
+		    THEN '16' 
+		    WHEN HOUR(DATE_FORMAT(ji.order_time,'%H:%i:%s')) &gt; 16 
+		    AND HOUR(DATE_FORMAT(ji.order_time,'%H:%i:%s')) &lt;= 20
+		    THEN '20' 
+		    WHEN HOUR(DATE_FORMAT(ji.order_time,'%H:%i:%s')) &gt;20
+		    AND HOUR(DATE_FORMAT(ji.order_time,'%H:%i:%s')) &lt;= 24 
+		    THEN '24' 
+		  END AS censustimess,
+		  CASE
+		   WHEN HOUR(DATE_FORMAT(ji.order_time,'%H:%i:%s')) &lt;=4 
+		    THEN SUM(ji.totality)
+		    WHEN HOUR(DATE_FORMAT(ji.order_time,'%H:%i:%s'))&gt; 4
+		    AND HOUR(DATE_FORMAT(ji.order_time,'%H:%i:%s'))&lt;= 8 
+		    THEN SUM(ji.totality) 
+		    WHEN HOUR(DATE_FORMAT(ji.order_time,'%H:%i:%s')) &gt;8
+		    AND HOUR(DATE_FORMAT(ji.order_time,'%H:%i:%s')) &lt;=12
+		    THEN SUM(ji.totality) 
+		    WHEN HOUR(DATE_FORMAT(ji.order_time,'%H:%i:%s')) &gt; 12
+		    AND HOUR(DATE_FORMAT(ji.order_time,'%H:%i:%s')) &lt;= 16 
+		    THEN SUM(ji.totality)
+		    WHEN HOUR(DATE_FORMAT(ji.order_time,'%H:%i:%s')) &gt; 16 
+		    AND HOUR(DATE_FORMAT(ji.order_time,'%H:%i:%s')) &lt;= 20
+		    THEN SUM(ji.totality)
+		    WHEN HOUR(DATE_FORMAT(ji.order_time,'%H:%i:%s')) &gt;20
+		    AND HOUR(DATE_FORMAT(ji.order_time,'%H:%i:%s')) &lt;= 24 
+		    THEN SUM(ji.totality)
+		  END AS censusnum 
+		FROM
+		 	jy_shipment_statistics ji
+			WHERE DATE_FORMAT(ji.order_time,'%Y-%m-%d') =#{param2}
+		 <if test="param3!=null and param3!=''">
+			and ji.customer_id =#{param3}
+		</if>
+		GROUP BY censustimess 
+		ORDER BY censusnum DESC 
+	</select>
+	
+	
+	
+	<!-- <update id="updateDyOrder" parameterType="java.util.Arrays"  >
+		update jy_shiping_order
+		<set>
+		is_print=1,
+		printtime=now(),
+		printer=#{param2}
+		</set>
+		where shiping_order_id  IN 
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</update> -->
+</mapper>

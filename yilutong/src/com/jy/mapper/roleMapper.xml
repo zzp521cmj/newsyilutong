@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jy.dao.RoleDao">
+	<resultMap type="Role" id="roleResultMap">
+		<id column="Role_id" property="id" />
+		<result column="Role_name" property="name" />
+		<result column="Role_ctime" property="ctime" />
+		<result column="Role_ltime" property="ltime" />
+		<result column="Role_remarks" property="remarks" />
+		<result column="caozuo" property="caozuo" />
+	</resultMap>
+
+	<select id="getRoles" resultMap="roleResultMap">
+		SELECT * FROM jy_Role
+		<if test="param3!=null">
+			WHERE role_name like '%${param3}%'
+		</if>
+		order by role_ctime desc
+		limit #{param1},#{param2}
+	</select>
+	<select id="getFunctions" resultType="Function">
+		SELECT * FROM jy_Function
+		WHERE function_menuid = #{0}
+	</select>
+	<select id="getFids" resultType="Integer">
+		SELECT f.function_id FROM
+		jy_Function f,jy_role_function rf WHERE
+		f.function_id=rf.role_function_functionid and f.function_menuid = #{0}
+		and rf.role_function_roleid=#{1}
+	</select>
+	<select id="getRoleList" resultMap="roleResultMap">
+		SELECT * FROM jy_Role
+	</select>
+
+	<select id="getCount" resultType="int">
+		SELECT count(*) FROM jy_role
+	</select>
+	<update id="modifyRole" parameterType="Role">
+		update jy_Role set
+		Role_name = #{name},Role_remarks=#{remarks},Role_ltime=#{ltime} where
+		Role_id=#{id}
+	</update>
+
+	<delete id="delRole" parameterType="int">
+		delete from jy_Role where
+		Role_id=#{id}
+	</delete>
+	<delete id="delRoles" parameterType="int">
+		delete from jy_user_Role
+		where user_Role_rid=#{id}
+	</delete>
+	<delete id="delUserRoles">
+		delete from jy_user_Role where
+		user_Role_uid=#{0}
+	</delete>
+	<delete id="delMenuFunction">
+		delete rf from jy_role_function rf,jy_function f
+		where rf.role_function_functionid = f.function_id and
+		rf.role_function_roleid=#{0} and f.function_menuid=#{1}
+	</delete>
+	<select id="checkRole" resultType="int">
+		SELECT count(*) FROM jy_Role
+		where role_name=#{param1}
+	</select>
+	<insert id="addRole" parameterType="Role">
+		insert jy_Role
+		value(null,#{name},#{ctime},null,#{remarks})
+	</insert>
+	<insert id="addFunction">
+		insert jy_role_function
+		value(null,#{1},#{0})
+	</insert>
+	<select id="getRole" resultMap="roleResultMap" parameterType="int">
+		SELECT * FROM jy_Role where Role_id=#{id}
+	</select>
+	<select id="getUserRole" resultType="int">
+		SELECT user_role_rid FROM
+		jy_user_Role where user_role_uid=#{0}
+	</select>
+	<select id="getRoleId" resultType="int">
+		select max(role_id) from
+		jy_role
+	</select>
+	<select id="getUserRoleCount" resultType="Integer">
+		select count(*) from
+		jy_user_role where user_role_rid=#{0}
+	</select>
+	<delete id="delMenu" parameterType="Integer">
+		delete from jy_menu_role
+		where menu_role_rid=#{param1}
+	</delete>
+	<insert id="addMenu" parameterType="Integer">
+		insert jy_menu_Role
+		value(null,#{param1},#{param2})
+	</insert>
+	<select id="getIdRoles" resultType="Integer">
+		SELECT
+		user_role_rid FROM
+		jy_user_role where user_role_uid=#{0}
+	</select>
+	<insert id="addUserRole">
+		insert into jy_user_role
+		values(null,#{0},#{1})
+	</insert>
+	<select id="getRoleUsermeessage" resultType="User">
+		SELECT * FROM jy_USER u
+		LEFT JOIN jy_user_role jur ON
+		u.id=jur.user_role_uid
+		where u.state='1' and
+		jur.user_role_rid=#{param6}
+		<if test="param3!=null">
+			AND u.username like '%${param3}%'
+		</if>
+		<if test="param4!=null">
+			AND u.realname like '%${param4}%'
+		</if>
+		<if test="param5!=null">
+			AND u.did=#{param5}
+		</if>
+		order by u.createtime desc
+		limit #{param1},#{param2}
+	</select>
+
+	<select id="getRoleUserTotal" resultType="int">
+		SELECT count(*) FROM jy_USER u
+		LEFT JOIN jy_user_role jur ON
+		u.id=jur.user_role_uid
+		where u.state='1' and
+		jur.user_role_rid=#{param4}
+		<if test="param1!=null">
+			AND u.username like '%${param1}%'
+		</if>
+		<if test="param2!=null">
+			AND u.realname like '%${param2}%'
+		</if>
+		<if test="param3!=null">
+			AND u.did=#{param3}
+		</if>
+	</select>
+	<delete id="deleteRoleUserInfo">
+		DELETE FROM jy_user_role WHERE user_role_rid= #{param2}
+		AND
+		user_role_uid in
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	<select id="outputRoles" resultMap="roleResultMap">
+		SELECT jr.*,COUNT(jur.user_role_id) as caozuo FROM jy_Role jr
+		LEFT JOIN
+		jy_user_role jur ON jr.role_id=jur.user_role_rid
+		where 1=1
+		<if test="array!=null and array.length!=0">
+			AND jr.role_id in
+			<foreach collection="array" index="index" item="item" open="("
+				separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="array==null or array.length==0">
+			<if test="param1!=null">
+				and jr.role_name like '%${param1}%'
+			</if>
+		</if>
+		GROUP BY jr.role_id
+		order by jr.role_ctime desc
+	</select>
+</mapper>

@@ -1,0 +1,106 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <base href="<%=basePath%>">
+    <title>专线公司结算提审</title>
+    <jsp:include page="/inc/easyuiLocation.jsp"></jsp:include>
+    <jsp:include page="../../../ValidationEngine/Validation.jsp"></jsp:include>
+   	<jsp:include page="/inc/incbootstrap.jsp"></jsp:include>
+	<link rel="stylesheet" href="./js/select2/select2.css" type="text/css"></link>
+  	<script type="text/javascript" src="./js/select2/select2.js"></script>
+	<link rel="stylesheet" type="text/css" href="./css/main.css">
+	<script type="text/javascript" src="./js/select2/select2_locale_zh-CN.js"></script>
+	<link rel="stylesheet" type="text/css" href="./css/main.css">
+  </head>
+  <%String[] flg = (String[])request.getAttribute("pid");
+  %>
+  <script type="text/javascript">
+  var pid=[];
+  	$(function(){
+  		$("#Editform").validationEngine('attach', { 
+				 promptPosition:'topRight:-15,0'
+				 });
+			<%for(int i=0;i<flg.length;i++){
+				%>
+				pid.push('<%=flg[i]%>');
+				<%
+				}%>  
+			$('#did').combotree(
+						{
+							url : "depn.do?method=getTree&&id=",
+							width : 150,
+							onBeforeLoad : function(node, param) {
+
+								if (node == null) {
+									$('#did').combotree('tree').tree('options').url = "depn.do?method=getTree&&id=";//加载顶层节点
+								} else {
+
+									$('#did').combotree('tree').tree('options').url = "depn.do?method=getTree&&id="
+											+ node.id;//加载下层节点
+								}
+
+							}
+						});
+
+  	});
+  		
+ 	var submitFormEdit = function($dialog, $grid, $pjq, $mainMenu) {
+ 	
+ 	 if($("#Editform").validationEngine('validate')){
+ 	 //可提交
+		$pjq.messager.confirm('提审','确定要提交吗?',function(r){   
+	    	if (r){    
+				$.ajax({
+					type: "POST",
+		  			url:'collect.do?method=getEreArraignedCustoms',
+		  			data:{
+		  			pid:pid.join(","),
+		  			did:$.trim($("#did").combotree("getValue")),
+		  			trial_remarks:$("#remarks").val()
+		  			},/* $('#Editform').serialize() */
+		  			success:function(msg){
+		  				if(msg.flag==true){
+		  					$pjq.messager.alert('提审','订单结算提审成功','info');
+						   	$grid.datagrid('reload');
+						   	$dialog.dialog('close');
+		  				};
+		  			}
+				});
+			}
+		});
+		 }else{
+			    $pjq.messager.alert('提审', '请选择提审部门', 'info');
+			  }
+	};
+	
+  </script>
+  <body>
+  	<form method="post" id="Editform">
+  	<input type="hidden" id="shiping_order_id" name="shiping_order_id"/>
+   	<fieldset>
+     	<table class="tableclass">
+		    <tr>
+			    <th colspan="4">结算提审</th>
+			</tr>
+		    <tr>
+		        <td><font color="red" style="margin-right:10px">*</font>审核部门:</td>
+			    <td class="td2">
+				<input type="text" class="validate[required]"  id="did"  name="did" />
+	      	    </td>
+	        </tr>
+	    	<tr>
+			    <td>提审备注:</td>		
+			    <td colspan="1" class="td2">
+					<textarea class="easyui-textarea" cols="25" rows="2"  id="remarks" name="trial_remarks"></textarea>
+	        </tr>
+		</table>
+    </fieldset>
+	</form>
+  </body>
+</html>

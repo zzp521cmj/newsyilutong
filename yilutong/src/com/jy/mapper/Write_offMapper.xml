@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jy.dao.Write_offDAO">		
+<!--  查询-->
+	<select id="getChangeOrderInfo" resultType="ShippingOrder">
+	SELECT
+		*
+		FROM
+		jy_shiping_order 
+		left join 
+		jy_change_fee  on jy_shiping_order.shiping_order_id=jy_change_fee.shiping_order_id
+		where
+		jy_shiping_order.is_update=1
+		<if test="param3!=null and param3!=''">
+			and shiping_order_num like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and updatetime like "%${param4}%"
+		</if>
+		<if test="param5!=null and param5!=''">
+			and check_time like "%${param5}%"
+		</if>
+		
+		ORDER BY
+		check_time
+		DESC
+		limit
+		#{param1},#{param2}
+	</select>
+
+	<select id="getChangeOrder" resultType="int">
+		select count(*) from jy_shiping_order 
+		left join 
+		jy_change_fee  on jy_shiping_order.shiping_order_id=jy_change_fee.shiping_order_id
+		where
+		jy_shiping_order.is_update=1
+<if test="param1!=null and param1!=''">
+			and shiping_order_num like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and check_time like "%${param2}%"
+		</if>
+		<if test="param3!=null and param3!=''">
+			and updatetime like "%${param3}%"
+		</if>
+	</select>
+	<select id="getUpdateShippingOrder"          
+		resultType="ShippingOrder">
+	SELECT
+		*
+		FROM
+		jy_shiping_order 
+		left join 
+		jy_change_fee  on jy_shiping_order.shiping_order_id=jy_change_fee.shiping_order_id
+		where
+	jy_shiping_order.shiping_order_id = #{shiping_order_id}
+	</select>
+	<update id="updateShippingOrder" parameterType="ShippingOrder">
+		update
+		jy_shiping_order
+		<set>
+			write_off=#{write_off},
+			write_a=#{write_a},
+			write_b=#{write_b},
+			write_c=#{write_c},
+			write_d=#{write_d},
+			write_e=#{write_e},
+			write_f=#{write_f},
+			write_g=#{write_g}
+		</set>
+		where 
+		shiping_order_id = #{shiping_order_id}
+	</update>
+</mapper>

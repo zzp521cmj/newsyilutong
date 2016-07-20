@@ -1,0 +1,907 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jy.dao.CollectDAO">	
+     <select id="getuser" resultType="User">
+     SELECT id,username from  jy_user WHERE  1=1
+     <if test="_parameter!=null">
+      and username like "%${_parameter}%"
+     </if>
+     </select>	
+<!-- 客户结算 查询-->
+	<select id="getCollect" resultType="ShippingOrder">
+    select 
+      jso.*,joc.*
+ 	 from 
+	 jy_shiping_order jso left join 
+	 jy_order_custom joc on jso.custom_id =joc.custom_id
+	 where 
+	 1=1
+	  AND jso.creat_type !=0 
+	 and jso.shiping_check = 1
+     
+		<if test="param3!=null and param3!=''">
+			and joc.custom_name like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and joc.car_time like "%${param4}%"
+		</if>
+		<if test="param5!=null and param5!=''">
+			and joc.kuhu_date &gt;=#{param5}
+		</if>
+		<if test="param6!=null and param6!=''">
+			and joc.kuhu_date &lt;=#{param6}
+		</if>
+		<if test="(param5!=null and param5!='') and (param6!=null and param6!='')">
+			and joc.kuhu_date &gt;=#{param5}
+			and joc.kuhu_date &lt;=#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">
+			and joc.write_off3 like "%${param7}%"
+		</if>
+		<if test="param8!=null and param8!=''">
+			and joc.send_time &gt;=#{param8}
+		</if>
+		<if test="param9!=null and param9!=''">
+			and joc.send_time &lt;=#{param9}
+		</if>
+		<if test="(param8!=null and param8!='') and (param9!=null and param9!='')">
+			and joc.send_time &gt;=#{param8}
+			and joc.send_time &lt;=#{param9}
+		</if>
+		<if test="param10!=null and param10!=''">
+			and joc.receipt_time &gt;=#{param10}
+		</if>
+		<if test="param11!=null and param11!=''">
+			and joc.receipt_time &lt;=#{param11}
+		</if>
+		<if test="(param10!=null and param10!='') and (param11!=null and param11!='')">
+			and joc.receipt_time &gt;=#{param10}
+			and joc.receipt_time &lt;=#{param11}
+		</if>	
+		<if test="param12!=null and param12!=''">
+			and joc.car_number like "%${param12}%"
+		</if>
+		<if test="param13!=null and param13!=''">
+			and joc.driver_name like "%${param13}%"
+		</if>
+	   GROUP BY jso.shiping_order_id	
+		limit
+		#{param1},#{param2}
+	</select>
+
+	<select id="getCollectInfo" resultType="int">
+	SELECT COUNT(*)	FROM (select 
+      jso.shiping_order_id
+ 	from 
+	 jy_shiping_order jso left join 
+	jy_order_custom joc on jso.custom_id =joc.custom_id
+		where 
+		1=1 
+		AND jso.creat_type !=0
+		and jso.shiping_check = 1
+	<if test="param1!=null and param1!=''">
+			and joc.custom_name like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and joc.car_time like "%${param2}%"
+		</if>
+		<if test="param3!=null and param3!=''">
+			and joc.kuhu_date like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and joc.write_off3 like "%${param4}%"
+		</if>
+		<if test="param5!=null and param5!=''">
+			and joc.send_time like "%${param5}%"
+		</if>
+		<if test="param6!=null and param6!=''">
+			and joc.receipt_time like "%${param6}%"
+		</if>
+		<if test="param7!=null and param7!=''">
+			and joc.car_number like "%${param7}%"
+		</if>
+		<if test="param8!=null and param8!=''">
+			and joc.driver_name like "%${param8}%"
+		</if>
+		)  AS qq
+	</select> 
+	<select id="selectfo" resultType="User">
+		select * from jy_user
+	
+	</select> 
+	
+		
+	<select id="selectSettement" resultType="Settlement">
+		select * from jy_write_project
+		
+		where 
+		shiping_order_num=#{_parameter}
+	</select> 
+	<select id="selectSettementInfo" resultType="int">
+		select count(*)from jy_write_project
+			where 
+		shiping_order_num=#{_parameter}
+		
+		
+	
+	
+	</select> 
+	<update id="updateShippiOrCo" parameterType="ShippingOrder">
+	 	update
+		jy_shiping_order
+		<set>
+		    <if test="received_remarks!=null and paid_fee!=''">
+			received_remarks = #{received_remarks},
+			</if>
+			<!-- //collection_fee=#{collection_fee}, -->
+			<if test="paid_fee!=null and paid_fee!=''">
+			paid_fee = #{paid_fee},
+			</if>
+			<if test="pay_destination_fee !=null and pay_destination_fee !=''">
+			pay_destination_fee = #{pay_destination_fee},
+			</if>
+			<if test="pay_trade_agency !=null and pay_trade_agency !=''">
+			pay_trade_agency = #{pay_trade_agency}
+			</if>
+			
+		</set>
+		where shiping_order_id = #{shiping_order_id} 
+	</update>
+	<update id="updateShippingOrder" parameterType="OrderCustom">
+	<!-- 	update
+		jy_order_custom
+		<set>
+			remarks_fee1 = #{remarks_fee1},
+			collection_fee=#{collection_fee},
+			paid_fee = #{paid_fee}
+		</set>
+		where custom_id = #{custom_id} -->
+	</update>
+	<select id="getUpdateShippingOrder" 
+		resultType="OrderCustom">
+		<!-- select * from jy_car_owner_info where car_owner_id=#{carOwnerId} -->
+		SELECT
+		*
+		FROM
+		jy_order_custom 
+		where
+		custom_id=#{_parameter},
+	
+	</select>
+	<update id="updateCollWori" parameterType="String">
+	    
+       UPDATE jy_order_custom SET write_off3 =#{param2} WHERE custom_id=#{param1}
+	</update>
+	<!-- 结算 -->
+	<update id="update3" parameterType="java.util.Arrays">
+                update jy_shiping_order   
+                <set>  
+                	<if test="param2!=null and param2!=''">
+                  write_off=#{param2},
+                  	</if>
+					<if test="param3!=null and param3!=''">
+                  received_remarks=#{param3},
+                  	</if>
+                  <if test="param4!=null and param4!=''">
+                  kuhu_date=#{param4},
+                  	</if>
+                  	 <if test="param5!=null and param5!=''">
+                  people_name=#{param5},
+                  	</if>
+                  customs_recheck_state =#{param6},
+                  	close_recheck=1,
+                  	<if test="param7!=null and param7!=''">
+                  	customs_sige_name =#{param7},
+                  	</if>
+                  	<if test="param8!=null and param8!=''">
+                  	customs_card =#{param8},
+                  	</if>
+                  	<if test="param9!=null and param9!=''">
+                     customs_bank =#{param9}
+                  	</if>
+                </set>  
+                
+                where shiping_order_id in              
+                <foreach collection="array" index="index" item="item" open="("
+				separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+		<select id="getUpdate3" 
+		resultType="OrderCustom">
+		SELECT
+		*
+		FROM
+		jy_order_custom 
+		where
+		custom_id=#{_parameter}
+	</select>
+	<!-- 应收其他费核销  -->
+		<select id="getAdorn_fee" resultType="ShippingOrder">
+		select * from 
+	jy_shiping_order  left join 
+	jy_order_custom on jy_shiping_order.custom_id =jy_order_custom.custom_id
+		where
+			1=1
+		<if test="param3!=null and param3!=''">
+			and jy_shiping_order.shiping_order_num like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and jy_shiping_order.send_station like "%${param4}%"
+		</if>
+		<if test="param5!=null and param5!=''">
+			and jy_shiping_order.others_date &gt;=#{param5}
+		</if>
+		<if test="param6!=null and param6!=''">
+			and jy_shiping_order.others_date &lt;=#{param6}
+		</if>
+		<if test="(param5!=null and param5!='') and (param6!=null and param6!='')">
+			and jy_shiping_order.others_date &gt;=#{param5}
+			and jy_shiping_order.others_date &lt;=#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">
+			and jy_shiping_order.write_off5 like "%${param7}%"
+		</if>
+		<if test="param8!=null and param8!=''">
+			and jy_shiping_order.custom_name like "%${param8}%"
+		</if>
+		<if test="param9!=null and param9!=''">
+			and jy_shiping_order.receipt like "%${param9}%"
+		</if>
+		<if test="param10!=null and param10!=''">
+			and jy_shiping_order.goods_name like "%${param10}%"
+		</if>
+		<if test="param11!=null and param11!=''">
+			and jy_shiping_order.goods_num like "%${param11}%"
+		</if>
+		<if test="param12!=null and param12!=''">
+			and jy_shiping_order.pay_type like "%${param12}%"
+		</if>
+		<if test="param13!=null and param13!=''">
+			and jy_shiping_order.paid like "%${param13}%"
+		</if>
+		
+		limit
+		#{param1},#{param2}
+	</select>
+
+	<select id="getAdorn_feeInfo" resultType="int">
+		select count(*) from jy_shiping_order 
+		where
+		1=1
+	<if test="param1!=null and param1!=''">
+			and jy_shiping_order.shiping_order_num like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and jy_shiping_order.send_station like "%${param2}%"
+		</if>
+		<if test="param3!=null and param3!=''">
+			and jy_shiping_order.others_date &gt;=#{param3}
+		</if>
+		<if test="param4!=null and param4!=''">
+			and jy_shiping_order.others_date &lt;=#{param4}
+		</if>
+		<if test="(param3!=null and param3!='') and (param4!=null and param4!='')">
+			and jy_shiping_order.others_date &gt;=#{param3}
+			and jy_shiping_order.others_date &lt;=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			and jy_shiping_order.write_off5 like "%${param5}%"
+		</if>
+		<if test="param6!=null and param6!=''">
+			and jy_shiping_order.custom_name like "%${param6}%"
+		</if>
+		<if test="param7!=null and param7!=''">
+			and jy_shiping_order.receipt like "%${param7}%"
+		</if>
+		<if test="param8!=null and param8!=''">
+			and jy_shiping_order.goods_name like "%${param8}%"
+		</if>
+		<if test="param9!=null and param9!=''">
+			and jy_shiping_order.goods_num like "%${param9}%"
+		</if>
+		<if test="param10!=null and param10!=''">
+			and jy_shiping_order.pay_type like "%${param10}%"
+		</if>
+		<if test="param11!=null and param11!=''">
+			and jy_shiping_order.paid like "%${param11}%"
+		</if>
+	</select>
+	<update id="update9" parameterType="String">
+                update jy_shiping_order   
+                <set>  
+                	<if test="param2!=null and param2!=''">
+                  write_off5=#{param2},
+                  	</if>
+				
+                  	<if test="param3!=null and param3!=''">
+                 	 others_date=#{param3},
+                  	</if>
+                  	
+                  		<if test="param4!=null and param4!=''">
+                  people_others=#{param4},
+                  	</if>
+                  	<if test="param5!=null and param5!=''">
+                  Write_remarks=#{param5}
+                  	</if>
+                  	
+                </set>  
+                where shiping_order_id = #{param1}
+	</update>
+	
+	
+	
+	<update id="editWrite" parameterType="String">
+                update jy_shiping_order   
+                <set>  
+                	<if test="param2!=null and param2!=''">
+                  write_id=#{param2},
+                  	</if>
+				
+                  
+                  	
+                </set>  
+                where shiping_order_id = #{param1}
+	</update>
+	
+	
+	
+	
+		<select id="getUpdate2" 
+		resultType="ShippingOrder">
+		<!-- select * from jy_car_owner_info where car_owner_id=#{carOwnerId} -->
+		SELECT
+		*
+		FROM
+		jy_shiping_order 
+		where
+		shiping_order_id=#{_parameter}
+	</select>
+	<select id="selectinfo" parameterType="java.util.Arrays" resultType="ShippingOrder">
+	SELECT *
+ 			from 
+ 			jy_shiping_order
+		where
+		shiping_order_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	<select id="select" parameterType="java.util.Arrays" resultType="ShippingOrder">
+	SELECT *
+ 			from 
+ 			jy_shiping_order
+		where
+		shiping_order_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	<insert id="insertinfo" parameterType="java.util.List"  >
+	insert into 
+	jy_confluence
+	(	
+	
+	direction,
+	source,
+	happen,
+	id,
+	shiping_order_num,
+	handle,
+	conf_id,
+	fee_date,
+	project
+	)
+	values
+	<foreach collection="list" item="item" index="index" separator="," >  
+	(		
+			
+			#{item.direction},
+			#{item.source},
+			#{item.happen},
+			#{item.id},
+			#{item.shiping_order_num},
+			#{item.handle},
+			#{item.conf_id},
+			#{item.fee_date},
+			#{item.project}
+			
+	)
+		</foreach>
+	</insert>
+			<insert id="add" parameterType="java.util.List"  >
+	insert into 
+	jy_mingxi
+	(	
+	laiyuan,
+	happen_date,
+	subject,
+	subject_two,
+	subject_three,
+	money,
+	remarks,
+	shiping_order_num,
+	customer_name,
+	consignee,
+	id,
+	mingxi_id
+	)
+	values
+	<foreach collection="list" item="item" index="index" separator="," >  
+	(		
+			#{item.laiyuan},
+			#{item.happen_date},
+			#{item.subject},
+			#{item.subject_two},
+			#{item.subject_three},
+			#{item.money},
+			#{item.remarks},
+			#{item.shiping_order_num},
+			#{item.customer_name},
+			#{item.consignee},
+			#{item.id},
+			#{item.mingxi_id}
+			
+			
+	)
+	</foreach>
+	</insert>
+	<update id="otherUpdate" parameterType="ShippingOrder">
+		update
+		jy_shiping_order
+		<set>
+			write_remarks =#{write_remarks},
+			paid = #{paid},
+			
+			paid_chayi=#{paid_chayi},
+			chayi_daifukuan1=#{chayi_daifukuan1}
+		
+		</set>
+		where shiping_order_id = #{shiping_order_id}
+	</update>
+	<update id="editOther" parameterType="String">
+                update jy_shiping_order   
+                <set> 
+                <if test="param2!=null and param2!=''">
+                  write_off5=#{param2},
+                  </if>
+                   others_date=#{param3},
+                   people_others=#{param4}
+                  	
+				
+                </set>  
+                where shiping_order_id = #{param1}
+	</update>
+	<update id="editKuhu" parameterType="String">
+                update jy_shiping_order   
+                <set>                
+                  write_off=3,                  
+                   kuhu_date=null,
+                   people_name=""
+                 	
+                </set>  
+                  where shiping_order_id = #{param1}
+	</update>
+	<delete id="delConf" parameterType="java.util.Arrays">
+		delete from
+		jy_confluence
+		where
+		id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+		<delete id="sp" parameterType="java.util.Arrays">
+		delete from
+		jy_write_project
+		where
+		write_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	<delete id="delMingxi" parameterType="java.util.Arrays">
+		delete from
+		jy_mingxi
+		where
+		mingxi_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	<select id="selectIn" resultType="ShippingOrder" parameterType="String">
+		select* from jy_shiping_order
+		where 
+		shiping_order_id = #{_parameter}
+	</select>
+	<insert id="addSettlement" parameterType="java.util.List"  >
+	insert into 
+	jy_write_project
+	(	
+	
+	write_project,
+	write_data,
+	write_money,
+	write_people,
+	shiping_order_num,
+	write_id,
+	write_fangshi,
+	remarks
+	
+	)
+	values
+	<foreach collection="list" item="item" index="index" separator="," >  
+	(		
+			#{item.write_project},
+			#{item.write_data},
+			#{item.write_money},
+			#{item.write_people},
+			#{item.shiping_order_num},
+			#{item.write_id},
+			#{item.write_fangshi},
+			#{item.remarks}		
+	)
+		</foreach>
+	</insert>
+	<!-- 客户结算审核 查询-->
+	<select id="getCheckCollect" resultType="ShippingOrder">
+	select 
+    sum(jso.destination_fee)  AS destination_fee,
+    sum(jso.transport_pay)  AS transport_pay,
+    
+    sum(jso.pay_destination_fee)  AS pay_destination_fee,
+    sum(jso.pay_trade_agency)  AS pay_trade_agency,
+     sum(jso.trade_agency)  AS trade_agency,
+    
+    sum(jso.paid_fee) AS paid_fee,
+    joc.close_recheck_state,
+    joc.close_recheck_name,
+    jso.*, joc.*
+ 	from 
+	jy_order_custom joc left join 
+	jy_shiping_order jso on jso.custom_id =joc.custom_id 
+	    where jso.shiping_check=1
+	    
+		<if test="param3!=null and param3!=''">
+			and joc.custom_name like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and joc.car_time like "%${param4}%"
+		</if>
+		<if test="param5!=null and param5!=''">
+			and joc.kuhu_date &gt;=#{param5}
+		</if>
+		<if test="param6!=null and param6!=''">
+			and joc.kuhu_date &lt;=#{param6}
+		</if>
+		<if test="(param5!=null and param5!='') and (param6!=null and param6!='')">
+			and joc.kuhu_date &gt;=#{param5}
+			and joc.kuhu_date &lt;=#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">
+			and joc.write_off3 like "%${param7}%"
+		</if>
+		<if test="param8!=null and param8!=''">
+			and joc.send_time &gt;=#{param8}
+		</if>
+		<if test="param9!=null and param9!=''">
+			and joc.send_time &lt;=#{param9}
+		</if>
+		<if test="(param8!=null and param8!='') and (param9!=null and param9!='')">
+			and joc.send_time &gt;=#{param8}
+			and joc.send_time &lt;=#{param9}
+		</if>
+		<if test="param10!=null and param10!=''">
+			and joc.receipt_time &gt;=#{param10}
+		</if>
+		<if test="param11!=null and param11!=''">
+			and joc.receipt_time &lt;=#{param11}
+		</if>
+		<if test="(param10!=null and param10!='') and (param11!=null and param11!='')">
+			and joc.receipt_time &gt;=#{param10}
+			and joc.receipt_time &lt;=#{param11}
+		</if>	
+		<if test="param12!=null and param12!=''">
+			and joc.car_number like "%${param12}%"
+		</if>
+		<if test="param13!=null and param13!=''">
+			and joc.driver_name like "%${param13}%"
+		</if>
+	   group by joc.customer_id
+		limit
+		#{param1},#{param2}
+	</select>
+	<select id="getCheckCollectCount" resultType="int">
+	SELECT COUNT(*)	FROM (select joc.* from 
+	jy_order_custom joc left join 
+	jy_shiping_order jso on jso.custom_id =joc.custom_id
+		where
+		1=1   and   jso.shiping_check=1
+		
+	<if test="param1!=null and param1!=''">
+			and joc.custom_name like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and joc.car_time like "%${param2}%"
+		</if>
+		<if test="param3!=null and param3!=''">
+			and joc.kuhu_date like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and joc.write_off3 like "%${param4}%"
+		</if>
+		<if test="param5!=null and param5!=''">
+			and joc.send_time like "%${param5}%"
+		</if>
+		<if test="param6!=null and param6!=''">
+			and joc.receipt_time like "%${param6}%"
+		</if>
+		<if test="param7!=null and param7!=''">
+			and joc.car_number like "%${param7}%"
+		</if>
+		<if test="param8!=null and param8!=''">
+			and joc.driver_name like "%${param8}%"
+		</if>
+		group by joc.customer_id
+		)  AS qq
+	</select> 
+	<update id="updateCheckCollect" parameterType="int">
+	    UPDATE jy_order_custom <set> close_recheck_time =NOW(),close_recheck_name= #{param2} ,close_recheck_state='1',
+	    close_recheck_remarks = #{param3},trade_agency = #{param6},transport_pay = #{param5},paid_fee = #{param4}
+	    </set>    
+	    WHERE custom_id in 
+	    <foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	<select id="getCustomShiping" parameterType="java.util.Arrays" resultType="ShippingOrder">
+		select 
+        *
+	 	from 
+		jy_order_custom joc left join 
+		jy_shiping_order jso on jso.custom_id =joc.custom_id
+	    WHERE  jso.write_off!=3 AND shiping_check = 1 AND joc.customer_id in
+	    <foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>   
+	    group by jso.shiping_order_id 
+	</select>
+	<insert id="insertCostShiping" parameterType="java.util.List">
+	    INSERT into jy_cost_summary 
+		(
+		cost_summary_id,
+		customer_id,
+		<!-- close_recheck_time, -->
+		shiping_order_id,
+		shiping_order_num,
+		take_fee,
+		send_fee,
+		adorn_fee,
+		change_fee,
+		receivable_ground_fee,
+		upstairs_fee,
+		deliver_fee,
+		inspect_fee,
+		seized_fee,
+		back_fee,
+		transport_pay,
+		trade_agency,
+		cost_summary_time
+		)
+		VALUES 
+		<foreach collection="list" index="index" item="item"
+			separator=",">
+		(
+		#{item.cost_summary_id},
+		#{item.customer_id},
+		<!-- #{item.close_recheck_time}, -->
+		#{item.shiping_order_id},
+		#{item.shiping_order_num},
+		#{item.take_fee},
+		#{item.send_fee},
+		#{item.adorn_fee},
+		#{item.change_fee},
+		#{item.receivable_ground_fee},
+		#{item.upstairs_fee},
+		#{item.deliver_fee},
+		#{item.inspect_fee},
+		#{item.seized_fee},
+		#{item.back_fee},
+		#{item.transport_pay},
+		#{item.trade_agency},
+		SYSDATE()
+		)
+		</foreach>
+	</insert>
+	<select id="getShippingCollect" resultType="ShippingOrder">
+	    	SELECT
+		ji.*,
+		datediff(now(),order_arrive_time) as stocks_predestination
+		FROM
+		jy_shiping_order ji LEFT JOIN jy_order_custom joc ON
+    ji.custom_id =joc.custom_id 
+		where
+		1=1 AND ji.creat_type!=0 AND ji.write_off!=3
+		and ji.customs_recheck_state !=0 
+		AND ji.shiping_check = 1 
+		<if test="param3!=null and param3!=''">
+			and ji.shiping_order_num like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.receipt like "%${param4}%"
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.end_address like "%${param5}%"
+		</if>
+		<if test="param6!=null and param6!=''">
+			and ji.send_time &gt;=#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">
+			and ji.send_time &lt;=#{param7}
+		</if>
+		<if test="(param6!=null and param6!='') and (param7!=null and param7!='')">
+			and ji.send_time &gt;=#{param6}
+			and ji.send_time &lt;=#{param7}
+		</if>
+		<if test="param8!=null and param8!=''">
+			 AND joc.customer_id  =#{param8}
+		</if>
+			<if test="param9!=null and param9!=''">
+			and ji.receipt_tel like "%${param9}%"
+		</if>
+			<if test="param10!=null and param10!=''">
+			and ji.shipping_order_state =#{param10}
+		</if>
+			<if test="param11!=null and param11!=''">
+			and ji.pay_type =#{param11}
+		</if>
+			<if test="param12!=null and param12!=''">
+			and ji.send_station =#{param12}
+		</if>
+		ORDER BY
+		ji.updatetime
+		DESC
+		limit
+		#{param1},#{param2}
+	</select>
+	<select id="getShippingCount" resultType="int">
+ select	COUNT(*) FROM (  	SELECT
+		ji.shiping_order_id
+		FROM
+		jy_shiping_order ji LEFT JOIN jy_order_custom joc ON
+    ji.custom_id =joc.custom_id 
+		where
+		1=1 AND ji.creat_type!=0 AND ji.write_off!=3
+		and ji.customs_recheck_state !=0 
+		AND ji.shiping_check = 1 	 	
+	<if test="param1!=null and param1!=''">
+			and shiping_order_num like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and receipt like "%${param2}%"
+		</if>
+		<if test="param3!=null and param3!=''">
+			and end_address like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and send_time &gt;=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			and send_time &lt;=#{param5}
+		</if>
+		<if test="(param4!=null and param4!='') and (param5!=null and param5!='') ">
+			and send_time &gt;=#{param4}
+			and send_time &lt;=#{param5}
+		</if>
+			<if test="param6!=null and param6!=''">
+			and customer_id =#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">
+			and receipt_tel like "%${param7}%"
+		</if>
+			<if test="param8!=null and param8!=''">
+			and shipping_order_state =#{param8}
+		</if>
+			<if test="param9!=null and param9!=''">
+			and pay_type =#{param9}
+		</if>
+			<if test="param10!=null and param10!=''">
+			and send_station =#{param10}
+		</if>
+			) AS qq
+		
+	</select>
+	<delete id="delectCollShi" parameterType="java.util.List" >
+	    DELETE FROM jy_cost_summary 
+	    WHERE 
+	  customer_id in 
+	    <foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach> 
+	</delete>
+	<select id="getshipinCollect" resultType="ShippingOrder">
+
+    select 
+     sum(jso.destination_fee)  AS destination_fee,
+    sum(jso.transport_pay)  AS transport_pay,
+    
+    sum(jso.pay_destination_fee)  AS pay_destination_fee,
+    sum(jso.pay_trade_agency)  AS pay_trade_agency,
+     sum(jso.trade_agency)  AS trade_agency,
+    
+    sum(jso.paid_fee) AS paid_fee,
+    jso.*, joc.*
+ 	from 
+	jy_order_custom joc left join 
+	jy_shiping_order jso on jso.custom_id =joc.custom_id 
+	where 1=1 and jso.write_off!=3 
+	and  jso.shiping_check=1 
+	
+	AND joc.customer_id  =#{_parameter}
+
+	</select>
+	<update id="rejectShipingorder" parameterType="String">
+	     update jy_shiping_order 
+	     <set>
+               
+                  write_off=3,
+				
+                  received_remarks="",
+                  	
+                  kuhu_date=NULL,
+                  
+                  people_name="",
+  
+                  	customs_recheck_state =3,
+                  	close_recheck=0
+        </set>
+      
+                where shiping_order_id = #{param1}
+
+	</update>
+	<update id="UpdateShipingorder" parameterType="String">
+	     update jy_shiping_order 
+	     <set>
+               
+  
+                  	customs_recheck_state =2
+               
+        </set>
+      
+                where shiping_order_id = #{param1}
+
+	</update>
+	
+	<update id="updateCori" parameterType="String">
+	    
+       UPDATE jy_order_custom SET write_off3 =3 WHERE custom_id=#{param1}
+	</update>
+	<!-- 专线公司提审 -->
+    <update id="getEreArraignedCustoms" parameterType="java.util.Arrays">
+		UPDATE jy_shiping_order 
+		<set> 
+		cus_time =SYSDATE(),
+		cus_name = #{param4},
+		cus_department = #{param3},
+		cus_remarks = #{param2},
+		customs_recheck_state =1,
+		cus_stata = 1
+		</set>
+		WHERE shiping_order_id  in
+		<foreach collection="array" index="index" item="item" open="("
+				separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+</mapper>
+

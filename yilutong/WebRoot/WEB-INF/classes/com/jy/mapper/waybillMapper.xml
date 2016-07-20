@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jy.dao.waybillDao">
+<select id="getShipManualInfo" resultType="ShippingOrder">
+		SELECT
+		datediff(now(),order_time) as stocks_predestination,
+		ji.*,
+		jca.create_time
+		FROM
+		jy_shiping_order ji
+		left join
+		jy_order_custom joc on joc.customer_id=ji.custom_id
+		left join
+		jy_customer jc on jc.customer_id=joc.customer_id
+		left join 
+		jy_agreementtoorder ja on ja.order_id=ji.shiping_order_id
+		left join
+		jy_create_agreement jca on jca.agreement_id=ja.agreement_id	
+		where
+		ji.creat_type=0
+
+		
+		<if test="param3!=null and param3!=''">
+			and ji.order_time &gt;=#{param3}
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.order_time &lt;=#{param4}
+		</if>
+		<if test="(param3!=null and param3!='') and (param4!=null and param4!='')">
+			and ji.order_time &gt;=#{param3}
+			and ji.order_time &lt;=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.send_station=#{param5}
+		</if>
+		<if test="param6!=null and param6!=''">
+			and ji.end_address=#{param6}
+		</if>
+		<if test="(param5!=null and param5!='') and (param6!=null and param6!='')">
+			and ji.send_station=#{param5}
+			and ji.end_address=#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">
+			and ji.shiping_order_num like "%${param7}%"
+		</if>
+		<if test="param8!=null and param8!=''">
+			and ji.receipt like "%${param8}%"
+		</if>
+		<if test="param9!=null and param9!=''">
+			and ji.custom_name like "%${param9}%"
+		</if>		
+			<if test="param10!=null and param10!=''">
+			and ji.shipping_order_state =#{param10}
+		</if>
+			<if test="param11!=null and param11!=''">
+			and ji.pay_type =#{param11}
+		</if>
+			<if test="param12!=null and param12!=''">
+			and ji.send_type =#{param12}
+		</if>
+		<if test="param13!=null and param13!=''">
+			and ji.goods_name =#{param13}
+		</if>
+		ORDER BY
+		ji.order_time
+		DESC
+		limit
+		#{param1},#{param2}
+	</select>
+
+	<select id="getShipManual" resultType="int">
+		select 
+		count(*)
+		 from
+			jy_shiping_order ji
+		left join
+		jy_order_custom joc on joc.customer_id=ji.custom_id
+		left join
+		jy_customer jc on jc.customer_id=joc.customer_id
+		left join 
+		jy_agreementtoorder ja on ja.order_id=ji.shiping_order_id
+		left join
+		jy_create_agreement jca on jca.agreement_id=ja.agreement_id	
+		where
+		ji.creat_type=0
+		<if test="param1!=null and param1!=''">
+			and ji.order_time &gt;=#{param1}
+		</if>
+		<if test="param2!=null and param2!=''">
+			and ji.order_time &lt;=#{param2}
+		</if>
+		<if test="(param1!=null and param1!='') and (param2!=null and param2='')">
+			and ji.order_time &gt;=#{param1}
+			and ji.order_time &lt;=#{param2}
+		</if>
+		<if test="param3!=null and param3!=''">
+			and ji.send_station=#{param3}
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.end_address=#{param4}
+		</if>
+		<if test="(param3!=null and param3!='') and (param4!=null and param4!='')">
+			and ji.send_station=#{param3}
+			and ji.end_address=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.shiping_order_num like "%${param5}%"
+		</if>
+		<if test="param6!=null and param6!=''">
+			and ji.receipt like "%${param6}%"
+		</if>
+		<if test="param7!=null and param7!=''">
+			and ji.custom_name like "%${param7}%"
+		</if>		
+			<if test="param8!=null and param8!=''">
+			and ji.shipping_order_state =#{param8}
+		</if>
+			<if test="param9!=null and param9!=''">
+			and ji.pay_type =#{param9}
+		</if>
+			<if test="param10!=null and param10!=''">
+			and ji.send_type =#{param10}
+		</if>
+		<if test="param11!=null and param11!=''">
+			and ji.goods_name =#{param11}
+		</if>
+	</select>
+	
+	<select id="getShipManuals" resultType="ShippingOrder">
+	SELECT
+		datediff(now(),order_time) as stocks_predestination,
+		ji.*,
+		jca.create_time
+		FROM
+		jy_shiping_order ji
+		left join
+		jy_order_custom joc on joc.customer_id=ji.custom_id
+		left join
+		jy_customer jc on jc.customer_id=joc.customer_id
+		left join 
+		jy_agreementtoorder ja on ja.order_id=ji.shiping_order_id
+		left join
+		jy_create_agreement jca on jca.agreement_id=ja.agreement_id	
+		where
+		ji.creat_type=0
+		
+		<if test="param1!=null and param1!=''">
+			and ji.order_time &gt;=#{param1}
+		</if>
+		<if test="param2!=null and param2!=''">
+			and ji.order_time &lt;=#{param2}
+		</if>
+		<if test="(param1!=null and param1!='') and (param2!=null and param2='')">
+			and ji.order_time &gt;=#{param1}
+			and ji.order_time &lt;=#{param2}
+		</if>
+		<if test="param3!=null and param3!=''">
+			and ji.send_station=#{param3}
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.end_address=#{param4}
+		</if>
+		<if test="(param3!=null and param3!='') and (param4!=null and param4!='')">
+			and ji.send_station=#{param3}
+			and ji.end_address=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.shiping_order_num like "%${param5}%"
+		</if>
+		<if test="param6!=null and param6!=''">
+			and ji.receipt like "%${param6}%"
+		</if>
+		<if test="param7!=null and param7!=''">
+			and ji.custom_name like "%${param7}%"
+		</if>		
+			<if test="param8!=null and param8!=''">
+			and ji.shipping_order_state =#{param8}
+		</if>
+			<if test="param9!=null and param9!=''">
+			and ji.pay_type =#{param9}
+		</if>
+			<if test="param10!=null and param10!=''">
+			and ji.send_type =#{param10}
+		</if>
+		<if test="param11!=null and param11!=''">
+			and ji.goods_name =#{param11}
+		</if>
+	</select>
+	
+		<select id="outShi" resultType="ShippingOrder">
+	SELECT
+		datediff(now(),order_time) as stocks_predestination,
+		ji.*,
+		jca.create_time
+		FROM
+		jy_shiping_order ji
+		left join
+		jy_order_custom joc on joc.customer_id=ji.custom_id
+		left join
+		jy_customer jc on jc.customer_id=joc.customer_id
+		left join 
+		jy_agreementtoorder ja on ja.order_id=ji.shiping_order_id
+		left join
+		jy_create_agreement jca on jca.agreement_id=ja.agreement_id	
+		where
+		ji.creat_type=0
+		and
+	 ji.shiping_order_id in
+		<foreach collection="array" index="index" item="item" open="("
+	
+	 separator="," close=")">
+			#{item}
+		</foreach>	
+	</select>
+	</mapper>

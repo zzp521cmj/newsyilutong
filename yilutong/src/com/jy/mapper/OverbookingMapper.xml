@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jy.dao.OverbookingDao">
+	<!-- 查询所以条数 -->
+	<select id="getShipCheckInfoConun" resultType="int">
+		select
+		count(*)
+		from
+		jy_shiping_orders_down
+		where 1=1
+		and user_id=#{param5}
+		<if test="param1!=null and param1!=''"> and shiping_order_num like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''"> and shiping_accept_static=#{param2}
+		</if>
+		<if test="param3!=null and param3!=''"> and custom_name=#{param3}
+		</if>
+		<if test="param4!=null and param4!='' "> and receipt=#{param4}
+		</if>
+	</select>
+
+	<!-- 查询 -->
+	<select id="getShipCheckInfo" resultType="Overbooking">
+		select
+		*
+		from
+		jy_shiping_orders_down
+		where 1=1 
+		and user_id=#{param7}
+		<if test="param3!=null and param3!=''"> and shiping_order_num like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''"> and shiping_accept_static=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''"> and custom_name=#{param5}
+		</if>
+		<if test="param6!=null and param6!='' "> and receipt=#{param6}
+		</if>
+		ORDER BY send_time DESC
+		limit
+		#{param1},#{param2}
+	</select>
+
+   <select id="xdselect" resultType="String">
+     SELECT 
+       MAX(shiping_order_num)
+         FROM  
+          jy_shiping_orders_down
+   </select>
+
+	<insert id="insertInfo" parameterType="Overbooking">
+		insert
+		into
+		jy_shiping_orders_down
+		(
+		shiping_orders_id,
+		shiping_order_num,
+		shiping_accept_static,
+		shiping_affirm,
+		send_station,
+		end_address,
+		send_time,
+		receipt,
+		receipt_tel,
+		receipt_phone,
+		receipt_address,
+		goods_name,
+		goods_packing,
+		goods_num,
+		goods_weight,
+		goods_vol,
+		custom_name,
+		send_type,
+		transport,
+		user_id
+		)value(
+		#{shiping_orders_id},
+		#{shiping_order_num},
+		0,
+		1,
+		#{send_station},
+		#{end_address},
+		#{send_time},
+		#{receipt},
+	    #{receipt_tel},
+		#{receipt_phone},
+		#{receipt_address},
+		#{goods_name},
+		#{goods_packing},
+		#{goods_num},
+		#{goods_weight},
+		#{goods_vol},
+		#{custom_name},
+		#{send_type},
+		#{transport},
+		#{user_id}
+		)
+	</insert>
+	
+	 <!-- 查询发货客户 -->
+      <select id="inquireName" resultType="Customer">
+		select 
+		customer_id,
+		  customer_name
+           from 
+            jy_customer
+		     where 1=1
+		<if test="_parameter!=null and _parameter!=''">
+			and customer_name like "%${_parameter}%"
+		</if>
+	</select>
+	
+	<!-- 查询收货客户 -->
+	<select id="inquireName1" resultType="Overbooking">
+	select
+	 receipt 
+	 from 
+	 jy_shiping_orders_down
+	 where 1=1
+	 <if test="_parameter!=null and _parameter!=''">
+	 and receipt like "%${_parameter}%"
+	 </if>
+	</select>
+	
+	<!-- 获取修改是id -->
+	<select id="updateId" resultType="Overbooking">
+	select 
+	   *
+	    from 
+	    jy_shiping_orders_down
+	     where 
+	     shiping_orders_id=#{_parameter}
+	</select>
+	
+	<!-- 修改 --> 
+	<update id="getupdate" parameterType="int">
+	  update
+	    jy_shiping_orders_down
+	    <set>
+		shiping_accept_static=0,
+		send_station=#{send_station},
+		end_address=#{end_address},
+		send_time=#{send_time},
+		receipt=#{receipt},
+		receipt_tel=#{receipt_tel},
+		receipt_phone=#{receipt_phone},
+		receipt_address=#{receipt_address},
+		goods_name=#{goods_name},
+		goods_packing=#{goods_packing},
+		goods_num=#{goods_num},
+		goods_weight=#{goods_weight},
+		goods_vol=#{goods_vol},
+		custom_name=#{custom_name},
+		send_type=#{send_type},
+		transport=#{transport}
+	    </set>
+	    where 
+	    shiping_orders_id=#{shiping_orders_id}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="deleteTravel" parameterType="java.util.Arrays">
+		delete from
+		jy_shiping_orders_down
+		where
+		shiping_orders_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	<!-- 接收 -->
+	<update id="updateunqualified" parameterType="java.util.Arrays">
+	 update 
+	 jy_shiping_orders_down
+	  <set>
+	   shiping_accept_static=1
+	  </set> 
+	  where shiping_orders_id IN
+	  <foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	
+	<!-- 确定 -->
+	<update id="countersign" parameterType="java.util.Arrays">
+	update
+	 jy_shiping_orders_down 
+	 <set>
+	 shiping_affirm=0
+	 </set> 
+     where shiping_accept_static=1 
+     and shiping_orders_id IN
+	 <foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+     <!-- 重复查询 -->
+		<select id="getNumber" resultType="int">
+		select
+		   count(*)
+		from
+		jy_shiping_orders_down
+		<if test="_parameter!=null">
+			where shiping_order_num=#{_parameter}
+		</if>
+	</select>
+	<select id="appGetOverBooking" resultType="Overbooking">
+		select
+		*
+		from
+		jy_shiping_orders_down
+		where 1=1 
+		and user_id=#{param3}
+		ORDER BY send_time DESC
+		limit
+		#{param1},#{param2}
+	</select>
+	<!-- 查询 -->
+	<select id="adminGetShipCheckInfo" resultType="Overbooking">
+		select
+		*
+		from
+		jy_shiping_orders_down
+		where 1=1 
+		<if test="param3!=null and param3!=''"> and shiping_order_num like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''"> and shiping_accept_static=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''"> and custom_name=#{param5}
+		</if>
+		<if test="param6!=null and param6!='' "> and receipt=#{param6}
+		</if>
+		ORDER BY send_time DESC
+		limit
+		#{param1},#{param2}
+	</select>
+	<select id="adminGetShipCheckInfoConun" resultType="int">
+		select
+		count(*)
+		from
+		jy_shiping_orders_down
+		where 1=1
+		<if test="param1!=null and param1!=''"> and shiping_order_num like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''"> and shiping_accept_static=#{param2}
+		</if>
+		<if test="param3!=null and param3!=''"> and custom_name=#{param3}
+		</if>
+		<if test="param4!=null and param4!='' "> and receipt=#{param4}
+		</if>
+	</select>
+</mapper>

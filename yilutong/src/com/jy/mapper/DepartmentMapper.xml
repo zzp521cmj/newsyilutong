@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="com.jy.dao.DepartmentDao">
+	<select id="getDepartmentf" resultType="Department">
+		select * from jy_department where father_id='1'
+	</select>
+	<select id="getDepartmentDisanfang" resultType="Department">
+		select * from jy_department where department_id ='4'
+	</select>
+	<select id="getDepartments" parameterType="String" resultType="Department">
+		select * from jy_department where father_id=#{0}
+	</select>
+	<select id="getDepartment" resultType="Department">
+		select * from jy_department where department_id=#{department_id}
+	</select>
+	<update id="modifyDepartment"  parameterType="Department">
+		update jy_Department set Department_name=#{department_name},father_id=#{father_id},address=#{address},tel=#{tel},leva=#{leva} where Department_id=#{department_id} 
+	</update>
+	<delete id="delDepartment">
+		delete from jy_Department  where Department_id=#{0} 
+	</delete>
+	<delete id="delDepartments">
+		delete from jy_Department  where father_id=#{0} 
+	</delete>
+	<insert id="addDepartment"  parameterType="Department">
+		insert into 
+		jy_Department(
+		department_id,
+		department_name,
+		father_Id,
+		address,
+		tel,
+		leva
+		)
+		 values(#{department_id},#{department_name},#{father_id},#{address},#{tel},#{leva})
+	</insert>
+	<select id="checkDepn" resultType="int">
+		SELECT count(*) FROM jy_Department where department_name=#{0} and father_id=#{1}
+	</select>
+	
+</mapper>

@@ -1,0 +1,833 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jy.dao.ChangeOrderDao">
+<!-- 勾选导出 -->
+ <select id="outShi" resultType="ShippingOrder">
+    SELECT	
+		ji.*
+		FROM
+		jy_shiping_order ji
+		WHERE
+		 ji.shiping_order_id in
+	<foreach collection="array" index="index" item="item" open="("
+	
+	 separator="," close=")">
+			#{item}
+		</foreach>	
+    </select>
+
+    <select id="outShipOrder" resultType="ShippingOrder">
+   SELECT	
+		ji.*
+		FROM
+		jy_shiping_order ji
+		LEFT JOIN jy_agreementtoorder jao ON jao.order_id=ji.shiping_order_id
+		LEFT JOIN jy_create_agreement jca ON jca.agreement_id=jao.agreement_id	
+		WHERE
+		ji.is_recept_no=1
+		 AND ji.shiping_check=1
+			AND ji.shipping_order_state=4
+			<if test="param1!=null and param1!=''">
+			and ji.shiping_order_num like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and ji.is_send like "%${param2}%"
+		</if>
+		<if test="param3!=null and param3!=''">
+			and  ji.is_receive like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.send_time &gt;=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.send_time &lt;=#{param5}
+		</if>
+		<if test="(param4!=null and param4!='') and (param5!=null and param5!='') ">
+			and ji.send_time &gt;=#{param4}
+			and ji.send_time &lt;=#{param5}
+		</if>
+		<if test="param6!=null and param6!=''">
+			and ji.is_recept_time &gt;=#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">
+			and ji.is_recept_time &lt;=#{param7}
+		</if>
+		<if test="(param6!=null and param6!='') and (param7!=null and param7!='')">
+			and ji.is_recept_time &gt;=#{param6}
+			and ji.is_recept_time &lt;=#{param7}
+		</if>
+			<if test="param8!=null and param8!=''">
+			and ji.is_send_time &gt;=#{param8}
+		</if>
+		<if test="param9!=null and param9!=''">
+			and ji.is_send_time &lt;=#{param9}
+		</if>
+		<if test="(param8!=null and param8!='') and (param9!=null and param9!='')">
+			and ji.is_send_time &gt;=#{param8}
+			and ji.is_send_time &lt;=#{param9}
+		</if>
+		<if test="param10!=null and param10!=''">
+		   and (ji.custom_name like "%${param10}%" or  ji.customer_id like "%${param10}%")
+		</if>
+		<if test="param11!=null and param11!=''">
+			and  ji.shiping_order_id in
+		<foreach collection="array" index="index" item="item" open="("
+		
+		 separator="," close=")">
+				#{item}
+		</foreach>	
+		</if>
+		<if test="param12!=null and param12!=''">
+		   and  jca.driverid =#{param12} 
+		</if>
+		ORDER BY
+		ji.updatetime
+		DESC
+    </select>
+	<select id="getChangeOrderInfo" resultType="ShippingOrder">
+		SELECT	
+		DISTINCT
+		ji.*
+		FROM
+		jy_shiping_order ji
+		LEFT JOIN 
+		jy_change_fee jc ON jc.shiping_order_id=ji.shiping_order_id
+		INNER JOIN 
+		jy_agreementtoorder ja ON ja.order_id=ji.shiping_order_id
+		WHERE
+		 ji.send_type!=0 and ji.shiping_check=1
+		<if test="param3!=null and param3!=''">
+			and ji.shiping_order_num like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.send_station like "%${param4}%"
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.is_update like "%${param5}%"
+		</if>
+		<if test="param6!=null and param6!=''">
+			and ji.check_time &gt;=#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">
+			and ji.check_time &lt;=#{param7}
+		</if>
+		<if test="(param6!=null and param6!='') and (param7!=null and param7!='')">
+			and ji.check_time &gt;=#{param6}
+			and ji.check_time &lt;=#{param7}
+		</if>
+		ORDER BY
+		ji.updatetime
+		DESC
+		limit
+		#{param1},#{param2}
+	</select>
+
+	<select id="getChangeOrder" resultType="int">
+		SELECT    
+				COUNT(*)
+		 FROM  
+			  jy_shiping_order ji  
+	 LEFT JOIN    
+			 jy_change_fee jc ON jc.shiping_order_id=ji.shiping_order_id   
+	  WHERE
+			ji.shiping_order_id IN (SELECT DISTINCT order_id FROM jy_agreementtoorder)  
+			and  ji.send_type!=0 and ji.shiping_check=1
+		<if test="param1!=null and param1!=''">
+			and ji.shiping_order_num like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and ji.send_station like "%${param2}%"
+		</if>
+		<if test="param3!=null and param3!=''">
+			and  ji.is_update like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.check_time &gt;=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.check_time &lt;=#{param5}
+		</if>
+		<if test="(param4!=null and param4!='') and (param5!=null and param5!='') ">
+			and ji.check_time &gt;=#{param4}
+			and ji.check_time &lt;=#{param5}
+		</if>
+
+	</select>
+	<!--  订单发送消息-->
+	<select id="getOrderInfo"   resultType="ShippingOrder">
+		SELECT	
+		ji.*
+		FROM
+		jy_shiping_order ji
+		WHERE
+		 1=1
+			<if test="param3!=null and param3!=''">
+			and ji.shiping_order_num like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.receipt like "%${param4}%"
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.receipt_tel like "%${param5}%"
+		</if>
+		<if test="param6!=null and param6!=''">
+			and ji.send_type =#{param6}
+		</if>
+		ORDER BY
+		ji.updatetime
+		DESC
+		limit
+		#{param1},#{param2}	
+	</select>
+	
+	
+	<!--  订单发送消息-->
+	<select id="getOrderInfoCount"   resultType="int">
+		SELECT	
+		count(*)
+		FROM
+		jy_shiping_order ji
+		WHERE
+		 1=1 
+		 <if test="param1!=null and param1!=''">
+			and ji.shiping_order_num like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and ji.receipt like "%${param2}%"
+		</if>
+		<if test="param3!=null and param3!=''">
+			and  ji.receipt_tel like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.send_type &gt;=#{param4}
+		</if>
+	</select>
+	
+	<!--  客户回单查询-->
+	<select id="getBackOrderInfo" resultType="ShippingOrder">
+	SELECT	
+		ji.*
+		FROM
+		jy_shiping_order ji
+		LEFT JOIN jy_agreementtoorder jao ON jao.order_id=ji.shiping_order_id
+		LEFT JOIN jy_create_agreement jca ON jca.agreement_id=jao.agreement_id
+		WHERE
+			ji.is_recept_no=1
+		 AND ji.shiping_check=1
+		AND ji.shipping_order_state=4
+		<if test="param3!=null and param3!=''">
+			and ji.shiping_order_num like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.is_send like "%${param4}%"
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.is_receive like "%${param5}%"
+		</if>
+		<if test="param6!=null and param6!=''">
+			and ji.send_time &gt;=#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">
+			and ji.send_time &lt;=#{param7}
+		</if>
+		<if test="(param6!=null and param6!='') and (param7!=null and param7!='')">
+			and ji.send_time &gt;=#{param6}
+			and ji.send_time &lt;=#{param7}
+		</if>
+		<if test="param8!=null and param8!=''">
+			and ji.is_recept_time &gt;=#{param8}
+		</if>
+		<if test="param9!=null and param9!=''">
+			and ji.is_recept_time &lt;=#{param9}
+		</if>
+		<if test="(param8!=null and param8!='') and (param9!=null and param9!='')">
+			and ji.is_recept_time &gt;=#{param8}
+			and ji.is_recept_time &lt;=#{param9}
+		</if>
+		<if test="param10!=null and param10!=''">
+			and ji.is_send_time &gt;=#{param10}
+		</if>
+		<if test="param11!=null and param11!=''">
+			and ji.is_send_time &lt;=#{param11}
+		</if>
+		<if test="(param10!=null and param10!='') and (param11!=null and param11!='')">
+			and ji.is_send_time &gt;=#{param10}
+			and ji.is_send_time &lt;=#{param11}
+		</if>
+		<if test="param12!=null and param12!=''">
+		   and ( ji.customer_id like "%${param12}%" or ji.custom_name like "%${param12}%")
+		</if>
+		<if test="param13!=null and param13!=''">
+		   and  jca.driverid =#{param13} 
+		</if>
+		ORDER BY
+		ji.updatetime
+		DESC
+		limit
+		#{param1},#{param2}
+	</select>
+	<!--  客户回单总数查询-->
+	<select id="getBackOrder" resultType="int">
+		SELECT    
+				COUNT(*)
+		FROM
+		jy_shiping_order ji
+		LEFT JOIN jy_agreementtoorder jao ON jao.order_id=ji.shiping_order_id
+		LEFT JOIN jy_create_agreement jca ON jca.agreement_id=jao.agreement_id
+		WHERE
+			ji.is_recept_no=1
+		 AND ji.shiping_check=1
+			and ji.shipping_order_state=4
+		<if test="param1!=null and param1!=''">
+			and ji.shiping_order_num like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and ji.is_send like "%${param2}%"
+		</if>
+		<if test="param3!=null and param3!=''">
+			and  ji.is_receive like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.send_time &gt;=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.send_time &lt;=#{param5}
+		</if>
+		<if test="(param4!=null and param4!='') and (param5!=null and param5!='') ">
+			and ji.send_time &gt;=#{param4}
+			and ji.send_time &lt;=#{param5}
+		</if>
+		<if test="param6!=null and param6!=''">
+			and ji.is_recept_time &gt;=#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">
+			and ji.is_recept_time &lt;=#{param7}
+		</if>
+		<if test="(param6!=null and param6!='') and (param7!=null and param7!='')">
+			and ji.is_recept_time &gt;=#{param6}
+			and ji.is_recept_time &lt;=#{param7}
+		</if>
+			<if test="param8!=null and param8!=''">
+			and ji.is_send_time &gt;=#{param8}
+		</if>
+		<if test="param9!=null and param9!=''">
+			and ji.is_send_time &lt;=#{param9}
+		</if>
+		<if test="(param8!=null and param8!='') and (param9!=null and param9!='')">
+			and ji.is_send_time &gt;=#{param8}
+			and ji.is_send_time &lt;=#{param9}
+		</if>
+		<if test="param10!=null and param10!=''">
+		     and ( ji.customer_id like "%${param10}%" or ji.custom_name like "%${param10}%")
+		</if>
+		<if test="param11!=null and param11!=''">
+		   and  jca.driverid =#{param11} 
+		</if>
+	</select>
+	<!--  处理且接收已签收的订单-->
+	<update id="dealBackOrder" parameterType="java.util.Arrays">
+		update 
+					jy_shiping_order 
+					<set>
+						is_receive=1,
+						shipping_order_state=4,
+						is_recept_time=NOW()
+					</set>
+		where
+			shiping_order_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>			
+	</update>
+	<!--  寄出-->
+	<update id="dealNotBackOrder" parameterType="java.util.Arrays">
+		update 
+					jy_shiping_order 
+					<set>
+						is_send=1,
+						is_send_nums=#{param2},
+						company_kd=#{param3},
+						is_send_time=NOW()
+					</set>
+		where
+			shiping_order_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>			
+	</update>
+	<!--  处理且接收已签收的订单取消-->
+		<update id="dealBackOrderUpdate" parameterType="java.util.Arrays">
+		update 
+					jy_shiping_order 
+					<set>
+						is_receive=0,
+						shipping_order_state=4,
+						is_recept_time=NULL 
+					</set>
+		where
+			shiping_order_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>			
+	</update>
+	<!--  寄出取消-->
+	<update id="dealOrderUpdate" parameterType="java.util.Arrays">
+		update 
+					jy_shiping_order 
+					<set>
+						is_send=0,
+						is_send_nums=null,
+						company_kd=null,
+						is_send_time=NULL
+					</set>
+		where
+			shiping_order_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>			
+	</update>
+	<!--导出 -->
+	<select id="getShipOrderAll" resultType="ShippingOrder">
+		SELECT
+		ji.*,
+		CASE WHEN ji.send_type='0' THEN '客户自提'
+		WHEN ji.send_type='1'  THEN '专车送货'
+		WHEN ji.send_type='2'  THEN '送货进仓'
+		WHEN ji.send_type='3'  THEN '送货上门'
+		WHEN ji.send_type='4' THEN '送货上楼'
+		END AS sendtype,
+		CASE WHEN ji.check_type='0' THEN '发货人门点'
+		WHEN
+		ji.check_type='1' THEN '起运货运站'
+		END AS checktype
+		<!-- CASE WHEN ji.shipping_order_state='0' THEN '受理'
+		WHEN
+		ji.shipping_order_state='1' THEN '在途'
+		ji.shipping_order_state='2' THEN '到达'
+		ji.shipping_order_state='3' THEN '配送'
+		ji.shipping_order_state='4' THEN '签收'
+		END AS order_state -->
+		<!-- jtc.travel_card_id, jtc.plate_number -->
+		FROM
+		jy_shiping_order ji
+		<!-- LEFT JOIN jy_travel_card jtc ON jtc.travel_card_id = ji.car_id -->
+		where
+		ji.shipping_order_state=0 
+		<if test="param1!=null and param1!=''">
+			and shiping_order_num like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and start_address like "%${param2}%"
+		</if>
+		<if test="param3!=null and param3!=''">
+			and end_address like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and check_time &gt;=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			and check_time &lt;=#{param5}
+		</if>
+		<if test="(param4!=null and param4!='') and (param5!=null and param5!='') ">
+			and check_time &gt;=#{param4}
+			and check_time &lt;=#{param5}
+		</if>
+		ORDER BY
+		ji.updatetime
+		DESC
+	</select>
+
+	<delete id="deleteChangeOrder" parameterType="java.util.Arrays">
+		delete from
+		jy_shiping_order
+		where
+		shiping_order_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+	<insert id="saveChangeOrder" parameterType="ChangeOrder">
+		insert
+		into
+		jy_change_fee
+		(
+		shiping_order_id,
+		change_fee_id,
+		sends_fee,
+		loading_fee,
+		unloading_fee,
+		trans_price,
+		change_fee,
+		unloadgoods_fee,
+		ischange_fee,
+		change_pay,
+		update_time
+		)
+		values (
+		#{shiping_order_id},
+		#{change_fee_id},
+		#{sends_fee},
+		#{loading_fee},
+		#{unloading_fee},
+		#{trans_price},
+		#{change_fee},
+		#{unloadgoods_fee},
+		#{ischange_fee},
+		#{change_pay},
+		#{update_time}
+		)
+
+	</insert>
+
+	<select id="getUpdateChangeOrder" parameterType="String"
+		resultType="ChangeOrder">
+		<!-- select * from jy_car_owner_info where car_owner_id=#{carOwnerId} -->
+		SELECT
+				ji.shiping_order_id,
+				ja.*
+		FROM
+				jy_shiping_order ji
+		LEFT JOIN 
+				jy_change_fee ja ON ja.shiping_order_id=ji.shiping_order_id
+		WHERE
+			ji.shiping_order_id=#{_parameter}
+	</select>
+	<update id="updateChangeOrder"  parameterType="ChangeOrder">
+		update
+		jy_change_fee
+		<set>
+				sends_fee=#{sends_fee},
+				loading_fee=#{loading_fee},
+				unloading_fee=#{unloading_fee},
+				trans_price=#{trans_price},
+				change_fee=#{change_fee},
+				unloadgoods_fee=#{unloadgoods_fee},
+				ischange_fee=#{ischange_fee},
+				change_pay=#{change_pay},
+				update_time=#{update_time}
+		</set>
+		where shiping_order_id = #{shiping_order_id}
+	</update>
+	<!-- 添加中转费时，修改订单状态是否录入 is_update -->
+	<update id="updateOrder"  parameterType="String" >
+		update jy_shiping_order
+		<set>
+		is_update=1	
+		</set>
+		where shiping_order_id = #{_parameter}
+	</update>
+	<select id="getAddOrderFee" resultType="CreateAgreement">
+		SELECT
+				ja.shiping_order_id,
+				ji.*
+		FROM
+				jy_create_agreement ji
+		INNER JOIN 
+				jy_agreementtoorder jat ON jat.agreement_id=ji.agreement_id
+		INNER JOIN 
+				jy_shiping_order ja ON ja.shiping_order_id=jat.order_id
+		where 
+		ji.isagain=0 and
+		ja.shiping_order_id=#{_parameter}
+	</select>
+	<!-- <select id="getPlateNumberLength" resultType="ShippingOrder"> select 
+		shiping_order_id, shiping_order_num from jy_shiping_order <if test="_parameter!=null"> 
+		where shiping_order_num like "%${_parameter}%" </if> </select> -->
+	<select id="getPlateNumberLength" resultType="ShippingOrder">
+		<!-- SELECT
+		DISTINCT travel_card_id,plate_number
+		FROM
+		jy_travel_card jtc
+		WHERE
+		travel_card_id NOT IN(
+		SELECT
+		DISTINCT travel_card_id
+		FROM
+		jy_travel_card
+		jtc
+		INNER JOIN
+		jy_shiping_order ji ON ji.car_id=jtc.travel_card_id
+		) -->
+		SELECT
+		DISTINCT travel_card_id,plate_number
+		FROM
+		jy_travel_card jtc
+		where jtc.state=1
+		<if test="_parameter!=null">
+			and plate_number like "%${_parameter}%"
+		</if>
+	</select>
+	<select id="searchOrder" parameterType="String"  resultType="int">
+		SELECT 
+			COUNT(*)  
+		FROM 
+			jy_change_fee
+		WHERE
+			 shiping_order_id=#{_parameter}
+	</select>
+	
+	<!--  提货单查询-->
+	<select id="getDeliveryOrderInfo" resultType="ShippingOrder">
+	SELECT	
+		ji.*,
+		jso.*
+		FROM
+		jy_shiping_order ji
+		LEFT JOIN jy_sign_order jso ON jso.order_id=ji.shiping_order_id
+		LEFT JOIN jy_order_custom jo ON jo.custom_id=ji.custom_id
+		WHERE
+		ji.send_type=0   AND ji.shiping_check=1
+		<if test="param3!=null and param3!=''">
+			and ji.shiping_order_num like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.is_print like "%${param4}%"
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.is_takes like "%${param5}%"
+		</if>
+		<if test="param6!=null and param6!=''">
+			and ji.send_time &gt;=#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">
+			and ji.send_time &lt;=#{param7}
+		</if>
+		<if test="(param6!=null and param6!='') and (param7!=null and param7!='')">
+			and ji.send_time &gt;=#{param6}
+			and ji.send_time &lt;=#{param7}
+		</if>
+		<if test="param8!=null and param8!=''">
+			and ji.take_times &gt;=#{param8}
+		</if>
+		<if test="param9!=null and param9!=''">
+			and ji.take_times &lt;=#{param9}
+		</if>
+		<if test="(param8!=null and param8!='') and (param9!=null and param9!='')">
+			and ji.take_times &gt;=#{param8}
+			and ji.take_times &lt;=#{param9}
+		</if>
+		<if test="param10!=null and param10!=''">
+			and jso.sign_time &gt;=#{param10}
+		</if>
+		<if test="param11!=null and param11!=''">
+			and jso.sign_time &lt;=#{param11}
+		</if>
+		<if test="(param10!=null and param10!='') and (param11!=null and param11!='')">
+			and jso.sign_time &gt;=#{param10}
+			and jso.sign_time &lt;=#{param11}
+		</if>
+		<if test="param12!=null and param12!=''">
+		  and ( ji.customer_id like "%${param12}%" or ji.custom_name like "%${param12}%")
+		</if>
+		ORDER BY jso.sign_time DESC,
+		ji.updatetime
+		DESC
+		limit
+		#{param1},#{param2}
+	</select>
+	<!--   提货单总数查询-->
+	<select id="getDeliveryOrder" resultType="int">
+		SELECT    
+				COUNT(*)
+		FROM
+		jy_shiping_order ji
+		LEFT JOIN jy_sign_order jso ON jso.order_id=ji.shiping_order_id
+		LEFT JOIN jy_order_custom jo ON jo.custom_id=ji.custom_id
+		WHERE
+		ji.send_type=0  AND ji.shiping_check=1
+		<if test="param1!=null and param1!=''">
+			and ji.shiping_order_num like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and ji.is_print like "%${param2}%"
+		</if>
+		<if test="param3!=null and param3!=''">
+			and  ji.is_takes like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.send_time &gt;=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.send_time &lt;=#{param5}
+		</if>
+		<if test="(param4!=null and param4!='') and (param5!=null and param5!='') ">
+			and ji.send_time &gt;=#{param4}
+			and ji.send_time &lt;=#{param5}
+		</if>
+		<if test="param6!=null and param6!=''">
+			and ji.take_times &gt;=#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">
+			and ji.take_times &lt;=#{param7}
+		</if>
+		<if test="(param6!=null and param6!='') and (param7!=null and param7!='')">
+			and ji.take_times &gt;=#{param6}
+			and ji.take_times &lt;=#{param7}
+		</if>
+			<if test="param8!=null and param8!=''">
+			and jso.sign_time &gt;=#{param8}
+		</if>
+		<if test="param9!=null and param9!=''">
+			and jso.sign_time &lt;=#{param9}
+		</if>
+		<if test="(param8!=null and param8!='') and (param9!=null and param9!='')">
+			and jso.sign_time &gt;=#{param8}
+			and jso.sign_time &lt;=#{param9}
+		</if>
+		<if test="param10!=null and param10!=''">
+		   and ( ji.customer_id like "%${param10}%" or ji.custom_name like "%${param10}%")
+		</if>
+	</select>
+	<select id="outDeliveryOrder" resultType="ShippingOrder">
+SELECT	
+		ji.send_time,ji.shiping_order_num,ji.send_station,
+		ji.end_address,ji.custom_name,ji.car_number,
+		ji.receipt,ji.receipt_tel,ji.receipt_address,
+		ji.goods_name,ji.transport_pay,ji.is_recept,
+		ji.shipping_order_name,jso.sign_time,ji.printer,
+		ji.take_times,ji.takers,ji.remarks,
+		CASE WHEN ji.send_type='0' THEN '客户自提'
+		WHEN ji.send_type='1'  THEN '专车送货'
+		WHEN ji.send_type='2'  THEN '送货进仓'
+		WHEN ji.send_type='3'  THEN '送货上门'
+		WHEN ji.send_type='4' THEN '送货上楼'
+		END AS send_type,
+		CASE WHEN ji.is_print='0' THEN '未打印'
+		WHEN ji.is_print='1'
+		THEN '已打印'
+		END AS is_print,
+		CASE WHEN ji.is_takes='0' THEN '未提货'
+		WHEN ji.is_takes='1'
+		THEN '已提货'
+		END AS is_takes,
+		 CASE WHEN ji.shipping_order_state!='4' AND ji.is_takes=0 THEN '未签收'
+	<!-- 	WHEN ji.shipping_order_state='1' AND ji.is_takes=0 THEN '配送中'
+		WHEN ji.shipping_order_state='2' AND ji.is_takes=0 THEN '转运中'
+		WHEN ji.shipping_order_state='3' AND ji.is_takes=0 THEN '到达' -->
+		WHEN ji.shipping_order_state='4' THEN '已签收'
+		END AS shipping_order_state,
+		jso.*
+		FROM
+		jy_shiping_order ji
+		LEFT JOIN jy_sign_order jso ON jso.order_id=ji.shiping_order_id
+		WHERE
+		ji.send_type=0   AND ji.shiping_check=1
+			<if test="param1!=null and param1!=''">
+			and ji.shiping_order_num like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and ji.is_print like "%${param2}%"
+		</if>
+		<if test="param3!=null and param3!=''">
+			and  ji.is_takes like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.send_time &gt;=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.send_time &lt;=#{param5}
+		</if>
+		<if test="(param4!=null and param4!='') and (param5!=null and param5!='') ">
+			and ji.send_time &gt;=#{param4}
+			and ji.send_time &lt;=#{param5}
+		</if>
+		<if test="param6!=null and param6!=''">
+			and ji.take_times &gt;=#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">
+			and ji.take_times &lt;=#{param7}
+		</if>
+		<if test="(param6!=null and param6!='') and (param7!=null and param7!='')">
+			and ji.take_times &gt;=#{param6}
+			and ji.take_times &lt;=#{param7}
+		</if>
+			<if test="param8!=null and param8!=''">
+			and jso.sign_time &gt;=#{param8}
+		</if>
+		<if test="param9!=null and param9!=''">
+			and jso.sign_time &lt;=#{param9}
+		</if>
+		<if test="(param8!=null and param8!='') and (param9!=null and param9!='')">
+			and jso.sign_time &gt;=#{param8}
+			and jso.sign_time &lt;=#{param9}
+		</if>
+		<if test="param10!=null and param10!=''">
+		   and (ji.custom_name like "%${param10}%" or  ji.customer_id  like "%${param10}%")
+		</if>
+		<if test="param11!=null and param11!=''">
+			and  ji.shiping_order_id in
+		<foreach collection="array" index="index" item="item" open="("
+		
+		 separator="," close=")">
+				#{item}
+		</foreach>	
+		</if>
+		ORDER BY jso.sign_time DESC,
+		ji.updatetime
+		DESC
+	</select>
+	<update id="updateFreeOrder"  parameterType="java.util.Arrays"  >
+		update jy_shiping_order
+		<set>
+		is_takes=1,
+		take_times=now(),
+		takers=#{param2}
+		</set>
+		where shiping_order_id  IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	
+	<select id="getShipOrder"  parameterType="java.util.Arrays"  resultType="ShippingOrder" >
+		SELECT
+		ji.*
+		FROM
+		jy_shiping_order ji
+		where
+		ji.shiping_order_id	 IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	<update id="updateDyOrder" parameterType="java.util.Arrays"  >
+		update jy_shiping_order
+		<set>
+		is_print=1,
+		printtime=now(),
+		printer=#{param2}
+		</set>
+		where shiping_order_id  IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	<!--  保存图片-->
+	<insert id="saveFilename">
+		insert into jy_backorderimages
+		(image_id,order_id,imageUrl) values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.image_id},
+			#{item.order_id},
+			#{item.imageUrl})
+		</foreach>
+
+	</insert>
+	<!-- 查询图片 -->
+	<select id="getSingShiperOrderImg" resultType="ShipperOrderImg">
+		SELECT * FROM
+		jy_backorderimages
+		WHERE order_id=#{_parameter}
+	</select>
+</mapper>

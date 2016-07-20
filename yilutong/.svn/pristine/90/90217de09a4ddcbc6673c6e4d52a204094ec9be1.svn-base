@@ -1,0 +1,443 @@
+/* 
+ 文件名:map.css
+创建人:黄清华
+类型:css
+创建日期:
+最新修改日期:
+*/
+/*
+	地图默认样式
+*/
+@charset "UTF-8";
+/* CSS Document */
+input[type="checkbox"] {
+	-webkit-appearance: none;
+	height: 16px;
+	vertical-align: middle;
+	width: 16px;
+	border: 1px solid #C1C1C1;
+}
+
+input[type="checkbox"]:hover {
+	border: 1px solid #C1C1C1;
+	cursor: pointer;
+}
+
+input[type="checkbox"]:checked {
+	background-image: url("../images/ckd.png");
+}
+
+input[type="checkbox"]:checked:hover {
+	cursor: pointer;
+}
+
+#dituContent {
+	position: absolute;
+	z-index: 2;
+}
+
+html,body {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+}
+
+li {
+	list-style: none;
+}
+
+#dituContent {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	font-family: "微雅软黑";
+}
+
+.iw_poi_title {
+	color: #CC5522;
+	font-size: 14px;
+	font-weight: bold;
+	overflow: hidden;
+	padding-right: 13px;
+	white-space: nowrap
+}
+
+.iw_poi_content {
+	font: 12px arial, sans-serif;
+	overflow: visible;
+	padding-top: 4px;
+	white-space: -moz-pre-wrap;
+	word-wrap: break-word
+}
+/* 选项卡样式 */
+#menushow {
+	position: absolute;
+	z-index: 3;
+	width: 224px;
+	height: 31px;
+	background-color: #2490ED;
+	top: 13%;
+	right: -174;
+	color: white;
+	font-weight: bolder;
+	line-height: 31px;
+	cursor: pointer;
+}
+
+#gnf {
+	float: left;
+	height: 31px;
+	width: 35px;
+	padding-left: 15px;
+	display: block;
+}
+
+#menall {
+	position: absolute;
+	z-index: 3;
+	background-color: white;
+	height: 31px;
+	width: 125px;
+	margin-left: 1%;
+	margin-top: 10%;
+}
+
+#menall2 {
+	position: absolute;
+	z-index: 3;
+	background-color: white;
+	height: 31px;
+	width: 48px;
+	margin-left: 1%;
+	margin-top: 10%;
+}
+
+#wxdtdiv {
+	position: absolute;
+	z-index: 3;
+	background-color: white;
+	height: 50px;
+	width: 48px;
+	right: 10px;
+	margin-top: 1%;
+	background-image: url("../images/wx.png");
+	cursor: pointer;
+}
+
+.menusclick {
+	height: 30px;
+	width: 30px;
+	border: 1px solid #c7c7c7;
+	float: left;
+	border-left: none;
+	cursor: pointer;
+}
+
+.menusclick2 {
+	height: 30px;
+	width: 48px;
+	border: 1px solid #c7c7c7;
+	float: left;
+	border-left: none;
+	cursor: pointer;
+	overflow: hidden;
+	line-height: 30px;
+	font: "微软雅黑", 14px, bold;
+}
+
+.menuimg {
+	margin: 5px 0 0 5px;
+}
+
+.menuimg2 {
+	margin: 5px 0 0 5px;
+}
+
+#sele {
+	position: absolute;
+	z-index: 3;
+	height: 37px;
+	width: 150px;
+	margin-top: 10px;
+	right: 70;
+}
+/*
+ 主页大小地图级别框
+*/
+#max {
+	color: #333;
+	position: absolute;
+	z-index: 3;
+	background-color: white;
+	height: 200px;
+	width: 320px;
+	top: 40%;
+	right: 50px;
+}
+/*
+ max内部板块调整
+*/
+#one {
+	font-family: '微软雅黑';
+	font-size: 13px;
+	font-weight: bold;
+	margin: 10px 0 0 13px;
+	color: #333;
+}
+
+#two {
+	font-family: '微软雅黑';
+	font-size: 13px;
+	font-weight: bold;
+	margin: 10px 0 0 13px;
+	color: #333;
+}
+
+#thr {
+	font-size: 13px;
+	font-weight: bold;
+	font-family: '微软雅黑';
+	margin: 10px 0 0 10px;
+	width: 290px;
+	height: 35px;
+	background-color: #FBFBFB;
+	border-radius: 5px;
+	line-height: 35px;
+	border: 1px solid #dddddd;
+	padding-left: 7px;
+	margin-bottom: 10px;
+}
+
+#four {
+	width: 300px;
+	height: 32px;
+	font-family: '微软雅黑';
+	margin: 10px 0 0 10px;
+	background-color: #FBFBFB;
+	border-radius: 5px;
+	border: 1px solid #dddddd;
+	color: #333;
+	line-height: 30px;
+	overflow-y: auto;
+}
+
+#qzd {
+	display: none;
+	margin-left: 20px;
+	margin-top: -7;
+}
+
+.cart {
+	display: -moz-inline-box;
+	display: inline-block;
+	width: 95px;
+}
+
+.carcolor {
+	display: -moz-inline-box;
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	vertical-align: sub;
+}
+
+.cartype {
+	display: -moz-inline-box;
+	display: inline-block;
+	width: 120px;
+}
+/* 
+内div span img 
+ */
+#bigndiv {
+	width: 320px;
+	height: 35px;
+	background-color: #2490ED;
+}
+
+#bigmapleave {
+	color: white;
+	font-family: 'Microsoft YaHei', 微软雅黑, Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+	line-height: 35px;
+	margin-left: 10px;
+}
+
+#sm {
+	cursor: pointer;
+	margin-left: 64%;;
+}
+
+#min {
+	position: absolute;
+	z-index: 3;
+	background-color: #053158;
+	height: 32px;
+	width: 110px;
+	margin-left: 83%;
+	margin-top: 430px;
+	cursor: pointer;
+	color: white;
+	font-size: 14px;
+	font-family: 微软雅黑;
+	font-weight: bolder;
+	line-height: 30px;
+}
+
+/*
+画框取车结果
+*/
+#resultall {
+	position: absolute;
+	z-index: 3;
+	background-color: white;
+	height: 260px;
+	width: 100%;
+	font-size: 14px;
+	color: white;
+	font-weight: bold;
+	/* top: 62%; */
+	bottom: 1;
+}
+/* div顶背景色 */
+#resulthead {
+	width: 100%;
+	height: 25px;
+	background-color: #2490ED;
+	line-height: 25px;
+}
+/* 结果集关闭div图片 */
+#resimg {
+	line-height: 25px;
+	margin-left: 20px;
+	cursor: pointer;
+}
+/* 结果集div控制 */
+#result {
+	height: 234px;
+	width: 100%;
+	overflow: hidden;
+	overflow-y: auto;
+}
+
+#restable {
+	border: 1px solid #ccc;
+	width: 100%;
+	line-height: 30px;
+	text-align: center;
+	background-color: #F8F8F8;
+	font-size: 13px;
+	color: #666;
+	font-family: 'Microsoft YaHei', 微软雅黑, Arial, Helvetica, sans-serif;
+}
+/*
+左侧车辆展示的cssstart
+*/
+#alls {
+	width: 280px;
+	height: 120px;
+	border: 1px solid #ccc;
+	padding: 5 0 0 20;
+	font-size: 13px;
+	color: #666;
+	font-family: 'Microsoft YaHei', 微软雅黑, Arial, Helvetica, sans-serif;
+}
+
+#mytables {
+	font-size: 13px;
+	color: #666;
+	font-family: 'Microsoft YaHei', 微软雅黑, Arial, Helvetica, sans-serif;
+	line-height: 20px;
+	width: 270px;
+	height: 100%;
+}
+
+.bts {
+	height: 30px;
+	cursor: pointer;
+	padding: 0 10px;
+	font: 300 13px/29px 'Open Sans', Helvetica, Arial, sans-serif;
+	background-color: #296191;
+	color: white;
+	border-color: #ccc;
+	border: 1px solid #ccc;
+}
+
+.bts:hover {
+	background-color: #3276B1;
+}
+
+#cks {
+	width: 300px;
+	height: 20px;
+	background-color: #FaFaFa;
+	border: 1px solid #ccc;
+	border-bottom: none;
+}
+
+#ck {
+	width: 300px;
+	height: 20px;
+	background-color: #FaFaFa;
+	border: 1px solid #ccc;
+	border-top: none;
+}
+
+#dgs {
+	width: 300px;
+	height: 360px;
+}
+
+.gbxs {
+	border: 1px solid #A9A9A9;
+	height: 25px;
+	background-color: #fafafa;
+	position: relative;
+	right: -10px;
+}
+
+.gbxs:hover {
+	background-color: #4BAAFC;
+	color: white;
+	cursor: pointer;
+}
+
+#cxxx {
+	width: 200px;
+	height: 80px;
+	position: absolute;
+	z-index: 10;
+	top: 30%;
+	left: 20%;
+	font-weight: bolder;
+	display: none;
+}
+
+#cxxxhd {
+	background-color: #2490ED;
+	height: 25px;
+	line-height: 25px;
+	padding-left: 10;
+	font-size: 13px;
+	color: white;
+	font-family: 'Microsoft YaHei', 微软雅黑, Arial, Helvetica, sans-serif;
+}
+
+#connet {
+	height: 75px;
+	background-color: white;
+}
+
+#tname {
+	width: 100;
+	margin: 15 0 0 30;
+}
+
+#thisname {
+	display: inline-flex;
+	width: 150;
+	overflow: hidden;
+	height: 30;
+}

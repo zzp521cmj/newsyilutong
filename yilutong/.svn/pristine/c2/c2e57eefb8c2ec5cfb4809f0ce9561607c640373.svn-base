@@ -1,0 +1,42 @@
+{
+    "Detail": [
+        {
+            "ProductID": 2,
+            "ProductName": "牛奶",
+            "UnitPrice": 15.2,
+            "Quantity": 20,
+            "Amount": 304
+        },
+        {
+            "ProductID": 16,
+            "ProductName": "饼干",
+            "UnitPrice": 13.9,
+            "Quantity": 35,
+            "Amount": 486.5
+        },
+        {
+            "ProductID": 36,
+            "ProductName": "鱿鱼",
+            "UnitPrice": 15.2,
+            "Quantity": 25,
+            "Amount": 380
+        },
+        {
+            "ProductID": 59,
+            "ProductName": "苏澳奶酪",
+            "UnitPrice": 44,
+            "Quantity": 30,
+            "Amount": 1320
+        }
+    ],
+    "Master": [
+       {
+    	    "OrderID": 10255,
+            "CustomerId": "RICSU",
+            "CompanyName": "永大企业",
+            "Address": "港务口街 29 号",
+            "OrderDate": "1996-7-12 0:00:00",
+            "Remark": "余小姐(089) 7034214"
+	}
+    ]
+}

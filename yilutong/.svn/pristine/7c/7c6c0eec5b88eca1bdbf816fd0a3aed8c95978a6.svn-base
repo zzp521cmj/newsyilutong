@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jy.dao.DataSetDao">
+	<!-- 获取车辆车牌id 和定位时间如当前时间的差列表 -->
+	<select id="updatestatefromtime" resultType="Maps">
+		SELECT
+		carno,
+		TIMESTAMPDIFF(MINUTE,inssj,NOW()) AS timesmin
+		FROM
+		jy_monitor_data
+		WHERE
+		inssj IS NOT NULL
+	</select>
+	<!-- 根据所得的车牌号进行更新gps状态的操作 -->
+	<insert id="updatestatebycarnos" parameterType="java.util.List">
+		update jy_monitor_data set
+		state = '3',gpsstate='关闭'
+		WHERE carno in
+		<foreach collection="list" index="index" item="item" open="("
+			separator="," close=")">
+			(
+			#{item}
+			)
+		</foreach>
+	</insert>
+	<!-- 保存临时表的数据到使用的全图监控week表中 -->
+	<insert id="savecarsinfo" parameterType="java.util.List">
+		INSERT INTO jy_monitor_data_week (
+		monitorid,
+		lng,
+		lat,
+		carid,
+		carno,
+		beidouid,
+		nowspace,
+		nowdate,
+		state,
+		departmentid,
+		gpsstate,
+		angle,
+		inssj
+		)
+		VALUES
+		<foreach collection="list" index="index" item="item"
+			separator=",">
+			(
+			#{item.monitorid},
+			#{item.lng},
+			#{item.lat},
+			#{item.carno},
+			#{item.carid},
+			#{item.beidouid},
+			#{item.nowspace},
+			#{item.nowdate},
+			#{item.state},
+			"2",
+			#{item.gpsstate},
+			#{item.angle},
+			#{item.inssj}
+			)
+		</foreach>
+	</insert>
+	<!-- 删除临时表 -->
+	<delete id="deletelscarsinfo">
+		delete from jy_monitor
+	</delete>
+	<!-- 删除jy_monitor_data_week表数据 -->
+	<delete id="deletelmdcarsinfo" parameterType="java.util.List">
+		DELETE FROM jy_monitor_data WHERE carno IN
+		<foreach collection="list" index="index" item="item" open="("
+			separator="," close=")">
+			(
+			#{item}
+			)
+		</foreach>
+	</delete>
+	<!-- 查询week表中的数据多少 -->
+	<select id="selectcarsinfocount" resultType="int">
+		SELECT COUNT(*) FROM
+		jy_monitor_data_week
+	</select>
+
+	<!-- new()~~~~~~~~~~~~ -->
+	<select id="checkweekdata" resultType="int">
+		SELECT COUNT(*) FROM
+		jy_monitor_data_week
+	</select>
+
+	<select id="checkmondata" resultType="int">
+		SELECT COUNT(*) FROM
+		jy_monitor_data_month
+	</select>
+
+	<select id="checkolddata" resultType="int">
+		SELECT COUNT(*) FROM
+		jy_monitor_data_old
+	</select>
+
+
+	<insert id="insertmon">
+		INSERT jy_monitor_data_month SELECT * FROM
+		jy_monitor_data_week
+	</insert>
+	<insert id="insertold">
+		INSERT jy_monitor_data_old SELECT * FROM
+		jy_monitor_data_month
+	</insert>
+	
+	<delete id="deleteweek" >
+		DELETE FROM jy_monitor_data_week
+	</delete>
+	<delete id="deletemon" >
+		DELETE FROM jy_monitor_data_month
+	</delete>
+</mapper>

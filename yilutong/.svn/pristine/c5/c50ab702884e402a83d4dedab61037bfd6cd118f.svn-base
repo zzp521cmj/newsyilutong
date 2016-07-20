@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="com.jy.dao.DetemineVehicleDao">
+	<resultMap id="BaseResultMap" type="com.jy.model.DetemineVehicle" >
+	    <id column="vehicle_auction_id" property="vehicleAuctionId" />
+	    <result column="demand_release_id" property="demandReleaseId" />
+	    <result column="price" property="price" />
+	    <result column="determine" property="determine" />
+	    <result column="userid" property="userid" />
+	    <result column="plate_number" property="plate_number" />
+	    <result column="tels" property="tels" />
+	    <result column="car_owner" property="car_owner" />
+	    <result column="car_length" property="car_length" />
+   	  	<result column="user_id" property="user_id" />
+   	  	<result column="travel_card_id" property="travel_card_id" />
+	    <result column="length_name" property="length_name" />
+  </resultMap>
+  <select id="getdetermineVehicle" resultMap="BaseResultMap">
+<!--   		SELECT  -->
+<!-- 			*  -->
+<!-- 		FROM  -->
+<!-- 			jy_vehicle_auction -->
+<!-- 		WHERE  -->
+<!-- 			demand_release_id = #{param3} -->
+	SELECT 
+		jva.*,
+		jtc.travel_card_id,
+		jtc.plate_number,
+		jtc.tels,
+		jtc.car_owner,
+		jtc.user_id,
+		jcl.length_name
+	FROM 
+		jy_vehicle_auction jva
+	INNER JOIN jy_travel_card jtc ON jva.userid=jtc.user_id
+	left  join
+  	 jy_car_length jcl on jcl.length_id=jtc.boxType
+	WHERE 
+		jva.state=1 and
+		demand_release_id = #{param3}
+		limit #{param1},#{param2}
+  </select>
+  <select id="getCount" resultType="int">
+  	SELECT 
+			COUNT(*) 
+		FROM 
+			jy_vehicle_auction jva
+		INNER JOIN jy_temporary_car jtc ON jva.userid=jtc.creating_user
+		WHERE 
+		jva.state=1 and
+			jva.demand_release_id = #{_parameter}
+  </select>
+  <select id="checkDetermineVehicle" resultType="int">
+  	SELECT 
+			COUNT(*) 
+		FROM 
+			jy_vehicle_auction jva
+		WHERE 
+			jva.demand_release_id = #{_parameter}
+			and 
+			jva.determine = 1
+  </select>
+  
+   <select id="zuidiPrice" resultMap="BaseResultMap">
+  	SELECT 
+		MIN(jva.price) AS zuidi,
+		COUNT(*) AS cou,
+		jva.*
+	FROM 
+		jy_vehicle_auction jva
+	INNER JOIN jy_temporary_car jtc ON jva.userid=jtc.creating_user
+		
+	WHERE 
+		jva.determine=1 
+		AND jtc.plate_number=#{_parameter}
+  
+  </select>
+  <update id="updateDetermineVehicle">
+  	update
+			jy_vehicle_auction 
+		set 
+		determine=1,
+		certain_time=SYSDATE()
+		where 
+			vehicle_auction_id=#{_parameter}
+  		
+  </update>
+   <update id="updateDetermine" >
+  	update
+			jy_demand_release 
+		set 
+		istrue=1
+		where 
+			demand_release_id=#{_parameter}
+  		
+  </update>
+  <!-- 查询carid -->
+  
+  <select id="getTemporary_carId" resultType="String">
+  	SELECT
+  		temporary_car_id
+  	FROM
+  		jy_vehicle_auction
+  	WHERE 
+  		vehicle_auction_id=#{0}
+  </select>
+  <!-- 获取设备id -->
+  <select id="getCannId" resultType="User">
+  	SELECT 
+  		ju.*
+  	FROM
+  		jy_user ju
+  	INNER JOIN 
+  		jy_travel_card jtc 
+	  	ON ju.id=jtc.user_id
+	WHERE 
+	 jtc.travel_card_id=#{_parameter}
+  	
+  </select>
+  <!-- 添加确认车辆msg -->
+  <insert id="saveConfirmMsg" parameterType="ConfirmMsg">
+  	INSERT INTO
+  		jy_confirmvehicle_msg
+  	(
+  		confirm_id,
+  		car_id,
+  		msg_time,
+  		isread,
+  		message,
+  		tel,
+  		state
+  	)
+  	VALUES
+  	(
+  		#{confirm_id},
+  		#{car_id},
+  		SYSDATE(),
+  		0,
+  		#{message},
+  		#{tel},
+  		#{state}
+  	)
+  </insert>
+  <!-- 查询没有确认的车辆信息 -->
+  <select id="getdetermineVehicleNotrue" resultType="DetemineVehicle">
+  SELECT 
+  	* 
+  FROM
+  	jy_vehicle_auction
+  WHERE 
+  		demand_release_id=#{_parameter}
+  AND 
+  		determine=0
+  </select>
+  <!-- 没有确定的cannlid -->
+  <select id="getCannIds" resultType="User" parameterType="java.util.Arrays">
+  SELECT 
+  		ju.*
+  	FROM
+  		jy_user ju
+  	INNER JOIN 
+  		jy_travel_card jtc 
+	  	ON ju.id=jtc.user_id
+	WHERE 
+	 jtc.travel_card_id IN
+	<foreach collection="array" index="index" item="item" open="("
+		separator="," close=")">
+		#{item}
+	</foreach>
+  </select>
+</mapper>

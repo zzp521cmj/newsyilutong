@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jy.dao.LinStandardDao">
+	<resultMap type="Remark" id="remaresultMap">
+		<id column="remark_id" property="remark_id" />
+		<result column="remark_type_id" property="remark_type_id" />
+		<result column="remark_point" property="remark_point" />
+		<result column="remark_state" property="remark_state" />
+		<result column="remark_range" property="remark_range" />
+		<association property="remarkRange" javaType="RemarkRange">
+			<id column="remark_range_id" property="remark_range_id" />
+			<result column="remark_range_name" property="remark_range_name" />
+		</association>
+	</resultMap>
+	<insert id="savelinstandard" parameterType="LinStandard">
+		insert into
+		jy_linstandard(linid,linname,linbh,linfatype,lincd,linbz,linzb,linctime,scity,ecity,stoptime,longtime,spt,ept)
+		values(#{linid},#{linname},#{linbh},#{linfatype},#{lincd},#{linbz},#{linzb},NOW(),#{scity},#{ecity},#{stoptime},#{longtime},#{spt},#{ept})
+	</insert>
+	<select id="getlinlist" resultType="PostClassline">
+		<if test="_parameter !=null">
+			select classline_id as classlineId,
+			classline_name as
+			classlineName,
+			classline_code as classlineCode,
+			organization_id as
+			organizationId
+			from jy_classline jc where jc.classline_name like
+			'%${_parameter}%'
+		</if>
+	</select>
+	<select id="getlinbyid" resultType="PostClassLineInfo">
+		select
+		siteFlag as siteflag,
+		sitePoint as lnglat,
+		classline_Id as classlineId,
+		remarkId
+		from
+		jy_classline_info jci where jci.classline_Id ='${_parameter}'
+		ORDER BY
+		siteorder
+	</select>
+	<select id="getlinnameandno" resultType="PostClassline">
+		SELECT
+		classline_name AS classlineName,classline_code AS classlineCode
+		FROM jy_classline
+		<if test="_parameter!=null and _parameter!=''">
+			WHERE classline_Id = '${_parameter}'
+		</if>
+	</select>
+	<select id="getLinbyid" resultType="LinStandard">
+		select * from jy_linstandard
+		where linid='${_parameter}'
+	</select>
+	<select id="getLinInfo" resultType="LinStandard">
+		SELECT *,(SELECT COUNT(*) FROM jy_linstandard_truck jlt WHERE
+		jl.linid=jlt.lid)AS ct FROM
+		jy_linstandard jl
+		where
+		1=1
+		<if test="param3!=null and param3!=''">
+			and linid like "%${param3}%"
+		</if>
+		ORDER BY linctime
+		limit #{param1},#{param2}
+
+	</select>
+	<select id="getLin" resultType="int">
+		select
+		count(*)
+		from
+		jy_linstandard
+		where
+		1=1
+		<if test="_parameter!=null and _parameter!=''">
+			and linid like "%${_parameter}%"
+		</if>
+	</select>
+	<select id="getLinName" resultType="LinStandard">
+		<if test="_parameter !=null">
+			select linid,linname from jy_linstandard where linname
+			like
+			'%${_parameter}%'
+		</if>
+	</select>
+	<delete id="deleteLinById" parameterType="java.util.Arrays">
+		delete from
+		jy_linstandard
+		where
+		linid IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	<delete id="deletecarbyno" parameterType="String">
+		delete from
+		jy_linstandard_truck
+		where
+		lid= #{_parameter}
+	</delete>
+	<select id="checkname" resultType="int">
+		select count(*) from
+		jy_linstandard where linname=#{linname}
+	</select>
+	<select id="getRemark" resultMap="remaresultMap">
+		select
+		remark_id,remark_type_id,remark_state,remark_point,remark_range,remark_range_name
+		from
+		jy_remark jr LEFT JOIN jy_remark_range jrr ON
+		jr.remark_range=jrr.remark_range_id where remark_id=#{0}
+	</select>
+	<select id="getLincount" resultType="int">
+		select count(*) from
+		jy_linstandard_truck where lid in
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+
+	<insert id="bdcar" parameterType="java.util.List">
+		INSERT INTO surmaxdata.jy_linstandard_truck (jltid, lid, tid, tname)
+		VALUES
+		<foreach collection="list" index="index" item="item"
+			separator=",">
+			(
+			#{item.jltid},
+			#{item.lid},
+			#{item.tid},
+			#{item.tname}
+			)
+		</foreach>
+	</insert>
+	<select id="getlincar" resultType="Linstandard_truck">
+		<if test="_parameter!=null and _parameter!=''">
+			SELECT
+			jltid,
+			lid,
+			tid,
+			tname
+			FROM
+			surmaxdata.jy_linstandard_truck
+			where lid="${_parameter}"
+		</if>
+	</select>
+	<!-- 查询是否有重复的插入数据 -->
+	<select id="checkAgain" resultType="int">
+		SELECT
+		COUNT(*)
+		FROM
+		jy_linstandard_truck jlt
+		WHERE
+		jlt.lid=#{param1}
+		AND jlt.tid=#{param2}
+
+	</select>
+	<insert id="saveLinstand" parameterType="Linstandard_truck">
+		INSERT INTO jy_linstandard_truck (jltid, lid, tid, tname)
+		VALUES
+		(
+		#{jltid},
+		#{lid},
+		#{tid},
+		#{tname}
+		)
+	</insert>
+
+	<select id="getorderbyaid" resultType="ShippingOrder">
+		SELECT jo.* FROM jy_agreementtoorder ja
+		INNER JOIN jy_order jo ON ja.order_id=jo.shiping_order_id
+		<if test="_parameter !=null">
+		WHERE ja.agreement_id='${_parameter}'
+		</if>
+		ORDER BY customer_point
+	</select>
+	<select id="getallremark" resultType="Warehouse">
+		SELECT 
+		  warehouse_name,
+		  warehouse_point
+		FROM
+		  jy_warehouse 
+	</select>
+</mapper>

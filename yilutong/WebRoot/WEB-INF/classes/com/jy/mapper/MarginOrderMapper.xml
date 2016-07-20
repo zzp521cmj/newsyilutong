@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jy.dao.MarginOrderDao">
+	<resultMap type="com.jy.model.OrderCustom" id="Order">
+		<id column="custom_id" property="custom_id"/>
+		<result column="custom_name" property="custom_name"  />
+		<result column="car_time" property="car_time"  />
+		<result column="send_station" property="send_station"  />
+		<result column="car_number" property="car_number"  />
+		<result column="driver_name" property="driver_name"  />
+		<result column="driver_phone" property="driver_phone"  />
+		<result column="send_time" property="send_time"/>
+		<result column="receipt_time" property="receipt_time"/>
+		<result column="adorn_fee2" property="adorn_fee2"  />
+		<result column="born_fee" property="born_fee"  />
+		<result column="born_fee1" property="born_fee1"  />
+		<result column="car_remarks" property="car_remarks"  />
+		<result column="updatetime" property="updatetime"  />
+		<result column="car_length" property="car_length"  />
+		<result column="car_type" property="car_type"  />
+		<result column="loading_remarks" property="loading_remarks"  />
+		<result column="adorn_fee1" property="adorn_fee1"  />
+		<result column="write_off4" property="write_off4"  />
+		<result column="total_cost" property="total_cost"  />
+		<result column="trunk_fee" property="trunk_fee"  />
+		<result column="take_fee" property="take_fee"  />
+		<result column="adorn_fee" property="adorn_fee"  />
+		<result column="collection_fee" property="collection_fee"  />
+		<result column="paid_fee" property="paid_fee"  />
+		<result column="write_off3" property="write_off3"  />
+		<result column="remarks_fee1" property="remarks_fee1"  />
+		<result column="remarks_fee2" property="remarks_fee2"  />
+		<result column="paid" property="paid"  />
+		<result column="paid1" property="paid1"  />
+		<result column="paid3" property="paid3"  />
+		<result column="trade_agency" property="trade_agency"  />
+		<result column="change_pay" property="change_pay"  />
+		<result column="send_fee" property="send_fee"  />
+		<result column="payble_other" property="payble_other"  />
+		<result column="change_fee1" property="change_fee1"  />
+		<result column="send_fee1" property="send_fee1"  />
+		<result column="send_other" property="send_other"  />
+		<result column="trunk_fee_c" property="trunk_fee_c"  />
+		<result column="take_fee_c" property="take_fee_c"  />
+		<result column="adorn_fee_c" property="adorn_fee_c"  />
+		<result column="trunk_fee1_c" property="trunk_fee1_c"  />
+		<result column="take_fee1_c" property="take_fee1_c"  />
+		<result column="adorn_fee1_c" property="adorn_fee1_c"  />
+	</resultMap>
+	<resultMap type="com.jy.model.OrderCustom" id="OrderCustom">
+		<id column="custom_id" property="custom_id"/>
+		<result column="custom_name" property="custom_name"  />
+	</resultMap>
+	<select id="getMarginOrder"  resultType="CreateAgreement">
+		<!-- SELECT
+		ji.*,ji.born_fee as born_fee1,总运费paid_fee  应付装卸费adorn_fee2    实付装卸费adorn_fee1  应付备注remarks_fee2     应收装卸费born_fee   实收装卸费born_fee1   应收备注remarks_fee1
+		(select sum(js.paid) from jy_shiping_order js where js.custom_id= ji.custom_id and pay_type = 1) as paid,提付实收
+		(select sum(js.paid1) from jy_shiping_order js where js.custom_id= ji.custom_id and pay_type = 0) as paid1,回付实收
+		(select sum(js.paid1) from jy_shiping_order js where js.custom_id= ji.custom_id and pay_type = 3) as paid2,到付实收
+		(select sum(js.trade_agency) from jy_shiping_order js where js.custom_id= ji.custom_id) as trade_agency,代收款
+		
+		(select sum(js.change_pay) from jy_shiping_order js where js.custom_id= ji.custom_id) as change_pay,应付中转费
+		(select sum(js.send_fee) from jy_shiping_order js where js.custom_id= ji.custom_id ) as send_fee,应付送货费
+		(select sum(js.payble_other) from jy_shiping_order js where js.custom_id= ji.custom_id ) as payble_other,应付其他费
+		
+		(select sum(js.change_fee1) from jy_shiping_order js where js.custom_id= ji.custom_id ) as change_fee1,实付中专费
+		(select sum(js.send_fee1) from jy_shiping_order js where js.custom_id= ji.custom_id ) as send_fee1,实付送货费
+		(select sum(js.send_other) from jy_shiping_order js where js.custom_id= ji.custom_id ) as send_other,实付其他费
+		
+		(select sum(js.trunk_fee) from jy_shiping_order js where js.custom_id= ji.custom_id ) as trunk_fee_c,应收中转费
+		(select sum(js.take_fee) from jy_shiping_order js where js.custom_id= ji.custom_id ) as take_fee_c,应收送货费
+		(select sum(js.adorn_fee) from jy_shiping_order js where js.custom_id= ji.custom_id ) as adorn_fee_c,应收其他费
+		
+		(select sum(js.trunk_fee) from jy_shiping_order js where js.custom_id= ji.custom_id ) as trunk_fee1_c,实收中转费
+		(select sum(js.take_fee) from jy_shiping_order js where js.custom_id= ji.custom_id ) as take_fee1_c,实收送货费
+		(select sum(js.adorn_fee) from jy_shiping_order js where js.custom_id= ji.custom_id ) as adorn_fee1_c实收其他费
+		FROM
+		jy_order_custom ji 
+		where 1=1 -->
+			SELECT 
+			SUM(jio.transport_pay) AS transport_pays,
+			(SUM(jio.transport_pay)-ji.all_money) AS money_cha,
+			ji.*,
+			CASE
+			WHEN ji.agreement_type='0' THEN '班线'
+			WHEN ji.agreement_type='1' THEN '配送'
+			WHEN ji.agreement_type='2' THEN '转运'
+			END AS agreement_types,
+			company_name
+			FROM jy_create_agreement ji
+			LEFT JOIN jy_agreementtoorder  jao ON ji.agreement_id=jao.agreement_id
+			LEFT JOIN jy_shiping_order jio ON  jio.shiping_order_id=jao.order_id
+			LEFT JOIN jy_company jc ON jc.company_id=ji.company_id
+			WHERE
+			1=1
+			<if test="param3!=null and param3!=''">
+			and ji.agreement_number  like "%${param3}%"
+		</if>	
+		<if test="param4!=null and param4!=''">
+			and ji.send_date &gt;=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.send_date &lt;=#{param5}
+		</if>	
+		<if test="param6!=null and param6!=''">
+			and ji.create_time &gt;=#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">
+			and ji.create_time &lt;=#{param7}
+		</if>
+		<if test="param8!=null and param8!=''">
+			and ji.car_id like "%${param8}%"
+		</if>
+		<if test="param9!=null and param9!=''">
+			and ji.car_name like "%${param9}%"
+		</if>	
+		<if test="param12!=null and param12!=''">
+			and  ji.agreement_id in
+		<foreach collection="array" index="index" item="item" open="("		
+		 separator="," close=")">
+				#{item}
+		</foreach>	
+		</if>			
+			GROUP BY ji.agreement_number
+			ORDER BY ji.create_time DESC
+			<if test="param1!=null and param2!=null   and param2!=0">
+			limit
+			#{param1},#{param2}	
+		</if>
+			
+	</select>
+	<select id="getMarginOrderCount" resultType="int">
+			SELECT 
+			 COUNT( *)	
+			 FROM(
+			 SELECT ji.agreement_number
+			 FROM jy_create_agreement ji
+			LEFT JOIN jy_agreementtoorder  jao ON ji.agreement_id=jao.agreement_id
+			LEFT JOIN jy_shiping_order jio ON  jio.shiping_order_id=jao.order_id
+			WHERE
+			1=1
+		<if test="param1!=null and param1!=''">
+			and ji.agreement_number like "%${param1}%"
+		</if>	
+		<if test="param2!=null and param2!=''">
+			and ji.send_date &gt;=#{param2}
+		</if>
+		<if test="param3!=null and param3!=''">
+			and ji.send_date &lt;=#{param3}
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.create_time &gt;=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.create_time &lt;=#{param5}
+		</if>
+		<if test="param6!=null and param6!=''">
+			and ji.car_id like "%${param6}%"
+		</if>
+		<if test="param7!=null and param7!=''">
+			and ji.car_name like "%${param7}%"
+		</if>
+		GROUP BY ji.agreement_number
+			 ) as tt
+			
+	</select>
+	
+	<select id="getMarginShip" resultType="ShippingOrder">
+		select js.*,js.take_fee as take_fee1,js.trunk_fee as trunk_fee1,js.ys_unloading_fee as ys_unloading_fee1,js.adorn_fee as adorn_fee1,
+		CASE
+			WHEN js.send_type='0' THEN '自提'
+			WHEN js.send_type='1' THEN '送货'
+			END AS sendType,
+		CASE
+			WHEN js.pay_type='0' THEN '回付'
+			WHEN js.pay_type='1' THEN '提付'
+			WHEN js.pay_type='2' THEN '现付'
+			WHEN js.pay_type='3' THEN '货到前付'
+			END AS payType,
+		CASE
+			WHEN js.is_receive='0' THEN '没有'
+			WHEN js.is_receive='1' THEN '接收'
+			END AS isReceive
+		 from jy_shiping_order js LEFT JOIN jy_order_custom  jy ON jy.custom_id=js.custom_id 
+where jy.custom_id = #{param13}<!-- and js.shipping_order_state=4 -->
+		 <if test="param3!=null and param3!=''">
+			and js.shiping_order_num like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and js.receipt like "%${param4}%"
+		</if>
+		<if test="param5!=null and param5!=''">
+			and js.end_address like "%${param5}%"
+		</if>
+		<if test="param6!=null and param6!=''">
+			and js.send_time &gt;=#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">
+			and js.send_time &lt;=#{param7}
+		</if>
+		<if test="(param6!=null and param6!='') and (param7!=null and param7!='')">
+			and js.send_time &gt;=#{param6}
+			and js.send_time &lt;=#{param7}
+		</if>
+		<if test="param8!=null and param8!=''">
+			and js.custom_id =#{param8}
+		</if>
+			<if test="param9!=null and param9!=''">
+			and js.receipt_tel like "%${param9}%"
+		</if>
+			<if test="param10!=null and param10!=''">
+			and js.custom_name like '%${param10}%'
+		</if>
+			<if test="param11!=null and param11!=''">
+			and js.pay_type =#{param11}
+		</if>
+			<if test="param12!=null and param12!=''">
+			and js.send_station =#{param12}
+		</if>
+		ORDER BY
+		js.updatetime
+		DESC
+		<if test="param1!=null and param2!=null and param2!=0">
+			limit
+			#{param1},#{param2}
+		</if>
+	</select>
+	<select id="getMarginShipCount" resultType="int">
+		select count(*) from (select js.*,js.take_fee as take_fee1,js.trunk_fee as trunk_fee1,js.ys_unloading_fee as ys_unloading_fee1,js.adorn_fee as adorn_fee1,
+		CASE
+			WHEN js.send_type='0' THEN '自提'
+			WHEN js.send_type='1' THEN '送货'
+			END AS sendType,
+		CASE
+			WHEN js.pay_type='0' THEN '回付'
+			WHEN js.pay_type='1' THEN '提付'
+			WHEN js.pay_type='2' THEN '现付'
+			WHEN js.pay_type='3' THEN '货到前付'
+			END AS payType,
+		CASE
+			WHEN js.is_receive='0' THEN '没有'
+			WHEN js.is_receive='1' THEN '接收'
+			END AS isReceive
+		from jy_shiping_order js LEFT JOIN jy_order_custom  jy ON jy.custom_id=js.custom_id 
+where jy.custom_id = #{param11}<!-- and js.shipping_order_state=4 -->
+		<if test="param1!=null and param1!=''">
+			and js.shiping_order_num like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and js.receipt like "%${param2}%"
+		</if>
+		<if test="param3!=null and param3!=''">
+			and js.end_address like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and js.send_time &gt;=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			and js.send_time &lt;=#{param5}
+		</if>
+		<if test="(param4!=null and param4!='') and (param5!=null and param5!='')">
+			and js.send_time &gt;=#{param4}
+			and js.send_time &lt;=#{param5}
+		</if>
+		<if test="param6!=null and param6!=''">
+			and js.custom_id =#{param6}
+		</if>
+			<if test="param7!=null and param7!=''">
+			and js.receipt_tel like "%${param7}%"
+		</if>
+			<if test="param8!=null and param8!=''">
+			and js.custom_name =#{param8}
+		</if>
+			<if test="param9!=null and param9!=''">
+			and js.pay_type =#{param9}
+		</if>
+			<if test="param10!=null and param10!=''">
+			and js.send_station =#{param10}
+		</if>
+		ORDER BY
+		js.updatetime
+		DESC
+		 ) as ship
+	</select>
+	<update id="updataRemarkCustom" parameterType="OrderCustom">
+		update
+		jy_order_custom
+		<set>
+			 		remarks_fee1=#{param2},
+					remarks_fee2=#{param3},
+		</set>
+		where custom_id = #{param1}
+	</update>
+	<update id="updataRemarkShip">
+		update
+		jy_shiping_order
+		<set>
+				charge_remark1=#{param2}
+				,charge_remark2=#{param3}
+		</set>
+		where shiping_order_id = #{param1}
+	</update>
+</mapper>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jy.dao.CityTarmAgreementSearchDao" >
+ 
+  <select id="getCityTarmAgreementSearchInfo" resultType="CityAgreement" >
+		SELECT 
+	    	jc.*,
+			jd.department_name,
+			jd.department_name as lastname  	
+	    FROM 
+			jy_cityAgreement jc
+		LEFT JOIN 
+			jy_department jd ON jd.department_id=jc.did
+			LEFT JOIN 
+			jy_department jd1 ON jd1.department_id=jc.lastdid
+		WHERE 
+			isCar=0
+			<if test="param3!=null and param3!=''">
+				and code like "%${param3}%"
+			</if>
+			<if test="param4!=null and param4!=''">
+				and car_id like "%${param4}%"
+			</if>
+			<if test="param5!=null and param5!=''">
+				and createtime &lt;=#{param5}
+			</if>
+			ORDER BY jc.isArrive  DESC, jc.arrive DESC, jc.createtime DESC,jc.car_id DESC
+		limit #{param1},#{param2}
+  </select>
+  	<!-- 查询所有 -->
+  <select id="getCityTarmAgreementSearchAll" resultType="CityAgreement">
+  		SELECT 
+	    	jc.*,
+			jd.department_name,
+			jd.department_name as last 	
+	    FROM 
+			jy_cityAgreement jc
+		LEFT JOIN 
+			jy_department jd ON jd.department_id=jc.did
+			LEFT JOIN 
+			jy_department jd1 ON jd1.department_id=jc.lastdid
+		WHERE 
+			isCar=0
+		<if test="_parameter!=null">
+			AND isArrive=#{_parameter}
+		</if>
+  </select>
+  <!-- 获取总行数 -->
+  	<select id="getCityTarmAgreementSearch" resultType="int">
+		SELECT 
+			COUNT(*)
+		FROM 
+			jy_cityAgreement
+		WHERE 
+			isCar=0
+			<if test="param1!=null and param1!=''">
+				and pcd_code like "%${param1}%"
+			</if>
+			<if test="param2!=null and param2!=''">
+				and car_id like "%${param2}%"
+			</if>
+			<if test="param3!=null and param3!=''">
+				and createtime &lt;=#{param3}
+			</if>
+  	</select>
+  	<select id="getCar_idLength" resultType="CityAgreement">
+		SELECT
+			id,car_id
+		FROM 
+			jy_cityAgreement
+		where
+			isCar=0
+		<if test="_parameter!=null">
+			and car_id like "%${_parameter}%"
+		</if>
+	</select>
+  
+</mapper>

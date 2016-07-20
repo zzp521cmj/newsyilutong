@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jy.dao.Jy_mingxiDAO">
+	<!-- 查询 -->
+	<select id="getMingxi" resultType="Jy_mingxi">
+	select * from 
+	jy_deta
+	where 1=1
+		<if test="param3!=null and param3!=''">
+			and jy_direction like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and jy_source like "%${param4}%"
+		</if>
+		<if test="param5!=null and param5!=''">
+			and jy_project like "%${param5}%"
+		</if>
+		
+		limit
+		#{param1},#{param2}
+	</select>
+
+	<select id="getMingxiInfo" resultType="int">
+		select count(*) from jy_deta
+	where
+		1=1
+
+		<if test="param1!=null and param1!=''">
+			and jy_direction like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and jy_source like "%${param2}%"
+		</if>
+		<if test="param3!=null and param3!=''">
+			and jy_project like "%${param3}%"
+		</if>
+	</select>
+	<insert id="add" parameterType="Confluence">
+		insert
+		into
+		jy_confluence
+		(
+		
+	direction,
+	source,
+	project,
+	happen,
+	other_shouru,
+	other_zhichu,
+	id,
+	shiping_order_num,
+	handle,
+	conf_id,
+	fee_date
+		)
+		values (
+		#{direction},
+		#{source},
+		#{project},
+		#{happen},
+		#{other_shouru},
+		#{other_zhichu},
+		#{id},
+		#{shiping_order_num},
+		#{handle},
+		#{conf_id},
+		#{fee_date}
+		
+		)
+	</insert>
+	
+	<insert id="addMingxi" parameterType="Mingxi">
+		insert
+		into
+		jy_mingxi
+		(
+		laiyuan,
+	happen_date,
+	subject,
+	subject_two,
+	subject_three,
+	money,
+	remarks,
+	shiping_order_num,
+	customer_name,
+	consignee,
+	mingxi_id,
+	id
+	
+		)
+		values (
+	#{laiyuan},
+	#{happen_date},
+	#{subject},
+	#{subject_two},
+	#{subject_three},
+	#{money},
+	#{remarks},
+	#{shiping_order_num},
+	#{customer_name},
+	#{consignee},
+	#{mingxi_id},
+	#{id}
+				
+	
+		
+		)
+	</insert>
+	<insert id="sava" parameterType="Jy_mingxi">
+		insert
+		into
+		jy_deta
+		(
+	jy_direction,
+	jy_source,
+	jy_project,
+	jy_id,
+	jy_jiaojie,
+	jy_subject,
+	jy_subject_two,
+	jy_money,
+	jy_remarks,
+	jy_fufei,
+	times
+		)
+		values (
+		#{jy_direction},
+		#{jy_source},
+		#{jy_project},
+		#{jy_id},
+		#{jy_jiaojie},
+		#{jy_subject},
+		#{jy_subject_two},
+		#{jy_money},
+		#{jy_remarks},
+		#{jy_fufei},
+		now()
+		)
+	</insert>
+	
+	<delete id="deleteMingxi" parameterType="java.util.Arrays">
+		delete from
+		jy_deta
+		where
+		jy_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	
+</mapper>

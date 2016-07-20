@@ -1,0 +1,554 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jy.dao.ClaimSettlementDao">
+
+	<resultMap type="com.jy.model.Claim_settlementmap" id="claim">
+		<id column="claimsid" property="claimsid"></id>
+		<result column="numbersid" property="numbersid" />
+		<result column="custom_name" property="custom_name" />
+		<result column="receipt" property="receipt" />
+		<result column="insurance_proceeds" property="insurance_proceeds" />
+		<result column="company_name" property="company_name" />
+		<result column="compensation_payments" property="compensation_payments" />
+		<result column="claims_state" property="claims_state" />
+		<result column="claims_time" property="claims_time" />
+		<result column="damage_intensity" property="damage_intensity" />
+		<result column="verifier" property="verifier" />
+		<result column="audit_opinion" property="audit_opinion" />
+		<result column="submit_state" property="submit_state" />
+		<result column="responsible_institutions" property="responsible_institutions" />
+		<result column="responsible_people" property="responsible_people" />
+		<result column="shiping_order_num" property="shiping_order_num" />
+		<result column="send_station" property="send_station" />
+		<result column="goods_name" property="goods_name" />
+		<result column="end_address" property="end_address" />
+		<result column="send_shouji" property="send_shouji" />
+		<result column="goods_num" property="goods_num" />
+		<result column="goods_weight" property="goods_weight" />
+		<result column="goods_vol" property="goods_vol" />
+		<result column="receipt_phone" property="receipt_phone" />
+		<result column="type" property="type" />
+		<result column="khbank" property="khbank" />
+		<result column="usernames" property="usernames" />
+		<result column="kahao" property="kahao" />
+		<result column="department_name" property="department_name" />
+	</resultMap>
+	<!-- 理赔总条数 -->
+	<select id="count" resultType="int">
+		SELECT COUNT(ji.claimsid)FROM jy_claim_settlement ji LEFT JOIN
+		jy_unqualified jd ON ji.abnormalid = jd.abnormalid where 1=1
+		<if test="param1!=null and param1!=''">and jd.shiping_order_num like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''"> and ji.claims_state=#{param2}
+		</if>
+		<if test="param3!=null and param3!=''">
+			and ji.claims_time &gt;=#{param3}
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.claims_time &lt;=#{param4}
+		</if>
+		<if test="(param3!=null and param3!='') and (param4!=null and param4!='')">
+			and ji.claims_time &gt;=#{param3}
+			and ji.claims_time
+			&lt;=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">and ji.custom_name=#{param5}
+		</if>
+		<if test="param6!=null and param6!=''">and jd.receipt=#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">and ji.did=#{param7}
+		</if>
+	</select>
+
+	<!--理赔查询 -->
+	<select id="inquire" resultMap="claim">
+		<!-- SELECT ji.*, jd.* FROM jy_claim_settlement ji LEFT JOIN jy_unqualified 
+			jd ON ji.abnormalid = jd.abnormalid -->
+		select
+		ji.claimsid,
+		ji.abnormalid,
+		 ji.compensation_payments,
+		ji.claims_state,
+		ji.claims_time,
+		ji.damage_intensity,
+		ji.verifier,
+		ji.audit_opinion,
+		ji.submit_state,
+		ji.arraign_remarks,
+		ji.type,
+		ji.khbank,
+		ji.usernames,
+		ji.kahao,
+		ji.zpbh,
+		jdp.department_name,
+		jd.*
+		from jy_claim_settlement ji
+		LEFT JOIN jy_between jn
+		ON
+		ji.claimsid=jn.claimsid
+		LEFT JOIN jy_unqualified jd
+		ON
+		jd.abnormalid=jn.abnormalid
+		LEFT JOIN jy_department jdp ON jdp.department_id=ji.did
+		where 1=1
+		<if test="param3!=null and param3!=''"> and jd.shiping_order_num like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''"> and ji.claims_state=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.claims_time &gt;=#{param5}
+		</if>
+		<if test="param6!=null and param6!=''">
+			and ji.claims_time &lt;=#{param6}
+		</if>
+		<if test="(param5!=null and param5!='') and (param6!=null and param6!='')">
+			and ji.claims_time &gt;=#{param5}
+			and ji.claims_time
+			&lt;=#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">and ji.custom_name=#{param7}
+		</if>
+		<if test="param8!=null and param8!=''">and jd.receipt=#{param8}
+		</if>
+		<if test="param9!=null and param9!=''">and ji.did=#{param9}
+		</if>	<!--预留参数权限  -->	
+		GROUP BY ji.claimsid
+		ORDER BY ji.claims_time DESC
+		limit
+		#{param1},#{param2}
+
+	</select>
+	<!-- 删除 -->
+	<delete id="deleteTravel" parameterType="java.util.Arrays">
+		delete from
+		jy_claim_settlement
+		where
+		claimsid IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+	<!-- 查询修改对应的id -->
+	<select id="updateId" resultType="Claim_settlement">
+		SELECT
+		ji.*
+		FROM
+		jy_claim_settlement ji
+		where
+		claimsid=#{_parameter}
+	</select>
+
+	<!-- 根据修改的id 获取中间表 -->
+	<select id="updateween" resultType="Between">
+		select
+		*
+		from
+		jy_between jb
+		where jb.claimsid=#{_parameter}
+	</select>
+
+	<!-- 修改 -->
+	<update id="getupdate" parameterType="int">
+		update
+		jy_claim_settlement
+		<set>
+			numbersid=#{numbersid},
+			compensation_payments=#{compensation_payments},
+			claims_state='1',
+			claims_time=SYSDATE(),
+			damage_intensity=#{damage_intensity},
+			audit_opinion=#{audit_opinion},
+			submit_state='1',
+			custom_name=#{custom_name},
+			custom_id=#{custom_id},
+			type=#{type},
+			khbank=#{khbank},
+			usernames=#{usernames},
+			kahao=#{kahao},
+			zpbh=#{zpbh}
+		</set>
+		where
+		claimsid=#{claimsid}
+	</update>
+
+	<!-- 提交 -->
+	<update id="updateunqualified" parameterType="java.util.Arrays">
+		update
+		jy_claim_settlement
+		<set>
+			submit_state = '0',
+			claims_state="3",
+			did=#{param2},
+			arraign_remarks=#{param3}
+		</set>
+		where claimsid IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+
+	<!-- 导出 -->
+	<select id="exportunqualified" resultMap="claim">
+		<!-- SELECT * FROM jy_claim_settlement ji LEFT JOIN jy_unqualified jd ON 
+			ji.abnormalid = jd.abnormalid -->
+		<!-- select
+		*
+		from jy_claim_settlement ji
+		LEFT JOIN jy_between jn
+		ON
+		ji.claimsid=jn.claimsid
+		LEFT JOIN jy_unqualified jd
+		ON
+		jd.abnormalid=jn.abnormalid -->
+			select
+		ji.claimsid,
+		ji.abnormalid,
+		 ji.compensation_payments,
+		ji.claims_state,
+		ji.claims_time,
+		ji.damage_intensity,
+		ji.verifier,
+		ji.audit_opinion,
+		ji.submit_state,
+		ji.arraign_remarks,
+		ji.type,
+		ji.khbank,
+		ji.usernames,
+		ji.kahao,
+		ji.zpbh,
+		jdp.department_name,
+		jd.*
+		from jy_claim_settlement ji
+		LEFT JOIN jy_between jn
+		ON
+		ji.claimsid=jn.claimsid
+		LEFT JOIN jy_unqualified jd
+		ON
+		jd.abnormalid=jn.abnormalid
+		LEFT JOIN jy_department jdp ON jdp.department_id=ji.did
+		where 1=1
+		<if test="param1!=null and param1!=''"> and jd.shiping_order_num like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''"> and ji.claims_state=#{param2}
+		</if>
+		<if test="param3!=null and param3!=''">
+			and ji.claims_time &gt;=#{param3}
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.claims_time &lt;=#{param4}
+		</if>
+		<if test="(param3!=null and param3!='') and (param4!=null and param4!='')">
+			and ji.claims_time &gt;=#{param3}
+			and ji.claims_time
+			&lt;=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">and ji.custom_name=#{param5}
+		</if>
+		<if test="param6!=null and param6!=''">and jd.receipt=#{param6}
+		</if>
+	</select>
+
+	<!-- 勾选导出 -->
+	<select id="outShi" resultMap="claim">
+	<!-- 	select
+		*
+		from jy_claim_settlement ji
+		LEFT JOIN jy_between jn
+		ON
+		ji.claimsid=jn.claimsid
+		LEFT JOIN jy_unqualified jd
+		ON
+		jd.abnormalid=jn.abnormalid -->
+			select
+		ji.claimsid,
+		ji.abnormalid,
+		 ji.compensation_payments,
+		ji.claims_state,
+		ji.claims_time,
+		ji.damage_intensity,
+		ji.verifier,
+		ji.audit_opinion,
+		ji.submit_state,
+		ji.arraign_remarks,
+		ji.type,
+		ji.khbank,
+		ji.usernames,
+		ji.kahao,
+		ji.zpbh,
+		jdp.department_name,
+		jd.*
+		from jy_claim_settlement ji
+		LEFT JOIN jy_between jn
+		ON
+		ji.claimsid=jn.claimsid
+		LEFT JOIN jy_unqualified jd
+		ON
+		jd.abnormalid=jn.abnormalid
+		LEFT JOIN jy_department jdp ON jdp.department_id=ji.did
+		WHERE
+		ji.claimsid in
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	<!-- 查询发货客户 -->
+	<select id="inquireName" resultType="Customer">
+		select
+		customer_id,
+		customer_name
+		from
+		jy_customer
+		where 1=1
+		<if test="_parameter!=null and _parameter!=''">
+			and customer_name like "%${_parameter}%"
+		</if>
+	</select>
+
+	<!-- 查询收货客户 -->
+	<select id="inquireName1" resultType="Unqualified">
+		select
+		receipt
+		from
+		jy_unqualified
+		where 1=1
+		<if test="_parameter!=null and _parameter!=''">
+			and receipt like "%${_parameter}%"
+		</if>
+	</select>
+
+	<!-- 查询异常签收且审核通过总条数 -->
+	<select id="abnormalcount" resultType="int">
+		SELECT COUNT(*) FROM ( SELECT jd.customer_id FROM jy_unqualified jd
+		LEFT JOIN jy_customer jr
+		ON jd.customer_id = jr.customer_id
+		where
+		audit_state=2
+		and ides=0
+		<if test="param1!=null and param1!=''">
+			and jd.send_time &gt;=#{param1}
+		</if>
+		<if test="param2!=null and param2!=''">
+			and jd.send_time &lt;=#{param2}
+		</if>
+		<if test="(param1!=null and param1!='') and (param2!=null and param2!='')">
+			and jd.send_time &gt;=#{param1}
+			and jd.send_time
+			&lt;=#{param2}
+		</if>
+		<if test="param3!=null and param3!=''"> and jd.customer_id=#{param3}
+		</if>
+		<if test="param4!=null and param4!=''">and jd.shiping_order_num like "%${param4}%"
+		</if>
+		<if test="param5!=null and param5!=''">and jd.responsible_people=#{param5}
+		</if>
+		<if test="param6!=null and param6!=''">and jd.types_id=#{param6}
+		</if>
+		)AS q
+	</select>
+
+	<!-- 查询异常签收且审核通过 -->
+	<select id="abnormal" resultType="Unqualified">
+		SELECT
+		*
+		FROM
+		jy_unqualified jd LEFT JOIN
+		jy_customer jr
+		ON jd.customer_id
+		= jr.customer_id
+		where audit_state=2
+		<if test="param3!=null and param3!=''">
+			and jd.send_time &gt;=#{param3}
+		</if>
+		<if test="param4!=null and param4!=''">
+			and jd.send_time &lt;=#{param4}
+		</if>
+		<if test="(param3!=null and param3!='') and (param4!=null and param4!='')">
+			and jd.send_time &gt;=#{param3}
+			and jd.send_time
+			&lt;=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''"> and jd.customer_id=#{param5}
+		</if>
+		<if test="param6!=null and param6!=''">and jd.shiping_order_num like "%${param6}%"
+		</if>
+		<if test="param7!=null and param7!=''">and jd.responsible_people=#{param7}
+		</if>
+		<if test="param8!=null and param8!=''">and jd.types_id=#{param8}
+		</if>
+		<if test="param9!=null and param9!=''">and jd.ides=#{param9}
+		</if>
+
+		GROUP BY abnormalid
+		limit
+		#{param1},#{param2}
+	</select>
+
+	<!-- 查询异常类型 -->
+	<select id="nquiryDisplay" resultType="Unqualified">
+		select
+		types_id
+		from
+		jy_unqualified
+		where 1=1
+		and audit_state=2
+		<if test="_parameter!=null and _parameter!=''">
+			and types_id like "%${_parameter}%"
+		</if>
+	</select>
+
+	<!-- 根据发货客户查询总条数 -->
+	<select id="countName" resultType="int">
+		select
+		count(*)
+		from
+		jy_unqualified
+		where 1=1
+		and audit_state=2
+		<if test="_parameter!=null and _parameter!=''">
+			and custom_name=#{_parameter}
+		</if>
+		GROUP BY abnormalid
+	</select>
+
+	<!-- 根据发货客户查询所有内容 -->
+	<select id="selectName" resultType="Unqualified">
+		select
+		*
+		from
+		jy_unqualified
+		where 1=1
+		and audit_state=2
+		<if test="param3!=null and param3!=''">
+			and custom_name=#{param3}
+		</if>
+		GROUP BY abnormalid
+		limit
+		#{param1},#{param2}
+	</select>
+
+	<!-- 添加 -->
+	<insert id="insertInfo" parameterType="Claim_settlement">
+		insert
+		into
+		jy_claim_settlement
+		(
+		claimsid,
+		numbersid,
+		compensation_payments,
+		claims_state,
+		claims_time,
+		damage_intensity,
+		verifier,
+		audit_opinion,
+		submit_state,
+		user_id,
+		custom_name,
+		custom_id,
+		type,
+		khbank,
+		usernames,
+		kahao,
+		zpbh
+		)
+		value
+		(
+		#{claimsid},
+		#{numbersid},
+		#{compensation_payments},
+		'1',
+		SYSDATE(),
+		#{damage_intensity},
+		#{verifier},
+		#{audit_opinion},
+		'1',
+		#{user_id},
+		#{custom_name},
+		#{custom_id},
+		#{type},
+		#{khbank},
+		#{usernames},
+		#{kahao},
+		#{zpbh}
+		)
+	</insert>
+
+	<!--添加中间表 -->
+	<insert id="insetinf" parameterType="java.util.List">
+		insert
+		into
+		jy_between
+		(
+		betweenid,
+		claimsid,
+		abnormalid
+		)
+		value
+		<foreach collection="list" index="index" item="item"
+			separator=",">
+			(
+			#{item.betweenid},
+			#{item.claimsid},
+			#{item.abnormalid}
+			)
+		</foreach>
+	</insert>
+
+	<!-- 查询该条数据关联的上报表 -->
+	<select id="getjUnqualified" parameterType="java.util.Arrays"
+		resultType="Unqualified">
+		select * from jy_unqualified
+		where abnormalid in
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+
+	<!--查询驳回记录的id -->
+	<select id="RecordList" resultType="Settlement_Record">
+		select
+		*
+		from
+		jy_claim_settlement_record
+		where
+		1=1
+		and claimsid=#{param1}
+	</select>
+	<select id="Record" resultType="int">
+		select
+		count(*)
+		from
+		jy_claim_settlement_record
+		where
+		1=1
+		and claimsid=#{param1}
+	</select>
+
+	<!-- 根据上报表id 修改是否理赔状态 -->
+	<update id="updatestate" parameterType="String">
+		UPDATE
+		jy_unqualified
+		set ides=#{param2}
+		where abnormalid in
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	<!-- 删除中间表 -->
+	<delete id="deleteween" parameterType="int">
+		DELETE
+		from
+		jy_between
+		where claimsid in
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+</mapper>

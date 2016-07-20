@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jy.dao.MonitorSetDao">
+	
+	<select id="getMonitorSetInfo" resultType="MonitorSet">
+	SELECT 
+		*
+	FROM 
+		jy_monitor_set
+	</select>
+		<update id="dealMonitorSet">
+			update  
+				jy_monitor_set
+			set 
+				smonitor_line=#{smonitor_line},
+				smonitor_distance=#{smonitor_distance},
+				smonitor_point=#{smonitor_point},
+				smonitor_trantime=#{smonitor_trantime},
+				smonitor_cartime=#{smonitor_cartime},
+				smonitor_pointtime=#{smonitor_pointtime}
+			where
+				smonitor_id=#{smonitor_id}
+		</update>
+	</mapper>

@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=gb2312" http-equiv="Content-Type">
+<meta name="keywords" content="JS代码,{keyword},JS广告代码,css垂直居中,div垂直居中,JS特效代码" />
+<meta name="description" content="此代码内容为{title}，属于站长常用代码，更多{keyword}代码请访问懒人图库JS代码频道。" />
+<title>{title}_懒人图库</title>
+<link type="text/css" href="css/lrtk.css" rel="stylesheet" />
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/lrtk.js"></script>
+</head>
+
+<body>
+<!--代码开始-->
+<div id="xzw_starSys">
+	<div id="xzw_starBox">
+		<ul class="star" id="star">
+			<li><a href="javascript:void(0)" title="1" class="one-star">1</a></li>
+			<li><a href="javascript:void(0)" title="2" class="two-stars">2</a></li>
+			<li><a href="javascript:void(0)" title="3" class="three-stars">3</a></li>
+			<li><a href="javascript:void(0)" title="4" class="four-stars">4</a></li>
+			<li><a href="javascript:void(0)" title="5" class="five-stars">5</a></li>
+		</ul>
+		<div class="current-rating" id="showb"></div>
+	</div>
+	<!--评价文字-->
+	<div class="description"></div>
+</div>
+<!--代码结束-->
+
+<div style="text-align:center;margin:20px 0;">
+    <p>来源：<a href="http://phone.witamean.net/sexy-vote/" target="_blank">witamean</a>　代码整理：<a href="http://www.lanrentuku.com/" target="_blank">懒人图库</a>　感谢：<a href="http://www.lanrentuku.com/" target="_blank">剑雨</a></p>
+    <p>＊尊重他人劳动成果，转载请自觉注明出处！注：此代码仅供学习交流，请勿用于商业用途。</p>
+    <p>{download}</p>
+    <p>{content}</p>
+    <p>{google_729x90}</p>
+</div>
+</body>
+</html>

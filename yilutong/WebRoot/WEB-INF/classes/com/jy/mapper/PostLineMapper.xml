@@ -1,0 +1,529 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- zzp 班线管理mapper-->
+<mapper namespace="com.jy.dao.PostLineDao" >
+<!-- <resultMap type="com.jy.model.PostClassline" id="resultPostLineInfoList">
+        <id property="classline_id" column="classlineId"/>
+        <result property="classlineName" column="classline_name"/>
+        <result property="classlineCode" column="classline_code"/>
+        <result property="organizationId" column="organization_id"/>
+</resultMap> -->
+	<resultMap type="com.jy.model.PostClassline" id="resultPostLineList">
+        <id property="classlineId" column="classline_id"/>
+        <result property="classlineName" column="classline_name"/>
+        <result property="classlineCode" column="classline_code"/>
+        <result property="organizationId" column="organization_id"/>
+        <result column="organizationName" property="organizationName"/>
+	    <result column="departure_time" property="departure_time"/>
+	    <result column="plate_number" property="plate_number"/>
+	    <result column="car_id" property="car_id"/>
+	    <result column="regular_type" property="regular_type"/>
+	    <result column="days" property="days"/>
+	    <result column="repetition_period" property="repetition_period"/>
+	    <result column="end_type" property="end_type"/>
+	    <result column="end_num" property="end_num"/>
+	    <result column="end_date" property="end_date"/>
+	    <result column="effective_date" property="effective_date"/>
+	    <result column="update_datetime" property="update_datetime"/>
+	     <result column="all_money" property="all_money"/>
+	    
+         <association property="postClassLineInfo" javaType="PostClassLineInfo" >
+            <id property="classlineId" column="classline_Id" />
+            <result property="shouzhandian" column="shouzhandian" />
+            <result property="endzhandian" column="endzhandian" />  
+            <result property="passdian" column="passdian" />
+            <result property="site_mlg" column="sumlength" />
+            <result property="site_run" column="sumtime" />
+        </association>
+         <association property="classLineToLinstandard" javaType="ClassLineToLinstandard">
+             <id property="classlineId" column="classline_id" />
+             <result property="linname" column="linname" />
+        </association>
+    </resultMap>
+    
+   <resultMap id="BasePostClassline" type="com.jy.model.PostClassline" >
+    <id column="classline_id" property="classlineId"/>
+    <result column="classline_name" property="classlineName"/>
+    <result column="classline_code" property="classlineCode"/>
+    <result column="organization_id" property="organizationId"/>
+    <result column="organizationName" property="organizationName"/>
+    <result column="departure_time" property="departure_time"/>
+    <result column="plate_number" property="plate_number"/>
+    <result column="car_id" property="car_id"/>
+    <result column="regular_type" property="regular_type"/>
+    <result column="days" property="days"/>
+    <result column="repetition_period" property="repetition_period"/>
+    <result column="end_type" property="end_type"/>
+    <result column="end_num" property="end_num"/>
+    <result column="end_date" property="end_date"/>
+    <result column="effective_date" property="effective_date"/>
+    <result column="all_money" property="all_money"/>
+    
+    
+  </resultMap>
+  
+   <resultMap id="BasePostClassLineInfo" type="com.jy.model.PostClassLineInfo" >
+	    <id column="siteId" property="site_id" />
+	    <result column="siteFlag" property="siteflag" />
+	    <result column="siteName" property="site_name" />
+	    <result column="sitePoint" property="lnglat" />
+	    <result column="siteLength" property="site_mlg"  />
+	    <result column="siteTime" property="site_run" />
+	    <result column="siteStayTime" property="site_stop" />
+	    <result column="classline_Id" property="classlineId" />
+	    <result column="siteorder" property="site_order"/>
+	    <result column="remarkId" property="remarkId"/>
+  	</resultMap>
+	<select id="getPostLine" resultMap="resultPostLineList">
+	SELECT
+		jc.*,
+		shoudian.classline_Id,
+		shoudian.siteId,
+		shoudian.siteName as shouzhandian,
+		enddian.siteName as endzhandian,
+		IFNULL(shoudian.siteLength,0)+
+		IFNULL(enddian.siteLength,0)+
+		SUM(IFNULL(passdian.siteLength,0)) AS sumlength,
+		IFNULL(shoudian.siteStayTime,0)+
+		IFNULL(enddian.siteTime,0)+
+		IFNULL(enddian.siteStayTime,0)+
+		IFNULL(enddian.siteTime,0)+
+		SUM(IFNULL(passdian.siteStayTime,0))+
+		SUM(IFNULL(passdian.siteTime,0)) as sumtime,
+		GROUP_CONCAT(distinct ls.linname) as linname,
+		GROUP_CONCAT(passdian.siteName) as passdian,
+		jd.department_name as organizationName
+	FROM 
+		jy_classline jc
+	INNER JOIN
+		jy_classline_info shoudian
+		ON jc.classline_Id=shoudian.classline_id AND shoudian.siteFlag=1
+		<if test="param5 != null and param5 != ''">
+			AND shoudian.siteName like '%${param5}%'
+		</if>
+	INNER JOIN
+		jy_classline_info enddian
+		ON jc.classline_Id=enddian.classline_id AND enddian.siteFlag=0
+		<if test="param6 != null and param6 != ''">
+			AND enddian.siteName like '%${param6}%'
+		</if>
+	LEFT JOIN
+		jy_classline_info passdian
+		ON jc.classline_Id=passdian.classline_id AND passdian.siteFlag=2
+	LEFT JOIN 
+		jy_classlinetolinstandard ctl
+		ON jc.classline_id=ctl.classline_id
+	LEFT JOIN
+		jy_linstandard ls
+		ON ls.linid=ctl.linid
+	LEFT JOIN
+ 		jy_department jd ON jc.organization_id=jd.department_id
+	WHERE
+		1=1
+	<if test="param3 != null and param3 != ''">
+			and jc.classline_name like '%${param3}%'
+	</if>
+	<if test="param4 != null and param4 != ''">
+			and jc.organization_id like '%${param4}%'
+	</if>
+	GROUP BY 
+		jc.classline_id
+	limit #{param1},#{param2}
+	</select>
+	<!-- 获取详细信息 -->
+	<select id="lookPostLineInfo" resultMap="resultPostLineList">
+	SELECT
+		jc.*,
+		shoudian.classline_Id,
+		shoudian.siteId,
+		shoudian.siteName as shouzhandian,
+		enddian.siteName as endzhandian,
+		IFNULL(shoudian.siteLength,0)+
+		IFNULL(enddian.siteLength,0)+
+		SUM(IFNULL(passdian.siteLength,0)) AS sumlength,
+		IFNULL(shoudian.siteStayTime,0)+
+		IFNULL(enddian.siteTime,0)+
+		IFNULL(enddian.siteStayTime,0)+
+		IFNULL(enddian.siteTime,0)+
+		SUM(IFNULL(passdian.siteStayTime,0))+
+		SUM(IFNULL(passdian.siteTime,0)) as sumtime,
+		GROUP_CONCAT(distinct ls.linname) as linname,
+		GROUP_CONCAT(passdian.siteName) as passdian,
+		jd.department_name as organizationName
+	FROM 
+		jy_classline jc
+	INNER JOIN
+		jy_classline_info shoudian
+		ON jc.classline_Id=shoudian.classline_id AND shoudian.siteFlag=1
+
+	INNER JOIN
+		jy_classline_info enddian
+		ON jc.classline_Id=enddian.classline_id AND enddian.siteFlag=0
+
+	LEFT JOIN
+		jy_classline_info passdian
+		ON jc.classline_Id=passdian.classline_id AND passdian.siteFlag=2
+	LEFT JOIN 
+		jy_classlinetolinstandard ctl
+		ON jc.classline_id=ctl.classline_id
+	LEFT JOIN
+		jy_linstandard ls
+		ON ls.linid=ctl.linid
+	LEFT JOIN
+ 		jy_department jd ON jc.organization_id=jd.department_id
+	WHERE
+		jc.classline_Id=#{_parameter}
+	GROUP BY 
+		jc.classline_id
+	</select>
+	
+	<!-- 条数 -->
+	<select id="getCount" resultType="int">
+		
+		SELECT 
+			COUNT(*) 
+		FROM (
+				SELECT
+					count(*)
+				FROM 
+					jy_classline jc
+				INNER JOIN
+					jy_classline_info shoudian
+					ON jc.classline_Id=shoudian.classline_id AND shoudian.siteFlag=1
+					<if test="param3 != null and param3 != ''">
+						AND shoudian.siteName like '%${param3}%'
+					</if>
+				INNER JOIN
+					jy_classline_info enddian
+					ON jc.classline_Id=enddian.classline_id AND enddian.siteFlag=0
+					<if test="param4 != null and param4 != ''">
+						AND enddian.siteName like '%${param4}%'
+					</if>
+				LEFT JOIN
+					jy_classline_info passdian
+					ON jc.classline_Id=passdian.classline_id AND passdian.siteFlag=2
+				LEFT JOIN 
+					jy_classlinetolinstandard ctl
+					ON jc.classline_id=ctl.classline_id
+				LEFT JOIN
+					jy_linstandard ls
+					ON ls.linid=ctl.linid
+				LEFT JOIN
+			 		jy_department jd ON jc.organization_id=jd.department_id
+				WHERE
+					1=1
+				<if test="param1 != null and param1 != ''">
+						and jc.classline_name like '%${param1}%'
+				</if>
+				<if test="param2 != null and param2 != ''">
+						and jc.organization_id like '%${param2}%'
+				</if>
+				GROUP BY 
+					jc.classline_id
+		) as ss
+	</select>
+	<!-- 获取首站点 -->
+  	<select id="getRemark" resultType="Remark">
+  		SELECT 
+			*
+		FROM 
+			jy_remark
+		WHERE
+			1=1
+		<if test="_parameter !=null and _parameter !=''">
+			AND remark_name LIKE '%${_parameter}%'
+		</if>
+  	</select>
+  	<!-- 插入班线基本信息 -->
+  	<insert id="addPostLine" parameterType="PostClassline" >
+  		INSERT INTO
+  			jy_classline
+	  		(
+	  			classline_id,
+	  			classline_name,
+	  			classline_code,
+	  			organization_id,
+	  			departure_time,
+		      	regular_type,
+		      	days, 
+		      	repetition_period,
+		      	end_type,
+		      	end_num,
+		      	end_date, 
+		      	effective_date,
+		      	all_money,
+		      	update_datetime, 
+		      	plate_number, 
+		      	car_id
+	  		)
+  		VALUES 
+	  		(
+	  			#{classlineId},
+	  			#{classlineName},
+	  			#{classlineCode},
+	  			#{organizationId},
+	  			#{departure_time}, 
+	      		#{regular_type}, 
+	      		<choose>
+	      			<when test="regular_type==1 and days!=null and days!=''">
+	      				#{days},
+	      			</when>
+	      			<otherwise>
+	      				0,
+	      			</otherwise>
+	      		</choose>
+	      		<choose>
+	      			<when test="regular_type==0 and repetition_period!=null and repetition_period!=''">
+	      				#{repetition_period},
+	      			</when>
+	      			<otherwise>
+	      				null,
+	      			</otherwise>
+	      		</choose>
+	     		#{end_type}, 
+	     		<choose>
+	     			<when test="end_type==2 and end_num!=null and end_num!=''">
+	     				#{end_num},
+	     			</when>
+	     			<otherwise>
+	     				null,
+	     			</otherwise>
+	     		</choose>
+	     		<choose>
+	     			<when test="end_type==3 and end_date!=null and end_date!=''">
+	     				#{end_date},
+	     			</when>
+	     			<otherwise>
+	     				null,
+	     			</otherwise>
+	     		</choose>
+		      	#{effective_date}, 
+		      	#{all_money},
+				SYSDATE(),
+				#{plate_number}, 
+		      	#{car_id}
+	  		)
+  	</insert>
+  	<!-- 插入班线信息 -->
+  	<insert id="addPostLineInfo" parameterType="java.util.List">
+  	 <!-- <selectKey keyProperty="site_id" resultType="String" order="AFTER">
+            select upper(replace(uuid(),'-','')) as site_id from jy_classline_info
+	</selectKey> -->
+  		INSERT INTO
+  			jy_classline_info
+  			(
+  				siteId,
+	  			siteFlag,
+	  			siteName,
+	  			sitePoint,
+	  			siteLength,
+	  			siteTime,
+	  			siteStayTime,
+	  			classline_Id,
+	  			siteorder,
+	  			remarkId
+  			)
+  		VALUES
+	  		<foreach collection="list" item="item" index="index" separator="," >  
+        	(
+        		#{item.site_id},
+        		#{item.siteflag},
+        		#{item.site_name},
+        		#{item.lnglat},
+        		#{item.site_mlg},
+        		#{item.site_run},
+        		#{item.site_stop},
+        		#{item.classlineId},
+        		#{item.site_order},
+        		#{item.remarkId}
+        	)  
+    		</foreach>
+  	</insert>
+  	<!-- 绑定线路信息 -->
+  	<insert id="addCtl" parameterType="java.util.List">
+  	INSERT INTO
+  			jy_classlinetolinstandard
+  			(
+  				classline_linstandard_id,
+	  			classline_id,
+	  			linid,
+	  			isdefalut
+  			)
+  		VALUES
+	  		<foreach collection="list" item="item" index="index" separator="," >  
+        	(
+        		#{item.classline_linstandard_id},
+        		#{item.classlineId},
+        		#{item.linid},
+        		#{item.isdefalut}
+        	)  
+    		</foreach>
+  	</insert>
+  	<!-- 获取基本信息 -->
+  	<select id="getSelectPostLine" resultMap="BasePostClassline" parameterType="string">
+  		SELECT 
+  			jc.*,
+  			jd.department_name as organizationName
+  		FROM 
+  			jy_classline jc
+  		LEFT JOIN
+  			jy_department jd ON jc.organization_id=jd.department_id
+  		WHERE 
+  			classline_id=#{_parameter}
+  	</select>
+  	<!--获取班线详细信息 -->
+  	<select id="getPostClassLineInfo" resultMap="BasePostClassLineInfo" parameterType="string">
+  		SELECT 
+  			*
+  		FROM 
+  			jy_classline_info
+  		WHERE
+  			classline_Id=#{id}
+  		ORDER BY siteorder
+  	</select>
+  	<!-- 获取要修改的线路信息 -->
+  	<select id="getlinesinfo" resultType="LinStandard" parameterType="string">
+  		SELECT 
+			jl.linid,
+			jl.linname,
+			jl.lincd,
+			jcl.isdefalut
+		FROM
+			jy_classlinetolinstandard jcl
+		LEFT JOIN 
+			jy_linstandard jl
+			ON jl.linid=jcl.linid
+		WHERE 
+			jcl.classline_id=#{id}
+  	</select>
+  	<!-- 删除班线基本信息 -->
+  	<delete id="deletePostLine" parameterType="string">
+  		DELETE 
+  		FROM
+  			jy_classline
+  		WHERE
+  			classline_id=#{id}
+  	</delete>
+  	<!-- 删除班线详细信息 -->
+  	<delete id="deletePostLineInfo" parameterType="string">
+  		DELETE 
+  		FROM
+  			jy_classline_info
+  		WHERE
+  			classline_Id=#{id}
+  	</delete>
+  	<!-- 删除对应的线路信息 -->
+  	<delete id="deletelinesinfo" parameterType="string">
+  		DELETE 
+  		FROM
+  			jy_classlinetolinstandard
+  		WHERE
+  			classline_id=#{id}
+  	</delete>
+  	<!-- 批量删除班线基本信息 -->
+  	<delete id="deletePostLinearrays" parameterType="java.util.Arrays">
+  		DELETE 
+  		FROM
+  			jy_classline
+  		WHERE
+  			classline_id 
+  		IN
+ 		<foreach collection="array" index="index" item="item" open="(" separator="," close=")">
+ 			#{item}
+ 		</foreach>
+  	</delete>
+  	<!-- 批量删除班线详细信息 -->
+  	<delete id="deletePostLineInfoarrays" parameterType="java.util.Arrays">
+  		DELETE
+  		FROM
+  			jy_classline_info
+  		WHERE
+  			classline_Id
+  		IN
+ 		<foreach collection="array" index="index" item="item" open="(" separator="," close=")">
+ 			#{item}
+ 		</foreach>
+  	</delete>
+  	
+  	<!-- 批量删除线路详细信息 -->
+  	<delete id="deletelinesInfoarrays" parameterType="java.util.Arrays">
+  		DELETE
+  		FROM
+  			jy_classlinetolinstandard
+  		WHERE
+  			classline_id
+  		IN
+ 		<foreach collection="array" index="index" item="item" open="(" separator="," close=")">
+ 			#{item}
+ 		</foreach>
+  	</delete>
+  	<!-- 获取线路 -->
+  	<select id="getlinInfo" resultType="LinStandard">
+  		SELECT 
+			*
+		FROM 
+			jy_linstandard
+		WHERE
+			1=1
+		<if test="_parameter !=null and _parameter !=''">
+			AND linname LIKE '%${_parameter}%'
+		</if>
+  	</select>
+  	<!-- 导出 -->
+  	<select id="searchAll" resultType="com.jy.excel.bean.PostLineExcel">
+	  	SELECT
+			jc.classline_name as classlineName,
+			jc.classline_code as classlineCode,
+			shoudian.classline_Id,
+			shoudian.siteId,
+			shoudian.siteName as shouzhandian,
+			enddian.siteName as endzhandian,
+			IFNULL(shoudian.siteLength,0)+
+			IFNULL(enddian.siteLength,0)+
+			SUM(IFNULL(passdian.siteLength,0)) AS sumlength,
+			IFNULL(shoudian.siteStayTime,0)+
+			IFNULL(enddian.siteTime,0)+
+			IFNULL(enddian.siteStayTime,0)+
+			IFNULL(enddian.siteTime,0)+
+			SUM(IFNULL(passdian.siteStayTime,0))+
+			SUM(IFNULL(passdian.siteTime,0)) as site_run,
+			GROUP_CONCAT(distinct ls.linname) as linname,
+			GROUP_CONCAT(passdian.siteName) as passdian,
+			jd.department_name as organizationName
+		FROM 
+			jy_classline jc
+		INNER JOIN
+			jy_classline_info shoudian
+			ON jc.classline_Id=shoudian.classline_id AND shoudian.siteFlag=1
+			<if test="param3 != null and param3 != ''">
+				AND shoudian.siteName like '%${param3}%'
+			</if>
+		INNER JOIN
+			jy_classline_info enddian
+			ON jc.classline_Id=enddian.classline_id AND enddian.siteFlag=0
+			<if test="param4 != null and param4 != ''">
+				AND enddian.siteName like '%${param4}%'
+			</if>
+		LEFT JOIN
+			jy_classline_info passdian
+			ON jc.classline_Id=passdian.classline_id AND passdian.siteFlag=2
+		LEFT JOIN 
+			jy_classlinetolinstandard ctl
+			ON jc.classline_id=ctl.classline_id
+		LEFT JOIN
+			jy_linstandard ls
+			ON ls.linid=ctl.linid
+		LEFT JOIN
+	 		jy_department jd ON jc.organization_id=jd.department_id
+		WHERE
+			1=1
+		<if test="param1 != null and param1 != ''">
+				and jc.classline_name like '%${param1}%'
+		</if>
+		<if test="param2 != null and param2 != ''">
+				and jc.organization_id like '%${param2}%'
+		</if>
+		GROUP BY 
+			jc.classline_id
+  	</select>
+</mapper>

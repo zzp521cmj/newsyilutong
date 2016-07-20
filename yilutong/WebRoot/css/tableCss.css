@@ -1,0 +1,71 @@
+ .tableclasss{
+ 	width: 98%;
+ 	text-align:center; 
+  	border: 1px solid silver;
+ 	margin: 0px;
+ 	font-size: 12px;
+ 	font-family:SimSun;
+ 	border-spacing: 0;
+ 	border-collapse: collapse;
+  }
+.tableclasss tr td:hover{
+	background-color: #3E71DF;
+}
+.tableclasss tr th:hover{
+	background-color: #3E71DF;
+}
+.tableclasss tr th{
+	font-size: 12px;
+	border:1px solid #C0C0C0;
+	background-color: #F1F6FF;
+	height: 25px;
+	width: 100px;
+	padding-right: 0px;
+	font-family:SimSun;
+	font-size: 12px;
+	text-align: center;
+}
+.tableclasss tr td{
+ 	font-size: 12px;
+ 	width: 60px;
+ 	height : 25px;
+    table-layout:fixed ;
+	border:1px solid #C0C0C0;
+	background-color: #F5FFFA;
+
+	font-family:SimSun;
+	padding-right: 0px;
+}
+.tableclasss .td3{
+	background:#3C78FA;
+	color:#FFFFFF
+
+}
+
+
+.tableclasss .td3:hover{
+	background-color: #3E71DF;
+}
+.tableclasss .td3 input{
+    width: 60px;
+	vertical-align: middle;
+}
+.tableclasss .td4 input{
+    width: 40px;
+	vertical-align: middle;
+}
+.tableclasss .td5 input{
+	width:90%;
+    height:90%;
+    border:none;
+    text-align:left;
+}
+.tableclasss .td6 textarea{
+	width:90%;
+    height:30px;
+    border:none;
+    text-align:left;
+    BORDER-RIGHT: 0px; /* //显示右边框为1px，如果不想显示就为0px */
+    
+}
+

@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="com.jy.dao.RemarkMapDao">
+	<select id="getTypes" resultType="RemarkType">
+		select * from jy_remark_type
+	</select>
+	<select id="getRange" resultType="RemarkRange">
+		select * from jy_remark_range
+	</select>
+	<select id="getOneRange" resultType="String">
+		select remark_range_name from jy_remark_range where remark_range_id=#{0}
+	</select>
+	<select id="getRemark" resultType="Customer">
+		select * from jy_customer where customer_id=#{0}
+	</select>
+	<select id="checkName" resultType="int">
+		select count(*) from jy_remark where remark_name=#{0}
+	</select>
+	<select id="checkRemark" resultType="int">
+		select count(*) from jy_classline_info where remarkId=#{0}
+	</select>
+	<select id="getRemarkName" resultType="Remark">
+		select * from jy_Remark r
+		<if test="param2=='name'">
+			where r.remark_name like '%${param1}%'
+		</if>
+		<if test="param2=='tel'">
+			where r.remark_tel like '%${param1}%%'
+		</if>
+		<if test="param2=='address'">
+			where r.remark_address like '%${param1}%%'
+		</if>
+	</select>
+	<insert id="addRemark" parameterType="Customer">
+		insert jy_customer(
+		customer_id,
+		customer_num,
+		customer_name,
+		customer_address,
+		customer_tel,
+		customer_point,
+		customer_createtime
+		)values(
+		#{customer_id},
+		#{customer_num},
+		#{customer_name},
+		#{customer_address},
+		#{customer_tel},
+		#{customer_point},
+		SYSDATE())
+	</insert>
+	<select id="getRemarks"  resultType="Customer">
+	SELECT a.*,
+		c.id AS uid
+	FROM jy_customer a
+	LEFT JOIN  jy_user c ON  c.costomersid=a.customer_id 
+	where 1=1
+	<if test="param3 !=null and param3 != ''">
+		 	AND a.customer_name like '%${param3}%'
+	</if>
+	<if test="param4 !=null and param4 != ''">
+		 	AND a.customer_tel like '%${param4}%'
+	</if>
+	<if test="param5 !=null and param5 != ''">
+		 	AND a.customer_address like '%${param5}%'
+	</if>
+		<if test="param6 !=null and param6 != ''">
+		 	AND a.customer_grade =#{param6}
+	</if>
+	<if test="param7 !=null and param7 != ''">
+		 	AND a.customer_id =#{param7}
+	</if>
+	order by a.customer_createtime desc
+	limit #{param1},#{param2} 
+	</select>
+	<update id="updateRemark" parameterType="Remark">
+	update jy_customer set 
+	customer_num=#{customer_num},
+	customer_name=#{customer_name},
+	customer_address=#{customer_address},
+	customer_tel=#{customer_tel},
+	customer_point=#{customer_point}
+	where customer_id=#{customer_id}
+	
+	</update>
+	<select id="getCount" resultType="int">
+	SELECT count(*)
+	from jy_customer a
+	LEFT JOIN  jy_user c ON  c.costomersid=a.customer_id 
+	where 1=1
+	<if test="param1 !=null">
+		 	AND a.customer_id like '%${param1}%'
+	</if>
+	<if test="param2 !=null">
+		 	AND a.customer_tel like '%${param2}%'
+	</if>
+	<if test="param3 !=null">
+		 	AND a.customer_address like '%${param3}%'
+	</if>
+	<if test="param4 !=null and param4 != ''">
+		 	AND a.customer_grade =#{param4}
+	</if>
+		<if test="param5!=null and param5 != ''">
+		 	AND a.customer_id =#{param5}
+	</if>
+	</select>
+	<select id="getModifyPeople" resultType="String">
+		SELECT user_name FROM jy_user where id=#{0} 
+	</select>
+	<delete id="deleteRemark">
+	delete from jy_customer where customer_id =#{0}
+	</delete>
+	<select id="getcustomer_num" resultType="int">
+		<if test="param1 !=null and param2 !=null">
+		SELECT COUNT(*) FROM jy_customer 
+		WHERE customer_num=#{param1} or customer_name=#{param2}
+		</if>
+
+	</select>
+		<select id="getcustomer_name" resultType="int">
+		<if test="_parameter !=null">
+		SELECT COUNT(*) FROM jy_customer 
+		WHERE customer_name=#{_parameter}
+		</if>
+	</select>
+	<insert id="saveCustomer" parameterType="Customer">
+		insert jy_customer(
+		customer_id,
+		customer_num,
+		customer_name,
+		customer_address,
+		customer_tel,
+		customer_teltoo,
+		customer_grade,
+		customer_point,
+		customer_createtime,
+		bz
+		)values(
+		#{customer_id},
+		#{customer_num},
+		#{customer_name},
+		#{customer_address},
+		#{customer_tel},
+		#{customer_teltoo},
+		#{customer_grade},
+		#{customer_point},
+		SYSDATE(),
+		#{bz}
+		)
+	</insert>
+	<select id="getCustomerbyid" resultType="Customer">
+		<if test="_parameter !=null">
+		SELECT * FROM jy_customer WHERE customer_id=#{_parameter}
+		</if>
+	</select>
+	<update id="updateCustomer" parameterType="Customer">
+		update jy_customer set 
+		customer_id =#{customer_id},
+		customer_num=#{customer_num},
+		customer_name=#{customer_name},
+		customer_address=#{customer_address},
+		customer_tel=#{customer_tel},
+		customer_teltoo=#{customer_teltoo},
+		customer_grade=#{customer_grade},
+		customer_point=#{customer_point},
+		bz=#{bz}
+		where customer_id=#{customer_id}
+	</update>
+	
+	<update id="updateCustomerUser" parameterType="String">
+		update jy_user set 
+			costomersid=#{param2}
+		where id=#{param1}	
+	</update>
+	<update id="deleCustomerUser" parameterType="String">
+		update jy_user set 
+			costomersid=#{param2}
+		where id=#{param1}	
+	</update>
+</mapper>

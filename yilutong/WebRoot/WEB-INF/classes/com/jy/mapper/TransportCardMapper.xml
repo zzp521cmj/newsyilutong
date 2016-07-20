@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- /**
+ * 道路运输证
+ * @author lx
+ */ -->
+<mapper namespace="com.jy.dao.TransportCardDao" >
+  <resultMap id="BaseResultMap" type="com.jy.model.TransportCard" >
+    <id column="road_transport_card_id" property="roadTransportCardId" jdbcType="VARCHAR" />
+    <result column="road_transport_card_number" property="roadTransportCardNumber" jdbcType="VARCHAR" />
+    <result column="road_owner" property="roadOwner" jdbcType="VARCHAR" />
+    <result column="road_address" property="roadAddress" jdbcType="VARCHAR" />
+    <result column="operating_license_number" property="operatingLicenseNumber" jdbcType="VARCHAR" />
+    <result column="tonnage" property="tonnage" jdbcType="VARCHAR" />
+    <result column="car_length" property="carLength" jdbcType="DOUBLE" />
+    <result column="car_width" property="carWidth" jdbcType="DOUBLE" />
+    <result column="car_height" property="carHeight" jdbcType="DOUBLE" />
+    <result column="business_scope" property="businessScope" jdbcType="VARCHAR" />
+    <result column="transport_certificate_date" property="transportCertificateDate" jdbcType="DATE" />
+    <result column="issuing_authorities" property="issuingAuthorities" jdbcType="VARCHAR" />
+    <result column="records" property="records" jdbcType="VARCHAR" />
+    <result column="validity_term" property="validityTerm" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    *
+    from jy_transport_card
+    where road_transport_card_id = #{roadTransportCardId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from jy_transport_card
+    where road_transport_card_id = #{roadTransportCardId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.jy.model.TransportCard" >
+    insert into jy_transport_card (road_transport_card_id, road_transport_card_number, 
+      road_owner, road_address, operating_license_number, 
+      tonnage, car_length, car_width, 
+      car_height, business_scope, transport_certificate_date, 
+      issuing_authorities, records, validity_term
+      )
+    values (#{roadTransportCardId,jdbcType=VARCHAR}, #{roadTransportCardNumber,jdbcType=VARCHAR}, 
+      #{roadOwner,jdbcType=VARCHAR}, #{roadAddress,jdbcType=VARCHAR}, #{operatingLicenseNumber,jdbcType=VARCHAR}, 
+      #{tonnage,jdbcType=VARCHAR}, #{carLength,jdbcType=DOUBLE}, #{carWidth,jdbcType=DOUBLE}, 
+      #{carHeight,jdbcType=DOUBLE}, #{businessScope,jdbcType=VARCHAR}, #{transportCertificateDate,jdbcType=DATE}, 
+      #{issuingAuthorities,jdbcType=VARCHAR}, #{records,jdbcType=VARCHAR}, #{validityTerm,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.jy.model.TransportCard" >
+    insert into jy_transport_card
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="roadTransportCardId != null" >
+        road_transport_card_id,
+      </if>
+      <if test="roadTransportCardNumber != null" >
+        road_transport_card_number,
+      </if>
+      <if test="roadOwner != null" >
+        road_owner,
+      </if>
+      <if test="roadAddress != null" >
+        road_address,
+      </if>
+      <if test="operatingLicenseNumber != null" >
+        operating_license_number,
+      </if>
+      <if test="tonnage != null" >
+        tonnage,
+      </if>
+      <if test="carLength != null" >
+        car_length,
+      </if>
+      <if test="carWidth != null" >
+        car_width,
+      </if>
+      <if test="carHeight != null" >
+        car_height,
+      </if>
+      <if test="businessScope != null" >
+        business_scope,
+      </if>
+      <if test="transportCertificateDate != null" >
+        transport_certificate_date,
+      </if>
+      <if test="issuingAuthorities != null" >
+        issuing_authorities,
+      </if>
+      <if test="records != null" >
+        records,
+      </if>
+      <if test="validityTerm != null" >
+        validity_term,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="roadTransportCardId != null" >
+        #{roadTransportCardId,jdbcType=VARCHAR},
+      </if>
+      <if test="roadTransportCardNumber != null" >
+        #{roadTransportCardNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="roadOwner != null" >
+        #{roadOwner,jdbcType=VARCHAR},
+      </if>
+      <if test="roadAddress != null" >
+        #{roadAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="operatingLicenseNumber != null" >
+        #{operatingLicenseNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="tonnage != null" >
+        #{tonnage,jdbcType=VARCHAR},
+      </if>
+      <if test="carLength != null" >
+        #{carLength,jdbcType=DOUBLE},
+      </if>
+      <if test="carWidth != null" >
+        #{carWidth,jdbcType=DOUBLE},
+      </if>
+      <if test="carHeight != null" >
+        #{carHeight,jdbcType=DOUBLE},
+      </if>
+      <if test="businessScope != null" >
+        #{businessScope,jdbcType=VARCHAR},
+      </if>
+      <if test="transportCertificateDate != null" >
+        #{transportCertificateDate,jdbcType=DATE},
+      </if>
+      <if test="issuingAuthorities != null" >
+        #{issuingAuthorities,jdbcType=VARCHAR},
+      </if>
+      <if test="records != null" >
+        #{records,jdbcType=VARCHAR},
+      </if>
+      <if test="validityTerm != null" >
+        #{validityTerm,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jy.model.TransportCard" >
+    update jy_transport_card
+    <set >
+      <if test="roadTransportCardNumber != null" >
+        road_transport_card_number = #{roadTransportCardNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="roadOwner != null" >
+        road_owner = #{roadOwner,jdbcType=VARCHAR},
+      </if>
+      <if test="roadAddress != null" >
+        road_address = #{roadAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="operatingLicenseNumber != null" >
+        operating_license_number = #{operatingLicenseNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="tonnage != null" >
+        tonnage = #{tonnage,jdbcType=VARCHAR},
+      </if>
+      <if test="carLength != null" >
+        car_length = #{carLength,jdbcType=DOUBLE},
+      </if>
+      <if test="carWidth != null" >
+        car_width = #{carWidth,jdbcType=DOUBLE},
+      </if>
+      <if test="carHeight != null" >
+        car_height = #{carHeight,jdbcType=DOUBLE},
+      </if>
+      <if test="businessScope != null" >
+        business_scope = #{businessScope,jdbcType=VARCHAR},
+      </if>
+      <if test="transportCertificateDate != null" >
+        transport_certificate_date = #{transportCertificateDate,jdbcType=DATE},
+      </if>
+      <if test="issuingAuthorities != null" >
+        issuing_authorities = #{issuingAuthorities,jdbcType=VARCHAR},
+      </if>
+      <if test="records != null" >
+        records = #{records,jdbcType=VARCHAR},
+      </if>
+      <if test="validityTerm != null" >
+        validity_term = #{validityTerm,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where road_transport_card_id = #{roadTransportCardId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jy.model.TransportCard" >
+    update jy_transport_card
+    set road_transport_card_number = #{roadTransportCardNumber,jdbcType=VARCHAR},
+      road_owner = #{roadOwner,jdbcType=VARCHAR},
+      road_address = #{roadAddress,jdbcType=VARCHAR},
+      operating_license_number = #{operatingLicenseNumber,jdbcType=VARCHAR},
+      tonnage = #{tonnage,jdbcType=VARCHAR},
+      car_length = #{carLength,jdbcType=DOUBLE},
+      car_width = #{carWidth,jdbcType=DOUBLE},
+      car_height = #{carHeight,jdbcType=DOUBLE},
+      business_scope = #{businessScope,jdbcType=VARCHAR},
+      transport_certificate_date = #{transportCertificateDate,jdbcType=DATE},
+      issuing_authorities = #{issuingAuthorities,jdbcType=VARCHAR},
+      records = #{records,jdbcType=VARCHAR},
+      validity_term = #{validityTerm,jdbcType=VARCHAR}
+    where road_transport_card_id = #{roadTransportCardId,jdbcType=VARCHAR}
+  </update>
+</mapper>

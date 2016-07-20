@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jy.dao.VehicleBiddingDao">
+	<select id="getDetermineVehicleMessage" resultType="VehiclevBidding">
+		SELECT jdi.car_id,
+		jca.agreement_id,jdi.driver_id,jdi.card_number,jdi.phone_number
+		,jdi.driver_name
+		,jcl.length_name,jvb.*,j.boxType,jt.car_height,jt.car_width,jt.car_length,jt.tonnage,
+		jdi.address AS
+		driver_address,j.plate_number
+		from jy_vehiclebidding jvb
+		LEFT JOIN jy_driver_info jdi ON
+		jdi.driver_id=jvb.driver_id
+
+		LEFT JOIN
+		jy_travel_card j ON jdi.car_id=j.travel_card_id
+		left join
+		jy_transport_card jt on
+		j.travel_card_id=jt.travel_card_id
+		left join
+		jy_registration jr on
+		j.travel_card_id=jr.travel_card_id
+		left join
+		jy_car_invoice ji on
+		j.travel_card_id=ji.travel_card_id
+		left join
+		jy_car_maintenance jm on
+		j.travel_card_id=jm.travel_card_id
+		left outer
+		join
+		jy_car_length jcl on
+		jcl.length_id=j.boxType
+		LEFT JOIN
+		jy_create_agreement jca ON jvb.agreement_id
+		=jca.agreement_id
+		where
+		jca.agreement_id=#{param3}
+		<if test="param4!=null and param4!=''">
+			AND jdi.driver_name LIKE '%${param4}%'
+		</if>
+		<if test="param6!=null and param6!=''">
+			AND jdi.phone_number LIKE '%${param6}%'
+		</if>
+		<if test="param5!=null and param5!=''">
+			AND j.plate_number LIKE '%${param5}%'
+		</if>
+		ORDER BY jvb.is_vehbid desc ,jvb.vehiclebidding_price
+		LIMIT
+		#{param1},#{param2}
+	</select>
+
+	<select id="getDetermineVehicleTotal" resultType="int">
+		SELECT count(*)
+		from jy_vehiclebidding jvb LEFT JOIN jy_driver_info jdi
+		ON
+		jdi.driver_id=jvb.driver_id
+
+		LEFT JOIN jy_travel_card j ON
+		jdi.car_id=j.travel_card_id
+		left join
+		jy_transport_card jt on
+		j.travel_card_id=jt.travel_card_id
+		left join
+		jy_registration jr on
+		j.travel_card_id=jr.travel_card_id
+		left join
+		jy_car_invoice ji on
+		j.travel_card_id=ji.travel_card_id
+		left join
+		jy_car_maintenance jm on
+		j.travel_card_id=jm.travel_card_id
+		left outer
+		join
+		jy_car_length jcl on
+		jcl.length_id=j.boxType
+		LEFT JOIN jy_create_agreement jca ON
+		jvb.agreement_id
+		=jca.agreement_id
+		where
+		jca.agreement_id=#{param1}
+		<if test="param2!=null and param2!=''">
+			AND jdi.driver_name LIKE '%${param2}%'
+		</if>
+		<if test="param4!=null and param4!=''">
+			AND jdi.phone_number LIKE '%${param4}%'
+		</if>
+		<if test="param3!=null and param3!=''">
+			AND j.plate_number LIKE '%${param3}%'
+		</if>
+	</select>
+	<update id="determineVehicleDriver">
+		UPDATE jy_create_agreement
+		SET car_number1 =#{param5},
+		car_id=#{param7},
+		car_name=#{param6},
+		all_money=#{param1},
+		phone_number=#{param8},
+		driverid=#{param4},
+		is_receipt_free=#{param9},
+		receivable_fee=#{param1}
+		WHERE agreement_id=#{param2}
+	</update>
+
+	<select id="getChannelIdNo" resultType="string">
+		SELECT group_concat(channelId) FROM
+		jy_user WHERE driver_id in (
+		<foreach collection="array" item="item" index="index"
+			separator=",">
+			#{item}
+		</foreach>
+		)
+	</select>
+	<select id="getEidtPriceMessage" resultType="CreateAgreement">
+		SELECT * FROM jy_vehiclebidding jv LEFT JOIN jy_create_agreement jca ON
+		jv.agreement_id=jca.agreement_id 
+		LEFT JOIN jy_user ju ON ju.driver_id = jv.driver_id
+		 WHERE ju.channelId=#{param1} and
+		jca.agreement_id=#{param2} ORDER BY jv.vehicle_time LIMIT 0,1
+	</select>
+    
+    <update id="appEidtPrice">
+       UPDATE jy_vehiclebidding jv 
+       <set>
+         jv.is_edit=#{param3},
+        <if test="param3==1">
+         jv.vehiclebidding_price=#{param2},
+        </if>
+       </set>
+       WHERE jv.vehiclebidding_id=#{param1}
+    </update>
+</mapper>
+

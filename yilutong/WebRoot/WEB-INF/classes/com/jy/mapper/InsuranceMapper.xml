@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- /**
+ * 保险信息
+ *@author lx
+ */ -->
+<mapper namespace="com.jy.dao.InsuranceDao" >
+  <resultMap id="BaseResultMap" type="com.jy.model.Insurance" >
+    <id column="insurance_id" property="insuranceId"/>
+    <result column="plate_number" property="plateNumber"/>
+    <result column="travel_card_id" property="travelCardId"/>
+   	<result column="insured" property="insured"/>
+   	<result column="insured_card" property="insuredCard"/>
+   	<result column="premium_amount_compulsory" property="premiumAmountCompulsory"/>
+   	<result column="jiaoqiangstart" property="jiaoqiangstart"/>
+   	<result column="jiaoqiangend" property="jiaoqiangend"/>
+   	<result column="insurance_period_compulsory" property="insurancePeriodCompulsory"/>
+   	<result column="car_tax" property="carTax"/>
+   	<result column="insurance_number_compulsory" property="insuranceNumberCompulsory"/>
+   	<result column="insurer" property="insurer"/>
+   	<result column="insurance_category" property="insuranceCategory"/>
+   	<result column="premium_amount_business" property="premiumAmountBusiness"/>
+   	<result column="sign_premium" property="signPremium"/>
+   	<result column="sign_premium_total" property="signPremiumTotal"/>
+   	<result column="shangyestart" property="shangyestart"/>
+   	<result column="shangyeend" property="shangyeend"/>
+   	<result column="insurance_period_business" property="insurancePeriodBusiness"/>
+   	<result column="insurance_number_business" property="insuranceNumberBusiness"/>
+   	<result column="premium_amount_cargo" property="premiumAmountCargo"/>
+   	<result column="huowustart" property="huowustart"/>
+   	<result column="huowuend" property="huowuend"/>
+   	<result column="insurance_period_cargo" property="insurancePeriodCargo"/>
+   	<result column="insurance_number_cargo" property="insuranceNumberCargo"/>
+   	<result column="add_date" property="addDate"/>
+  </resultMap>
+  <!-- 车辆信息一览 -->
+  <select id="getInsurance" resultMap="BaseResultMap">
+    select
+    	j.*,
+    	jtc.travel_card_id,
+    	jtc.plate_number
+    from 
+    	jy_insurance j 
+    left join 
+    	jy_travel_card jtc on j.travel_card_id=jtc.travel_card_id
+    where 1=1
+   	<if test="param3!=null and param3 != ''">
+   		and j.travel_card_id = #{param3}
+   	</if> 
+   	order by add_date desc
+    limit #{param1},#{param2}
+  </select>
+  <select id="getAllInsurance" resultMap="BaseResultMap">
+    select
+    	j.*,
+    	jtc.travel_card_id,
+    	jtc.plate_number as plate_number
+    from 
+    	jy_insurance j 
+    left join 
+    	jy_travel_card jtc on j.travel_card_id=jtc.travel_card_id
+    where 1=1
+   	<if test="_parameter!=null and _parameter != ''">
+   		and j.travel_card_id = #{_parameter}
+   	</if> 
+   	order by add_date desc
+  </select>
+  <!-- 总条数 -->
+  <select id="getCount" resultType="int">
+  	select 
+  		count(*) 
+  	from 
+  		jy_insurance
+  		 where 1=1
+    	<if test="_parameter!=null and _parameter!=''">
+    		and travel_card_id like '%${_parameter}%'
+    	</if> 
+  </select>
+  <!-- 批量删除 -->
+	<delete id="deleteInsurance" parameterType="java.util.Arrays">
+		delete from 
+			jy_insurance
+		 where 
+		 	travel_card_id in
+		<foreach collection="array" index="index" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	<!-- 新增车辆 -->
+  <insert id="addInsurance" parameterType="Insurance" >
+    insert into 
+    	jy_insurance 
+    	(insurance_id, 
+    	 travel_card_id, 
+	     insured, 
+		 insured_card, 
+		 premium_amount_compulsory, 
+		<if test="jiaoqiangstart!=null and jiaoqiangstart!=''">
+	      jiaoqiangstart,
+	       </if> 
+         <if test="jiaoqiangend!=null and jiaoqiangend!=''">
+	      jiaoqiangend,
+	       </if>  
+		 car_tax, 
+		 insurance_number_compulsory, 
+		 insurer, 
+		 insurance_category, 
+		 premium_amount_business, 
+		 sign_premium, 
+		 sign_premium_total, 
+		<if test="shangyestart!=null and shangyestart!=''">
+	      shangyestart,
+	    </if> 
+        <if test="shangyeend!=null and shangyeend!=''">
+	      shangyeend,
+	    </if>  
+		 insurance_number_business,
+		 premium_amount_cargo,
+		<if test="huowustart!=null and huowustart!=''">
+	      huowustart,
+	       </if> 
+         <if test="huowuend!=null and huowuend!=''">
+	      huowuend,
+	       </if>  
+		 insurance_number_cargo,
+		 add_date)
+    values 
+    	(#{insuranceId}, 
+    	#{travelCardId}, 
+        #{insured}, 
+        #{insuredCard}, 
+        #{premiumAmountCompulsory},
+        <if test="jiaoqiangstart!=null and jiaoqiangstart!=''">
+	      #{jiaoqiangstart},
+	       </if> 
+         <if test="jiaoqiangend!=null and jiaoqiangend!=''">
+	      #{jiaoqiangend},
+	       </if> 
+        #{carTax}, 
+        #{insuranceNumberCompulsory}, 
+        #{insurer}, 
+        #{insuranceCategory}, 
+        #{premiumAmountBusiness}, 
+        #{signPremium}, 
+        #{signPremiumTotal}, 
+        <if test="shangyestart!=null and shangyestart!=''">
+	      #{shangyestart},
+	    </if> 
+        <if test="shangyeend!=null and shangyeend!=''">
+	      #{shangyeend},
+	    </if>  
+        #{insuranceNumberBusiness}, 
+        #{premiumAmountCargo}, 
+         <if test="huowustart!=null and huowustart!=''">
+	      #{huowustart},
+	       </if> 
+         <if test="huowuend!=null and huowuend!=''">
+	      #{huowuend},
+	       </if>  
+        #{insuranceNumberCargo},
+        SYSDATE())
+  </insert>
+    <!-- 获取修改信息 -->
+  <select id="getEditInsurance" parameterType="string" resultMap="BaseResultMap">
+		select 
+	    	j.*,
+	    	jtc.plate_number
+	    from 
+	    	jy_insurance j
+	    left join
+	    	jy_travel_card jtc on j.travel_card_id=jtc.travel_card_id
+	    where 
+	    	insurance_id = #{insuranceId}
+  </select>
+    <!-- 修改车辆信息 -->
+  <update id="editInsurance" parameterType="Insurance" >
+    update 
+      	  jy_insurance
+    set 
+    	 travel_card_id=#{travelCardId}, 
+	     insured=#{insured}, 
+		 insured_card=#{insuredCard}, 
+		 <if test="jiaoqiangstart!='' and jiaoqiangstart!=null">
+	      jiaoqiangstart = #{jiaoqiangstart},
+	       </if> 
+         <if test="jiaoqiangend!=null and jiaoqiangend!=''">
+	      jiaoqiangend = #{jiaoqiangend},
+	       </if> 
+		 premium_amount_compulsory= #{premiumAmountCompulsory}, 
+		 insurance_period_compulsory=#{insurancePeriodCompulsory}, 
+		 car_tax=#{carTax}, 
+		 insurance_number_compulsory=#{insuranceNumberCompulsory}, 
+		 insurer=#{insurer}, 
+		 insurance_category=#{insuranceCategory}, 
+		 premium_amount_business=#{premiumAmountBusiness}, 
+		 sign_premium=#{signPremium}, 
+		 sign_premium_total=#{signPremiumTotal}, 
+		 insurance_period_business=#{insurancePeriodBusiness},
+		 <if test="shangyestart!=null and shangyestart!=''">
+	     shangyestart=#{shangyestart},
+	    </if> 
+        <if test="shangyeend!=null and shangyeend!=''">
+	      shangyeend=#{shangyeend},
+	    </if> 
+		 insurance_number_business=#{insuranceNumberBusiness},
+		 premium_amount_cargo=#{premiumAmountCargo},
+		 insurance_period_cargo=#{insurancePeriodCargo}, 
+		 <if test="huowustart!=null and huowustart!=''">
+	      huowustart = #{huowustart},
+	       </if> 
+         <if test="huowuend!=null and huowuend!=''">
+	     huowuend=#{huowuend},
+	       </if>  
+		 insurance_number_cargo=#{insuranceNumberCargo}
+    where 
+      	travel_card_id=#{travelCardId}
+  </update>
+  <!-- 根据车牌号查询 -->
+	<select id="getCar_Num" resultMap="BaseResultMap">
+		select
+		 	travel_card_id,plate_number
+		from
+		 	jy_travel_card
+		where
+		<if test="_parameter!=null">
+			plate_number like '%${_parameter}%'
+		</if>
+	</select>
+	<select id="dangyueInsurance" resultMap="BaseResultMap">
+		SELECT
+    	j.*,
+    	jtc.travel_card_id,
+    	jtc.plate_number
+    FROM 
+    	jy_insurance j 
+    LEFT JOIN 
+    	jy_travel_card jtc ON j.travel_card_id=jtc.travel_card_id
+    	WHERE
+    		 DATE_FORMAT(j.jiaoqiangend,'%Y')=#{param1}
+    	AND DATE_FORMAT(j.jiaoqiangend,'%m')=#{param2}
+	</select>
+</mapper>

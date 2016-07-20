@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jy.dao.DataHandlingDao">
+	<!-- 获取所有数据信息 -->
+	<select id="getData" resultType="Monitor">
+		SELECT
+		monitorid,
+		lng,
+		lat,
+		carid,
+		beidouid,
+		nowspace,
+		nowdate,
+		state,
+		gpsstate,
+		angle,
+		weather,
+		isspeed,
+		MAX(inssj) AS inssj
+		FROM
+		truckclouddata.jy_monitor
+		GROUP BY carid
+		ORDER BY
+		inssj
+	</select>
+	<!-- 获取车辆车牌号列表 -->
+	<select id="getcarlist" resultType="Truck">
+		SELECT travel_card_id AS
+		carId,
+		plate_number AS plateNumber,department_id AS
+		departmentid
+		FROM
+		jy_travel_card jtc
+		LEFT JOIN jy_equipment_info jei ON
+		jtc.travel_card_id=jei.car_id
+	</select>
+	<!-- 保存临时表的数据到使用的全图监控表中 -->
+	<insert id="savecarlminfo" parameterType="java.util.List">
+		INSERT INTO jy_monitor_data (
+		monitorid,
+		lng,
+		lat,
+		carid,
+		carno,
+		beidouid,
+		nowspace,
+		nowdate,
+		state,
+		departmentid,
+		gpsstate,
+		angle,
+		inssj,
+		isspeed
+		)
+		VALUES
+		<foreach collection="list" index="index" item="item"
+			separator=",">
+			(
+			#{item.monitorid},
+			#{item.lng},
+			#{item.lat},
+			#{item.carno},
+			#{item.carid},
+			#{item.beidouid},
+			#{item.nowspace},
+			#{item.nowdate},
+			#{item.state},
+			"2",
+			#{item.gpsstate},
+			#{item.angle},
+			#{item.inssj},
+			#{item.isspeed}
+			)
+		</foreach>
+	</insert>
+	<!-- 保存临时表的数据到使用的全图监控week表中 -->
+	<insert id="savecarsinfo" parameterType="java.util.List">
+		INSERT INTO jy_monitor_data_week (
+		monitorid,
+		lng,
+		lat,
+		carid,
+		carno,
+		beidouid,
+		nowspace,
+		nowdate,
+		state,
+		departmentid,
+		gpsstate,
+		angle,
+		inssj
+		)
+		VALUES
+		<foreach collection="list" index="index" item="item"
+			separator=",">
+			(
+			#{item.monitorid},
+			#{item.lng},
+			#{item.lat},
+			#{item.carno},
+			#{item.carid},
+			#{item.beidouid},
+			#{item.nowspace},
+			#{item.nowdate},
+			#{item.state},
+			"2",
+			#{item.gpsstate},
+			#{item.angle},
+			#{item.inssj}
+			)
+		</foreach>
+	</insert>
+	<!-- 删除临时表 -->
+	<delete id="deletelscarsinfo">
+		delete from jy_monitor
+	</delete>
+	<!-- 删除jy_monitor_data_week表数据 -->
+	<delete id="deletelmdcarsinfo" parameterType="java.util.List">
+		DELETE FROM jy_monitor_data WHERE carno IN
+		<foreach collection="list" index="index" item="item" open="("
+			separator="," close=")">
+			(
+			#{item}
+			)
+		</foreach>
+	</delete>
+	<!-- 查询week表中的数据多少 -->
+	<select id="selectcarsinfocount" resultType="int">
+		SELECT COUNT(*) FROM
+		jy_monitor_data_week
+	</select>
+</mapper>

@@ -1,0 +1,154 @@
+
+body {
+	left: 0px;
+	top: 0px;
+	right: 0px;
+	bottom: 0px;
+	font-size: 14px;
+}
+label{
+	vertical-align: middle;
+}
+.search-text{
+	vertical-align: middle;
+	width: 150px;
+	margin-right: 10px;
+	height: 22px
+}
+.st-north{
+	margin: 10px;
+	height: 55px
+}
+.functionbutton{
+	margin-right: 50px;
+	margin-left: 10px;
+	width: 80px;
+}
+.datagrid-tool-sp {
+	height:24px;
+	width:1px;
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #fff;
+  margin: 2px 1px;
+}
+fieldset {
+	border: 1px dotted #D1D7DC;
+	margin: 10px;
+	padding: 0px;
+}
+		
+legend {
+	border: 1px dotted #D1D7DC;
+	font-size: small;
+	color: blue;
+}
+/* .btncss{
+	width: 80px;
+	height: 30px;
+	background-color: #95B3D7;
+	border-color: #95B3D7;
+	border-style: none;
+	cursor: hand;
+	margin-right: 15px;
+	-webkit-border-radius: 15px;
+	-moz-border-radius: 15px;
+	border-radius: 15px;
+	outline:none;
+ 	behavior: url(iecss3.htc);
+} */
+
+.btncss {	
+	background-color: #1a7bc9;
+	border: 1px solid #1a7bc9;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:14px;
+	padding:5px 28px;
+	text-decoration:none;
+	transition:all 0.5s;
+	-moz-transition:all 0.5s; /* Firefox 4 */
+	-webkit-transition:all 0.5s; /* Safari and Chrome */
+	-o-transition:all 0.5s; /* Opera */
+}
+.btncss:hover {
+  background: #9cc8f7;
+  color: #404040;
+  border: 1px solid #9cc8f7;
+  filter: none;
+}
+.btncss:active {
+	position:relative;
+	top:1px;
+}
+
+ .tableclass{
+ 	width: 98%;
+ 	text-align:right;
+ 	border: 1px solid silver;
+ 	margin: 5px;
+ 	font-size: 12px;
+ 	font-family:SimSun;
+ 	border-spacing: 0;
+ 	border-collapse: collapse;
+  }
+.tableclass tr td:hover{
+	background-color: #E0ECFF;
+}
+.tableclass tr th{
+	font-size: 14px;
+	border:1px solid #C0C0C0;
+	background-color: #F1F6FF;
+	height: 30px;
+	width: 100px;
+	padding-right: 10px;
+	font-family:SimSun;
+	font-size: 12px;
+	text-align: center;
+}
+.tableclass tr th:hover{
+	background-color: #E0ECFF;
+}
+.tableclass tr td{
+	font-size: 14px;
+	border:1px solid #C0C0C0;
+	background-color: #F1F6FF;
+/* 	height: 37px;
+ */	width: 100px;
+	font-family:SimSun;
+	padding-right: 10px;
+	font-size: 12px;
+}
+.tableclass .td2{
+	background-color: #FAFCFF;
+	text-align: left;
+	font-family:SimSun;
+	padding:10px 0px 10px 10px;
+
+}
+.tableclass .td2:hover{
+	background-color: #F1F6FF;
+}
+.tableclass .td2 input{
+	  width: 150px;
+	vertical-align: middle;
+}
+.divlabel{
+	padding:0px 0px 0px 10px;
+}
+#searchInfoId{
+	padding-top: 5px;
+}
+#btnMoreSearch{
+	position:relative;
+	left:2;
+	top:5;
+	text-decoration: none;
+}
+#btnMoreSearch:hover{
+	color:#214e75;
+	text-decoration: underline;
+}
+.btn{
+}

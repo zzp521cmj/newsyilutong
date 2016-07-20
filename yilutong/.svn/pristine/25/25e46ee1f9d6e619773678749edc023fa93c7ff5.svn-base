@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jy.dao.ClassPlanDao">
+	<!-- 获取班线列表 -->
+	<select id="getlinlist" resultType="PostClassline">
+		<if test="_parameter !=null">
+			SELECT
+				classline_id as classlineId,
+				classline_name as
+				classlineName,
+				classline_code as classlineCode,
+				organization_id as
+				organizationId
+			FROM
+				jy_classline jc 
+			WHERE 
+				jc.classline_name 
+			LIKE '%${_parameter}%'
+		</if>
+	</select>
+	<!-- 获取车辆列表 -->
+	<select id="getCarInfo" resultType="TravelCard">
+		SELECT
+		 	travel_card_id as travelCardId,
+		 	plate_number as plateNumber
+		FROM
+		 	jy_travel_card
+		WHERE
+			plate_number like '%${_parameter}%'
+	</select>
+	<!-- 查询自动计划表 -->
+	<select id="getClassPlanInfo" resultType="ClassPlan">
+		SELECT 
+			classplan_id, 
+			organization_id, 
+			classline_id, 
+	      	classline_name, 
+	      	departure_time, 
+	      	regular_type,
+	      	days,
+	      	repetition_period,
+	      	end_type,
+	      	end_num,
+	      	end_date,
+	      	effective_date,
+	      	update_datetime, 
+	      	plate_number, 
+	      	car_id,
+	      	jd.department_name
+	    FROM
+	    	jy_classplan
+	    LEFT JOIN
+			jy_department jd ON jd.department_id=organization_id
+	    WHERE
+	    	1=1
+	    <if test="param3 != null and param3 != ''">
+			and classline_name like '%${param3}%'
+		</if>
+		<if test="param4 != null and param4 != ''">
+			and organization_id = ${param4}
+		</if>
+		<if test="param5 != null and param5 != ''">
+			and plate_number like '%${param5}%'
+		</if>
+		ORDER BY update_datetime 
+		limit #{param1},#{param2}
+	</select>
+	
+	<!-- 查询自动计划表 -->
+	<select id="getCount" resultType="int">
+		SELECT 
+			count(*)
+	    FROM
+	    	jy_classplan
+	    WHERE
+	    	1=1
+	    <if test="param3 != null and param3 != ''">
+			and classline_name like '%${param3}%'
+		</if>
+		<if test="param4 != null and param4 != ''">
+			and organization_id = ${param4}
+		</if>
+		<if test="param5 != null and param5 != ''">
+			and plate_number like '%${param5}%'
+		</if>
+	</select>
+	
+	<!-- 查询编辑信息 -->
+	<select id="getClassPlanEditInfo" resultType="ClassPlan">
+		SELECT 
+			classplan_id, 
+			organization_id, 
+			classline_id, 
+	      	classline_name, 
+	      	departure_time, 
+	      	regular_type,
+	      	days,
+	      	repetition_period,
+	      	end_type,
+	      	end_num,
+	      	end_date,
+	      	effective_date,
+	      	update_datetime, 
+	      	plate_number, 
+	      	car_id,
+	      	jd.department_name
+	    FROM
+	    	jy_classplan
+	    LEFT JOIN
+			jy_department jd ON jd.department_id=organization_id
+	    WHERE
+	    	1=1
+	    AND classplan_id=#{_parameter}
+	</select>
+	<!-- 添加自动计划任务表 -->
+	<insert id="addclassplan" parameterType="ClassPlan">
+	INSERT INTO 
+		jy_classplan
+		(	
+			classplan_id, 
+			organization_id, 
+			classline_id, 
+	      	classline_name, 
+	      	departure_time, 
+	      	regular_type,
+	      	<if test="days!=null and days!='' and regular_type==1">
+	      	days, 
+	      	</if>
+	      	<if test="repetition_period!=null and repetition_period!='' and regular_type==0">
+	      	repetition_period,
+	      	</if>
+	      	end_type,
+	      	<if test="end_num!=null and end_num!='' and end_type==2"> 
+	      	end_num,
+	      	</if>
+	      	<if test="end_date!=null and end_date!=''">
+	      	end_date, 
+	      	</if>
+	      	effective_date,
+	      	update_datetime, 
+	      	plate_number, 
+	      	car_id
+	     )
+    	VALUES 
+    	(
+    		#{classplan_id}, 
+    		#{organization_id}, 
+    		#{classline_id}, 
+      		#{classline_name}, 
+      		#{departure_time}, 
+      		#{regular_type}, 
+      		<if test="days!=null and days!='' and regular_type==1">
+     		#{days}, 
+     		</if>
+     		<if test="repetition_period!=null and repetition_period!='' and regular_type==0">
+     		#{repetition_period}, 
+     		</if>
+     		#{end_type}, 
+     		<if test="end_num!=null and end_num!='' and end_type==2"> 
+	      	#{end_num},
+	      	</if>
+	      	<if test="end_date!=null and end_date!=''">
+	      	#{end_date},
+	      	</if>
+	      	#{effective_date}, 
+			SYSDATE(),
+			#{plate_number}, 
+	      	#{car_id}
+      )
+	</insert>
+</mapper>

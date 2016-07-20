@@ -1,0 +1,26 @@
+table{
+	border: 1px;
+    width:100% ;
+	
+}
+table tr{
+	border-color: black #000000 #000000 black; 
+	border-style: solid; 
+	border-top-width: 1px; 
+	border-right-width: 1px; 
+	border-bottom-width: 1px; 
+	border-left-width: 1px;
+	font-size:12px;
+	height:25px;
+	
+}
+table tr td{
+	border-color: black #000000 #000000 black; 
+	border-style: solid; 
+	border-top-width: 1px; 
+	border-right-width: 1px; 
+	border-bottom-width: 1px; 
+	border-left-width: 1px;
+	font-size:12px;
+	height:25px;
+}

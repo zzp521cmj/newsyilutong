@@ -1,0 +1,1410 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jy.dao.CreatAgreementDao">
+	<resultMap type="com.jy.model.ShippingOrder" id="AgreeOrders">
+		<result column="agreement_number" property="agreement_number"
+			jdbcType="VARCHAR" />
+		<result column="agreement_type" property="agreement_type"
+			jdbcType="VARCHAR" />
+		<result column="shiping_order_num" property="shiping_order_num"
+			jdbcType="VARCHAR" />
+		<result column="receipt" property="receipt" jdbcType="VARCHAR" />
+		<result column="send_time" property="send_time" jdbcType="VARCHAR" />
+		<result column="car_name" property="car_name" jdbcType="VARCHAR" />
+		<result column="car_number" property="car_number" jdbcType="VARCHAR" />
+		<result column="1send_type" property="sendType" jdbcType="VARCHAR" />
+		<result column="1pay_type" property="payType" jdbcType="VARCHAR" />
+		<result column="transport_pay" property="transport_pay"
+			jdbcType="VARCHAR" />
+		<result column="trade_agency" property="trade_agency" jdbcType="VARCHAR" />
+		<result column="is_recept" property="is_recept" jdbcType="VARCHAR" />
+		<result column="goods_name" property="goods_name" jdbcType="VARCHAR" />
+		<result column="goods_weight" property="goods_weight" jdbcType="VARCHAR" />
+		<result column="goods_vol" property="goods_vol" jdbcType="VARCHAR" />
+		<result column="goods_num" property="goods_num" jdbcType="VARCHAR" />
+		<result column="practiacl_num" property="practiacl_num"
+			jdbcType="VARCHAR" />
+		<result column="take_fee" property="take_fee" jdbcType="VARCHAR" />
+		<result column="trunk_fee" property="trunk_fee" jdbcType="VARCHAR" />
+		<result column="send_remarks" property="send_remarks" jdbcType="VARCHAR" />
+		<result column="change_remarks" property="change_remarks"
+			jdbcType="VARCHAR" />
+		<result column="create_user" property="create_user" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap id="BaseResultMap" type="com.jy.model.AgreementCarMessage">
+		<id column="driver_id" property="driverId" jdbcType="VARCHAR" />
+		<result column="car_id" property="carId" jdbcType="VARCHAR" />
+		<result column="driver_name" property="driverName" jdbcType="VARCHAR" />
+		<result column="gender" property="gender" />
+		<result column="birthday" property="birthday" jdbcType="DATE" />
+		<result column="phone_number" property="phoneNumber" jdbcType="VARCHAR" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
+		<result column="card_number" property="cardNumber" jdbcType="VARCHAR" />
+		<result column="card_nation" property="cardNation" jdbcType="VARCHAR" />
+		<result column="card_issuing_authority_authority" property="cardIssuingAuthorityAuthority" />
+		<result column="card_validity_date" property="cardValidityDate" />
+		<result column="driving_license" property="drivingLicense" />
+		<result column="driver_nationality" property="driverNationality" />
+		<result column="driver_license_date" property="driverLicenseDate" />
+		<result column="driving_type" property="drivingType" />
+		<result column="drving_licensing_date" property="drvingLicensingDate" />
+		<result column="driver_license_archivesNumber" property="driverLicenseArchivesnumber" />
+		<result column="employment_certified_card" property="employmentCertifiedCard" />
+		<result column="employment_type" property="employmentType" />
+		<result column="employment_issuing_authority" property="employmentIssuingAuthority" />
+		<result column="employment_validity_date" property="employmentValidityDate" />
+		<result column="employment_licensing_date" property="employmentLicensingDate" />
+		<result column="employment_license_date" property="employmentLicenseDate" />
+		<result column="update_date" property="updateDate" />
+		<result column="driving_record" property="drivingRecord" />
+		<result column="travel_card_id" property="travel_card_id" />
+		<result column="plate_number" property="plate_number" />
+		<result column="ptype" property="ptype" />
+		<result column="travel_card_id" property="travelCardId" />
+		<result column="plate_number" property="plateNumber" />
+		<result column="car_owner" property="carOwner" />
+		<result column="tels" property="tels" />
+		<result column="user_idcard" property="user_idcard" />
+		<result column="enabled" property="enabled" />
+		<result column="boxType" property="boxType" />
+		<result column="length_name" property="length_name" />
+		<result column="department_id" property="departmentId" />
+		<result column="front" property="front" />
+		<result column="traction_weight" property="tractionWeight" />
+		<result column="equipment_weight" property="equipmentWeight" />
+		<result column="car_weight" property="carWeight" />
+		<result column="inline_height" property="inlineHeight" />
+		<result column="inline_width" property="inlineWidth" />
+		<result column="inline_length" property="inlineLength" />
+		<result column="outline_height" property="outlineHeight" />
+		<result column="outline_width" property="outlineWidth" />
+		<result column="outline_length" property="outlineLength" />
+		<result column="approve_weight" property="approveWeight" />
+		<result column="approve_number" property="approveNumber" />
+		<result column="file_number" property="fileNumber" />
+		<result column="travel_certificate_date" property="travelCertificateDate" />
+		<result column="registration_date" property="registrationDate" />
+		<result column="engine_number" property="engineNumber" />
+		<result column="identification_code" property="identificationCode" />
+		<result column="brand" property="brand" />
+		<result column="using_properties" property="usingProperties" />
+		<result column="address" property="address" />
+		<result column="car_type" property="carType" />
+		<result column="car_model" property="carModel" />
+		<result column="notes" property="notes" />
+		<result column="inspection_records" property="inspectionRecords" />
+		<result column="user_id" property="user" />
+		<result column="d" property="d" />
+		<result column="car_length" property="carLength" />
+		<result column="tonnage" property="tonnage" />
+	</resultMap>
+	<resultMap id="DriverBaseResultMap" type="com.jy.model.Driver">
+		<id column="driver_id" property="driverId" jdbcType="VARCHAR" />
+		<result column="car_id" property="carId" jdbcType="VARCHAR" />
+		<result column="driver_name" property="driverName" jdbcType="VARCHAR" />
+		<result column="gender" property="gender" />
+		<result column="birthday" property="birthday" jdbcType="DATE" />
+		<result column="phone_number" property="phoneNumber" jdbcType="VARCHAR" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
+		<result column="card_number" property="cardNumber" jdbcType="VARCHAR" />
+		<result column="card_nation" property="cardNation" jdbcType="VARCHAR" />
+		<result column="card_issuing_authority_authority" property="cardIssuingAuthorityAuthority" />
+		<result column="card_validity_date" property="cardValidityDate" />
+		<result column="driving_license" property="drivingLicense" />
+		<result column="driver_nationality" property="driverNationality" />
+		<result column="driver_license_date" property="driverLicenseDate" />
+		<result column="driving_type" property="drivingType" />
+		<result column="drving_licensing_date" property="drvingLicensingDate" />
+		<result column="driver_license_archivesNumber" property="driverLicenseArchivesnumber" />
+		<result column="employment_certified_card" property="employmentCertifiedCard" />
+		<result column="employment_type" property="employmentType" />
+		<result column="employment_issuing_authority" property="employmentIssuingAuthority" />
+		<result column="employment_validity_date" property="employmentValidityDate" />
+		<result column="employment_licensing_date" property="employmentLicensingDate" />
+		<result column="employment_license_date" property="employmentLicenseDate" />
+		<result column="update_date" property="updateDate" />
+		<result column="driving_record" property="drivingRecord" />
+		<result column="travel_card_id" property="travel_card_id" />
+		<result column="plate_number" property="plate_number" />
+		<result column="ptype" property="ptype" />
+	</resultMap>
+
+	<resultMap id="printerCreateMessage" type="com.jy.model.CreateAgreement">
+		<id column="agreement_id" property="agreement_id" jdbcType="VARCHAR" />
+		<result column="car_number1" property="car_number1" jdbcType="VARCHAR" />
+		<result column="car_name" property="car_name" jdbcType="VARCHAR" />
+		<result column="phone_number" property="phone_number" />
+		<result column="agreement_number" property="agreement_number" />
+		<result column="number" property="number" />
+		<result column="end_address" property="end_address" />
+		<result column="send_station" property="send_station" />
+		<association property="driver" javaType="com.jy.model.Driver">
+			<id column="driver_id" property="driverId" jdbcType="VARCHAR" />
+			<result column="driving_license" property="drivingLicense" />
+		</association>
+		<collection property="shippingOrders" ofType="com.jy.model.ShippingOrder">
+			<id column="shiping_order_id" property="shiping_order_id"
+				jdbcType="VARCHAR" />
+			<result column="goods_name" property="goods_name" jdbcType="VARCHAR" />
+			<result column="receipt_address" property="receipt_address"
+				jdbcType="VARCHAR" />
+			<result column="shiping_order_num" property="shiping_order_num" />
+			<result column="goods_num" property="goods_num" />
+			<result column="goods_weight" property="goods_weight" />
+			<result column="goods_vol" property="goods_vol" />
+			<result column="is_recept" property="is_recept" />
+			<result column="destination_fee" property="destination_fee" />
+		</collection>
+
+	</resultMap>
+
+
+
+	<select id="getCreateAgreementInfo" resultType="CreateAgreement">
+		SELECT
+		ji.*,
+		js.send_type,
+		js.end_address,
+		js.shiping_order_id,
+		MAX(js.shipping_order_state) AS order_state,
+		COUNT(jv.vehiclebidding_id) AS vehiclebidding_count
+		FROM
+		jy_create_agreement ji
+		LEFT JOIN
+		jy_agreementtoorder ja ON
+		ja.agreement_id=ji.agreement_id
+		<!--LEFT JOIN jy_shiping_order js ON js.shiping_order_id=ja.order_id jy_order -->
+		LEFT JOIN
+		jy_shiping_order js ON js.shiping_order_id=ja.order_id
+		LEFT
+		JOIN jy_vehiclebidding jv ON jv.agreement_id=ji.agreement_id
+		WHERE
+		(ji.agreement_type=0 or
+		ji.agreement_type=1
+		OR ji.agreement_type=2)
+		<!-- and (ji.ldp_id=#{param13} OR ji.ndp_id=#{param13} ) -->
+		and js.shiping_order_id is not null
+		<if test="param3!=null and param3!=''">
+			and ji.agreement_number like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.create_time &gt;=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.create_time &lt;=#{param5}
+		</if>
+		<if test="(param5!=null and param5!='') and (param4!=null and param4!='')">
+			and ji.create_time &gt;=#{param4}
+			and ji.create_time
+			&lt;=#{param5}
+		</if>
+		<if test="param6!=null and param6!=''">
+			and ji.car_name like "%${param6}%"
+		</if>
+		<if test="param7!=null and param7!=''">
+			and ji.car_number1 like "%${param7}%"
+		</if>
+		<if test="param8!=null and param8!=''">
+			and ji.agreement_type like "%${param8}%"
+		</if>
+		<if test="param9!=null and param9!=''">
+			and ji.end_address like "%${param9}%"
+		</if>
+		<if test="param10!=null and param10!=''">
+			and ji.company_id in(select company_id from jy_company jc
+			where jc.company_name like '%${param10}%')
+		</if>
+		<if test="param11!=null and param11!=''">
+			and ji.phone_number like "%${param11}%"
+		</if>
+		<if test="param12!=null and param12!=''">
+			and js.shipping_order_state like "%${param12}%"
+		</if>
+		<if test="param14!=null and param14!=''">
+			and ji.send_station like "%${param14}%"
+		</if>
+		<!-- 1, 2, id, start_date, end_date, car_name,car_number1,agreement_type,end_address,company_id,phone_number,order_state -->
+		<!-- <if test="param3!=null and param3!=''"> and ji.agreement_number like 
+			"%${param3}%" </if> <if test="param4!=null and param4!=''"> and DATE_ADD(ji.create_time,INTERVAL 
+			1 DAY) &gt;=#{param4} </if> <if test="param5!=null and param5!=''"> and DATE_SUB(ji.create_time,INTERVAL 
+			1 DAY) &lt;=#{param5} </if> <if test="(param5!=null and param5!='') and (param4!=null 
+			and param4!='')"> and DATE_ADD(ji.create_time,INTERVAL 1 DAY) &gt;=#{param4} 
+			and DATE_SUB(ji.create_time,INTERVAL 1 DAY) &lt;=#{param5} </if> -->
+		GROUP BY ji.agreement_id
+		ORDER BY
+		ji.create_time
+		DESC
+		limit
+		#{param1},#{param2}
+	</select>
+	<select id="searchCreateAgreement" resultType="int">
+		select
+		count(*)
+		from
+		jy_create_agreement
+		<!-- LEFT JOIN jy_travel_card jtc ON jtc.travel_card_id = ji.car_id -->
+		where
+		jtc.travel_card_id =#{param2}
+	</select>
+	<select id="getCreateAgreement" resultType="int">
+		select count(*) from (
+		SELECT ji.* FROM jy_create_agreement ji
+		LEFT JOIN
+		jy_agreementtoorder ja ON ja.agreement_id=ji.agreement_id
+		LEFT JOIN
+		jy_shiping_order js ON js.shiping_order_id=ja.order_id
+		LEFT JOIN
+		jy_vehiclebidding jv ON jv.agreement_id=ji.agreement_id
+		WHERE
+		(ji.agreement_type=0 or
+		ji.agreement_type=1
+		OR ji.agreement_type=2)
+
+		<!-- and (ji.ldp_id=#{param11} OR ji.ndp_id=#{param11} ) -->
+		and js.shiping_order_id is not null
+		<if test="param1!=null and param1!=''">
+			and agreement_number like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and create_time &gt;=#{param2}
+		</if>
+		<if test="param3!=null and param3!=''">
+			and create_time &lt;=#{param3}
+		</if>
+		<if test="(param2!=null and param2!='') and (param3!=null and param3!='') ">
+			and create_time &gt;=#{param2}
+			and create_time
+			&lt;=#{param3}
+		</if>
+		<if test="param4!=null and param4=''">
+			and ji.car_name like "%${param4}%"
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.car_number1 like "%${param5}%"
+		</if>
+		<if test="param6!=null and param6!=''">
+			and ji.agreement_type like "%${param6}%"
+		</if>
+		<if test="param7!=null and param7!=''">
+			and js.end_address like "%${param7}%"
+		</if>
+		<if test="param8!=null and param8!=''">
+			and ji.company_id in(select company_id from jy_company jc
+			where jc.company_name like '%${param8}%')
+		</if>
+		<if test="param9!=null and param9!=''">
+			and ji.phone_number like "%${param9}%"
+		</if>
+		<if test="param10!=null and param10!=''">
+			and js.shipping_order_state like "%${param10}%"
+		</if>
+		<if test="param12!=null and param12!=''">
+			and ji.send_station like "%${param12}%"
+		</if>
+		GROUP BY ji.agreement_id
+		) t
+		<!-- <if test="param1!=null and param1!=''"> and agreement_number like 
+			"%${param1}%" </if> <if test="param2!=null and param2!=''"> and DATE_ADD(create_time,INTERVAL 
+			1 DAY) &gt;=#{param2} </if> <if test="param3!=null and param3!=''"> and DATE_SUB(create_time,INTERVAL 
+			1 DAY) &lt;=#{param3} </if> <if test="(param2!=null and param2!='') and (param3!=null 
+			and param3!='') "> and DATE_ADD(create_time,INTERVAL 1 DAY) &gt;=#{param2} 
+			and DATE_SUB(create_time,INTERVAL 1 DAY) &lt;=#{param3} </if> -->
+	</select>
+	<!--导出 -->
+	<select id="getCreateAgreementAll" resultType="CreateAgreement">
+		SELECT jc.company_name,jd.department_name AS department_name,
+		CASE WHEN
+		ji.pay_type='0' THEN '预付'
+		WHEN
+		ji.pay_type='1' THEN '到付'
+		WHEN
+		ji.pay_type='2' THEN '回付'
+		END AS
+		pay_type,
+		CASE WHEN
+		ji.agreement_type='0' THEN '班线'
+		WHEN
+		ji.agreement_type='1' THEN '配送'
+		WHEN ji.agreement_type='2' THEN '转运'
+		END AS agreement_types,ji.*,
+		count(js.shiping_order_id) as number,
+		js.*
+		<!-- , CASE WHEN js.send_type='0' THEN '自提' WHEN js.send_type='1' THEN 
+			'送货' END AS 1send_type, CASE WHEN js.pay_type='0' THEN '回付' WHEN js.pay_type='1' 
+			THEN '提付' WHEN js.pay_type='2' THEN '现付' WHEN js.pay_type='3' THEN '货到前付' 
+			END AS 1pay_type -->
+		FROM jy_shiping_order
+		js INNER JOIN
+		jy_agreementtoorder ja
+		ON
+		js.shiping_order_id=ja.order_id
+		INNER JOIN jy_create_agreement ji ON
+		ja.agreement_id=ji.agreement_id
+		LEFT JOIN jy_company jc ON
+		jc.company_id=ji.company_id
+		LEFT JOIN jy_department jd ON
+		jd.department_id = ji.ndp_id
+		where 1=1
+		and js.shiping_order_id is not
+		null
+		<if test="array!=null and array.length!=0">
+			AND ji.agreement_id in
+			<foreach collection="array" index="index" item="item" open="("
+				separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="array==null or array.length==0">
+			<if test="param3!=null and param3!=''">
+				and ji.agreement_number like "%${param3}%"
+			</if>
+			<if test="param2!=null and param2!=''">
+				and ji.create_time &gt;=#{param2}
+			</if>
+			<if test="param3!=null and param3!=''">
+				and ji.create_time &lt;=#{param3}
+			</if>
+			<if test="(param2!=null and param2!='') and (param3!=null and param3!='')">
+				and ji.create_time &gt;=#{param2}
+				and ji.create_time
+				&lt;=#{param3}
+			</if>
+			<if test="param4!=null and param4!=''">
+				and ji.car_name like "%${param4}%"
+			</if>
+			<if test="param5!=null and param5!=''">
+				and ji.car_number1 like "%${param5}%"
+			</if>
+			<if test="param6!=null and param6!=''">
+				and ji.agreement_type like "%${param6}%"
+			</if>
+			<if test="param7!=null and param7!=''">
+				and js.end_address like "%${param7}%"
+			</if>
+			<if test="param8!=null and param8!=''">
+				and ji.company_id in(select company_id from jy_company
+				jc
+				where jc.company_name like '%${param8}%')
+			</if>
+			<if test="param9!=null and param9!=''">
+				and ji.phone_number like "%${param11}%"
+			</if>
+			<if test="param10!=null and param10!=''">
+				and js.shipping_order_state like "%${param12}%"
+			</if>
+
+		</if>
+		GROUP BY ji.agreement_id
+		ORDER BY
+		ji.create_time
+		DESC
+	</select>
+	<!-- <select id="getCreateAgreementAll" resultType="CreateAgreement"> SELECT 
+		ji.*, CASE WHEN ji.agreement_type='0' THEN '班线' WHEN ji.agreement_type='1' 
+		THEN '配送' WHEN ji.agreement_type='2' THEN '转运' END AS agreementtype FROM 
+		jy_create_agreement ji LEFT JOIN jy_travel_card jtc ON jtc.travel_card_id 
+		= ji.car_id where 1=1 <if test="param1!=null and param1!=''"> and ji.agreement_number 
+		like "%${param1}%" </if> <if test="param2!=null and param2!=''"> and DATE_ADD(ji.create_time,INTERVAL 
+		1 DAY) &gt;=#{param2} </if> <if test="param3!=null and param3!=''"> and DATE_SUB(ji.create_time,INTERVAL 
+		1 DAY) &lt;=#{param3} </if> <if test="(param2!=null and param2!='') and (param3!=null 
+		and param3!='') "> and DATE_ADD(ji.create_time,INTERVAL 1 DAY) &gt;=#{param2} 
+		and DATE_SUB(ji.create_time,INTERVAL 1 DAY) &lt;=#{param3} </if> ORDER BY 
+		ji.create_time DESC </select> -->
+	<!-- 删除协议 -->
+	<delete id="deleteCreateAgreement" parameterType="java.util.Arrays">
+		delete from
+		jy_create_agreement
+		where
+		agreement_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	<!-- 详细表页面的订单号查询 -->
+	<select id="getXXCreateAgreement" resultType="GuanlianCA">
+		SELECT * FROM jy_agreementtoorder
+		<if test="_parameter!=null">
+			where agreement_id=#{_parameter}
+		</if>
+	</select>
+	<!-- 删除时候查询订单号 -->
+	<select id="orderNumber" parameterType="java.util.Arrays"
+		resultType="GuanlianCA">
+		select * from
+		jy_agreementtoorder
+		where
+		agreement_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+
+	<!--协议删除关联表的数据 -->
+	<delete id="deleToOder" parameterType="java.util.Arrays">
+		delete from
+		jy_agreementtoorder
+		where
+		agreement_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+	<!-- 删除时,修改订单状态 -->
+	<update id="deleState" parameterType="java.util.List">
+		update
+		jy_shiping_order		<!-- shiping_order -->
+		<set>
+			shipping_order_state=0
+			,send_fee=null
+			,change_pay=null,
+			send_remarks=null,
+			change_remarks=null,
+			send_fee1=null,
+			change_fee1=null,
+			change_other=null
+		</set>
+		where
+		shiping_order_id IN
+		<foreach collection="list" index="index" item="item" open="("
+			separator="," close=")">
+			#{item.order_id}
+		</foreach>
+		and shipping_order_state!=4
+	</update>
+	<!-- 协议和订单表的关联保存 -->
+	<insert id="saveAgreementToorder" parameterType="java.util.List">
+
+		INSERT INTO jy_agreementtoorder (id,agreement_id,order_id,order_num)
+		VALUES
+		<foreach collection="list" index="index" item="item"
+			separator=",">
+			(
+			#{item.id},
+			#{item.agreement_id},
+			#{item.order_id},
+			#{item.shipping_order_num}
+			)
+		</foreach>
+	</insert>
+
+	<insert id="saveCreateAgreement" parameterType="CreateAgreement">
+		insert into
+		jy_create_agreement
+		(
+		agreement_id,
+		agreement_number,
+		agreement_type,
+		ndp_id,
+		ldp_id,
+		car_number1,
+		car_id,
+		car_name,
+		all_money,
+		receivable_fee,
+		phone_number,
+		remarks_send,
+		create_time,
+		create_user,
+		number,
+		company_id,
+		company_number,
+		custom_id,
+		send_date,
+		chanage_pay_type,
+		company_tel,
+		driverid,
+		goods_weight,
+		goods_vol,
+		goods_num,
+		all_destination_fee,
+		all_transportation_fee,
+		all_trade_agency,
+		all_handling_charge,
+		all_change_handling,
+		all_change_pay,
+		end_address,
+		send_station,
+		pay_type
+		)
+		values (
+		#{agreement_id},
+		#{agreement_number},
+		#{agreement_type},
+		#{ndp_id},
+		#{ldp_id},
+		#{car_number1},
+		#{car_id},
+		#{car_name},
+		#{all_money},
+		#{all_money},
+		#{phone_number},
+		#{remarks_send},
+		#{create_time},
+		#{create_user},
+		#{number},
+		#{company_id},
+		#{company_number},
+		#{car_id},
+		#{send_date},
+		#{chanage_pay_type},
+		#{company_tel},
+		#{driverid},
+		#{goods_weight},
+		#{goods_vol},
+		#{goods_num},
+		#{all_destination_fee},
+		#{all_transportation_fee},
+		#{all_trade_agency},
+		#{all_handling_charge},
+		#{all_change_handling},
+		#{all_change_pay},
+		#{end_address},
+		#{send_station},
+		#{pay_type}
+		)
+
+	</insert>
+	<!-- 制作协议修改订单状态 -->
+	<update id="updateState" parameterType="java.util.Arrays">
+		update
+		jy_shiping_order  <!-- shiping_order -->
+		<set>
+			shipping_order_state=#{0}
+		</set>
+		where
+		shiping_order_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	<select id="getUpdateCreateAgreement" resultType="CreateAgreement">
+		SELECT
+		ji.*,
+		jc.company_name,
+		jc.end_people,
+		jc.end_phone
+		FROM
+		jy_create_agreement ji
+		LEFT JOIN
+		jy_company jc ON jc.company_id = ji.company_id
+		where
+		ji.agreement_id=#{agreement_id}
+	</select>
+
+	<!-- <update id="updateCreateAgreement" parameterType="CreateAgreement"> 
+		update jy_shiping_order <set> shiping_order_num=#{shiping_order_num}, start_address=#{start_address}, 
+		end_address=#{end_address}, check_time=#{check_time}, checkp=#{checkp}, check_tel=#{check_tel}, 
+		check_phone= #{check_phone}, receipt=#{receipt}, receipt_tel=#{receipt_tel}, 
+		receipt_phone=#{receipt_phone}, receipt_address=#{receipt_address}, goods_name= 
+		#{goods_name}, goods_packing= #{goods_packing}, goods_num=#{goods_num}, goods_weight=#{goods_weight}, 
+		goods_vol=#{goods_vol}, car_id=#{car_id}, spe= #{spe}, take_fee=#{take_fee}, 
+		send_fee= #{send_fee}, adorn_fee=#{adorn_fee}, trunk_fee=#{trunk_fee}, insurance=#{insurance}, 
+		pay_type=#{pay_type}, transport_pay= #{transport_pay}, remarks=#{remarks}, 
+		check_type= #{check_type}, send_type=#{send_type}, shipping_order_state=#{shipping_order_state}, 
+		change_address=#{change_address}, trade_agency=#{trade_agency}, creat_type=#{creat_type}, 
+		updatetime=#{updatetime}, shipping_order=#{shipping_order} </set> where shiping_order_id 
+		= #{shiping_order_id} </update> -->
+	<update id="updateCreateAgreement" parameterType="CreateAgreement">
+		update
+		jy_create_agreement
+		<set>
+			agreement_type=#{agreement_type},
+			ndp_id=#{ndp_id},
+			ldp_id=#{ldp_id},
+			car_number1=#{car_number1},
+			car_id= #{car_id},
+			car_name=#{car_name},
+			all_money=#{all_money},
+			receivable_fee=#{all_money},
+			phone_number=#{phone_number},
+			remarks_send=#{remarks_send},
+			create_time= #{create_time},
+			create_user= #{create_user},
+			number=#{number},
+			company_id=#{company_id},
+			company_number=#{company_number},
+			chanage_pay_type=#{chanage_pay_type},
+			company_tel=#{company_tel},
+			driverid=#{driverid},
+			goods_weight=#{goods_weight},
+			goods_vol=#{goods_vol},
+			goods_num=#{goods_num},
+			all_destination_fee=#{all_destination_fee},
+			all_transportation_fee=#{all_transportation_fee},
+			all_trade_agency=#{all_trade_agency},
+			all_handling_charge=#{all_handling_charge},
+			all_change_handling=#{all_change_handling},
+			all_change_pay=#{all_change_pay},
+			send_station=#{send_station},
+			end_address=#{end_address},
+			pay_type=#{pay_type}
+		</set>
+		where agreement_id = #{agreement_id}
+	</update>
+	<select id="getNumber" resultType="CreateAgreement">
+		select
+		*
+		from
+		jy_shiping_order
+		<if test="_parameter!=null">
+			where shiping_order_num=#{_parameter}
+		</if>
+	</select>
+	<!-- <select id="getPlateNumberLength" resultType="ShippingOrder"> select 
+		shiping_order_id, shiping_order_num from jy_shiping_order <if test="_parameter!=null"> 
+		where shiping_order_num like "%${_parameter}%" </if> </select> -->
+	<select id="getPlateNumberLength" resultType="CreateAgreement">
+		SELECT
+		DISTINCT travel_card_id,plate_number
+		FROM
+		jy_travel_card jtc
+		WHERE
+		travel_card_id NOT IN(
+		SELECT
+		DISTINCT travel_card_id
+		FROM
+		jy_travel_card
+		jtc
+		INNER JOIN
+		jy_order ji ON ji.car_id=jtc.travel_card_id
+		)
+		<if test="_parameter!=null">
+			and plate_number like "%${_parameter}%"
+		</if>
+	</select>
+	<select id="getCompany" resultType="Company">
+		SELECT
+		*
+		FROM
+		jy_company
+		WHERE 1=1
+		<if test="_parameter!=null">
+			and company_name like "%${_parameter}%"
+		</if>
+	</select>
+	<update id="updataMoney">
+		update
+		jy_shiping_order
+		<set>
+			<if test="param2!=null and param2!=''">
+				practiacl_num=#{param2},
+			</if>
+			<if test="param3!=null and param3!=''">
+				send_fee=#{param3},
+			</if>
+			<if test="param3!=null and param3!=''">
+				send_fee1=#{param3},
+			</if>
+
+			send_remarks=#{param4},
+
+			<if test="param5!=null and param5!=''">
+				change_pay=#{param5},
+			</if>
+			<!-- <if test="param5!=null and param5!=''"> change_fee1=#{param5}, </if> -->
+
+
+			change_remarks=#{param6},
+
+			<if test="param7!=null and param7!=''">
+				chanage_pay_type=#{param7},
+			</if>
+			<if test="param8!=null and param8!=''">
+				change_other=#{param8},
+			</if>
+			<if test="param9!=null and param9!=''">
+				upstairs_fee=#{param9},
+			</if>
+
+			<if test="param10!=null and param10!=''">
+				change_back_fee=#{param10},
+			</if>
+			<if test="param11!=null and param11!=''">
+				change_back_type=#{param11},
+			</if>
+			<if test="param11!=null and param11!=''">
+				change_back_type=#{param11},
+			</if>
+			<if test="param12!=null and param12!=''">
+				change_handling=#{param12},
+			</if>
+			<if test="param13!=null and param13!=''">
+				paidtc_fu=#{param13},
+			</if>
+			<if test="param14!=null and param14!=''">
+				change_feilv=#{param14}
+			</if>
+		</set>
+		where shiping_order_id = #{param1}
+	</update>
+
+	<!-- 移除协议中的运单 -->
+	<update id="updataZong">
+		update jy_create_agreement
+		<set>
+			<if test="param2!=null and param2!=''">
+				all_money=#{param2}
+			</if>
+			<if test="param3!=null and param3!=''">
+				number=number-#{param3}
+			</if>
+		</set>
+		where agreement_id = #{param1}
+	</update>
+
+	<!-- 移除协议中的运单 -->
+	<delete id="removeShip" parameterType="java.util.Arrays">
+		delete from
+		jy_agreementtoorder
+		where
+		agreement_id =#{0} and order_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+	<select id="getShipOrderCA" resultType="int">
+		SELECT
+		count(*)
+		FROM
+		jy_shiping_order ji
+		where
+		ji.shipping_order_state=0
+		AND (ji.creat_type!=1 OR ji.is_order_arrive=1)
+		<if test="param2!=null and param2!=''">
+			and ji.send_time &gt;=#{param2}
+		</if>
+		<if test="param3!=null and param3!=''">
+			and ji.send_time &lt;=#{param3}
+		</if>
+		<if test="(param2!=null and param2!='') and (param3!=null and param3!='')">
+			and ji.send_time &gt;=#{param2}
+			and ji.send_time
+			&lt;=#{param3}
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.shiping_order_num like "%${param4}%"
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.shipping_order_state =#{param5}
+		</if>
+		<if test="param6!=null and param6!=''">
+			and ji.pay_type =#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">
+			and ji.receipt like "%${param7}%"
+		</if>
+		<if test="param8!=null and param8!=''">
+			and ji.end_address like "%${param8}%"
+		</if>
+		<if test="param9!=null and param9!=''">
+			and ji.send_station like "%${param9}%"
+		</if>
+		<if test="param10!=null and param10!=''">
+			and ji.receipt_tel like "%${param10}%"
+		</if>
+		<if test="param11!=null and param11!=''">
+			and ji.send_type = #{param11}
+		</if>
+	</select>
+	<select id="getShipOrderInfoCA" resultType="ShippingOrder">
+		SELECT
+		ji.*,datediff(now(),order_arrive_time) as stocks_predestination
+		FROM
+		jy_shiping_order ji
+		where
+		ji.shipping_order_state=0 AND
+		(ji.creat_type!=1 OR ji.is_order_arrive=1)
+
+		<if test="param4!=null and param4!=''">
+			and ji.send_time &gt;=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.send_time &lt;=#{param5}
+		</if>
+		<if test="(param4!=null and param4!='') and (param5!=null and param5!='')">
+			and ji.send_time &gt;=#{param4}
+			and ji.send_time
+			&lt;=#{param5}
+		</if>
+		<if test="param6!=null and param6!=''">
+			and ji.shiping_order_num like "%${param6}%"
+		</if>
+		<if test="param7!=null and param7!=''">
+			and ji.shipping_order_state =#{param7}
+		</if>
+		<if test="param8!=null and param8!=''">
+			and ji.pay_type =#{param8}
+		</if>
+		<if test="param9!=null and param9!=''">
+			and ji.receipt like "%${param9}%"
+		</if>
+		<if test="param10!=null and param10!=''">
+			and ji.end_address like "%${param10}%"
+		</if>
+		<if test="param11!=null and param11!=''">
+			and ji.send_station like "%${param11}%"
+		</if>
+		<if test="param12!=null and param12!=''">
+			and ji.receipt_tel like "%${param12}%"
+		</if>
+		<if test="param13!=null and param13!=''">
+			and ji.send_type =#{param13}
+		</if>
+		ORDER BY ji.end_address,ji.time_appointment
+		limit
+		#{param1},#{param2}
+	</select>
+	<!-- 查询车辆信息 -->
+	<select id="getTravel" resultMap="BaseResultMap">
+		select
+		j.*,jdi.*,
+		jt.*,
+		jr.*,
+		ji.*,
+		jm.*,
+		jcl.length_name,
+		jdi.address AS
+		driver_address
+		from
+		jy_travel_card j
+		left join
+		jy_transport_card jt on
+		j.travel_card_id=jt.travel_card_id
+		left join
+		jy_registration jr on
+		j.travel_card_id=jr.travel_card_id
+		left join
+		jy_car_invoice ji on
+		j.travel_card_id=ji.travel_card_id
+		left join
+		jy_car_maintenance jm on
+		j.travel_card_id=jm.travel_card_id
+		left outer join
+		jy_car_length jcl on
+		jcl.length_id=j.boxType
+		LEFT JOIN jy_driver_info jdi ON
+		jdi.car_id=j.travel_card_id
+		where j.state=1
+		<if test="param3!=null and param3!=''">
+			and j.travel_card_id like '%${param3}%'
+		</if>
+		<if test="param4!=null and param4!=''">
+			and j.department_id = #{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			AND jt.car_length = #{param5}
+		</if>
+		<if test="param6!=null and param6!=''">
+			AND jcl.length_name like '%${param6}%'
+		</if>
+		order by j.createtime desc
+		limit #{param1},#{param2}
+	</select>
+	<!-- 总条数 -->
+	<select id="getCount" resultType="int">
+		select
+		COUNT(*)
+		from
+		jy_travel_card j
+		left join
+		jy_transport_card jt on
+		j.travel_card_id=jt.travel_card_id
+		left join
+		jy_registration jr on
+		j.travel_card_id=jr.travel_card_id
+		left join
+		jy_car_invoice ji on
+		j.travel_card_id=ji.travel_card_id
+		left join
+		jy_car_maintenance jm on
+		j.travel_card_id=jm.travel_card_id
+		left outer join
+		jy_car_length jcl on
+		jcl.length_id=j.boxType
+		LEFT JOIN jy_driver_info jdi ON
+		jdi.car_id=j.travel_card_id
+		where j.state=1
+		<if test="param1!=null and param1!=''">
+			and j.travel_card_id like '%${param1}%'
+		</if>
+		<if test="param2!=null and param2!='' ">
+			and j.department_id = #{param2}
+		</if>
+		<if test="param3!=null and param3!='' ">
+			AND jt.car_length = #{param3}
+		</if>
+		<if test="param4!=null and param4!=''">
+			AND jcl.length_name like '%${param4}%'
+		</if>
+
+	</select>
+	<select id="getSplitShipOrderMessage" resultType="ShippingOrder">
+		select *,datediff(now(),order_arrive_time) as stocks_predestination
+		from
+		jy_shiping_order
+		where
+		shiping_order_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	<insert id="saveSplitOldShipOrder" parameterType="string">
+		insert into
+		jy_split_shiping_order(shiping_order_id,send_time,weituo_time,weitoudanhao,shiping_order_num,fhdanweiname,send_station,custom_name,send_phone,send_shouji,
+		fahuo_address,shdanweiname,end_address,receipt,receipt_tel,receipt_phone,receipt_address,send_type,goods_name,
+		goods_packing,goods_num,goods_weight,goods_vol,destination_fee,picking_fee,freight_fee,affirm_value,rates,
+		insurance_fee,adorn_fee,receivable_ground_fee,upstairs_fee,deliver_fee,inspect_fee,seized_fee,transport_pay,back_fee,
+		trade_agency,shouxu_feelv,handling_charge,daohuo_time,trade_agency_stata,konghuo,most_urgent,printed,pay_type,shipping_order_state,
+		is_recept,remarks,transport_mode,shiping_check,invoice_state,phone_state,is_order_arrive,
+		creat_type,remarks_fee,appointment_remarks,order_time,time_appointment,order_arrive_time,shouliwangdian,baozhuang_name,yewuyuan,
+		shipping_order_name,is_recept_no
+		) select
+		shiping_order_id,send_time,weituo_time,weitoudanhao,shiping_order_num,fhdanweiname,send_station,custom_name,send_phone,send_shouji,
+		fahuo_address,shdanweiname,end_address,receipt,receipt_tel,receipt_phone,receipt_address,send_type,goods_name,
+		goods_packing,goods_num,goods_weight,goods_vol,destination_fee,picking_fee,freight_fee,affirm_value,rates,
+		insurance_fee,adorn_fee,receivable_ground_fee,upstairs_fee,deliver_fee,inspect_fee,seized_fee,transport_pay,back_fee,
+		trade_agency,shouxu_feelv,handling_charge,daohuo_time,trade_agency_stata,konghuo,most_urgent,printed,pay_type,shipping_order_state,
+		is_recept,remarks,transport_mode,shiping_check,invoice_state,phone_state,is_order_arrive,
+		creat_type,remarks_fee,appointment_remarks,order_time,time_appointment,order_arrive_time,shouliwangdian,baozhuang_name,yewuyuan,
+		shipping_order_name,is_recept_no from
+		jy_shiping_order where
+		shiping_order_id=#{_parameter}
+	</insert>
+	<insert id="saveSplitNewShipOrder" parameterType="java.util.List">
+		insert into
+		jy_shiping_order
+		(
+		shiping_order_id,
+		shiping_order_num,
+		send_station,
+		end_address,
+		send_time,
+		receipt,
+		receipt_tel,
+		receipt_phone,
+		receipt_address,
+		goods_name,
+		goods_packing,
+		goods_num,
+		goods_weight,
+		goods_vol,
+		transport_mode,
+		take_fee,
+		adorn_fee,
+		receivable_ground_fee,
+		upstairs_fee,
+		deliver_fee,
+		seized_fee,
+		inspect_fee,
+		pay_type,
+		transport_pay,
+		remarks,
+		send_type,
+		trade_agency,
+		shipping_order_name,
+		is_recept,
+		custom_id,
+		car_number,
+		custom_name,
+		remarks_fee,
+		creat_type,
+		change_fee,
+		back_fee,
+		send_fee,
+		order_time,
+		invoice_state,
+		is_split,
+		shiping_check,
+		is_order_arrive,
+		order_arrive_time,
+		updatetime,
+		shipping_order_state,
+		phone_state,
+		time_appointment,
+		weituo_time,
+		weitoudanhao,
+		fhdanweiname,
+		send_shouji,
+		fahuo_address,
+		rates,
+		shouxu_feelv,
+		handling_charge,
+		daohuo_time,
+		trade_agency_stata,
+		fankuan_stata,
+		konghuo,
+		most_urgent,
+		printed,
+		shouliwangdian,
+		baozhuang_name,
+		yewuyuan,
+		is_recept_no
+		)
+		values
+		<foreach collection="list" index="index" item="item"
+			separator=",">
+			(
+			#{item.shiping_order_id},
+			#{item.shiping_order_num},
+			#{item.send_station},
+			#{item.end_address},
+			#{item.send_time},
+			#{item.receipt},
+			#{item.receipt_tel},
+			#{item.receipt_phone},
+			#{item.receipt_address},
+			#{item.goods_name},
+			#{item.goods_packing},
+			<if test="item.goods_num!=null and item.goods_num!=''">
+				#{item.goods_num},
+			</if>
+			<if test="item.goods_num==null or item.goods_num==''">
+				'0',
+			</if>
+
+			<if test="item.goods_weight!=null and item.goods_weight!=''">
+				#{item.goods_weight},
+			</if>
+			<if test="item.goods_weight==null or item.goods_weight==''">
+				'0.00',
+			</if>
+
+			<if test="item.goods_vol!=null and item.goods_vol!=''">
+				#{item.goods_vol},
+			</if>
+			<if test="item.goods_vol==null or item.goods_vol==''">
+				'0.00',
+			</if>
+
+			#{item.transport_mode},
+
+			<if test="item.take_fee!=null and item.take_fee!=''">
+				#{item.take_fee},
+			</if>
+			<if test="item.take_fee==null or item.take_fee==''">
+				'0.00',
+			</if>
+
+			<if test="item.adorn_fee!=null and item.adorn_fee!=''">
+				#{item.adorn_fee},
+			</if>
+			<if test="item.adorn_fee==null or item.adorn_fee==''">
+				'0.00',
+			</if>
+
+			<if
+				test="item.receivable_ground_fee!=null and item.receivable_ground_fee!=''">
+				#{item.receivable_ground_fee},
+			</if>
+			<if
+				test="item.receivable_ground_fee==null or item.receivable_ground_fee==''">
+				'0.00',
+			</if>
+
+			<if test="item.upstairs_fee!=null and item.upstairs_fee!=''">
+				#{item.upstairs_fee},
+			</if>
+			<if test="item.upstairs_fee==null or item.upstairs_fee==''">
+				'0.00',
+			</if>
+
+			<if test="item.deliver_fee!=null and item.deliver_fee!=''">
+				#{item.deliver_fee},
+			</if>
+			<if test="item.deliver_fee==null or item.deliver_fee==''">
+				'0.00',
+			</if>
+
+			<if test="item.seized_fee!=null and item.seized_fee!=''">
+				#{item.seized_fee},
+			</if>
+			<if test="item.seized_fee==null or item.seized_fee==''">
+				'0.00',
+			</if>
+
+			<if test="item.inspect_fee!=null and item.inspect_fee!=''">
+				#{item.inspect_fee},
+			</if>
+			<if test="item.inspect_fee==null or item.inspect_fee==''">
+				'0.00',
+			</if>
+
+
+			#{item.pay_type},
+			#{item.transport_pay},
+			#{item.remarks},
+			#{item.send_type},
+			<if test="item.trade_agency!=null and item.trade_agency!=''">
+				#{item.trade_agency},
+			</if>
+			<if test="item.trade_agency==null or item.trade_agency==''">
+				'0.00',
+			</if>
+			#{item.shipping_order_name},
+			#{item.is_recept},
+			#{item.custom_id},
+			#{item.car_number},
+			#{item.custom_name},
+			<if test="item.remarks_fee!=null and item.remarks_fee!=''">
+				#{item.remarks_fee},
+			</if>
+			<if test="item.remarks_fee==null or item.remarks_fee==''">
+				'0.00',
+			</if>
+
+			#{item.creat_type},
+
+			<if test="item.change_fee!=null and item.change_fee!=''">
+				#{item.change_fee},
+			</if>
+			<if test="item.change_fee==null or item.change_fee==''">
+				'0.00',
+			</if>
+
+			<if test="item.back_fee!=null and item.back_fee!=''">
+				#{item.back_fee},
+			</if>
+			<if test="item.back_fee==null or item.back_fee==''">
+				'0.00',
+			</if>
+
+			<if test="item.send_fee!=null and item.send_fee!=''">
+				#{item.send_fee},
+			</if>
+			<if test="item.send_fee==null or item.send_fee==''">
+				'0.00',
+			</if>
+			#{item.order_time},
+			#{item.invoice_state},
+			#{item.is_split},
+			#{item.shiping_check},
+			#{item.is_order_arrive},
+			#{item.order_arrive_time},
+			now(),
+			#{item.shipping_order_state},
+			#{item.phone_state},
+			#{item.time_appointment},
+			#{item.weituo_time},
+			#{item.weitoudanhao},
+			#{item.fhdanweiname},
+			#{item.send_shouji},
+			#{item.fahuo_address},
+
+			<if test="item.rates!=null and item.rates!=''">
+				#{item.rates},
+			</if>
+			<if test="item.rates==null or item.rates==''">
+				'5',
+			</if>
+
+			<if test="item.shouxu_feelv!=null and item.shouxu_feelv!=''">
+				#{item.shouxu_feelv},
+			</if>
+			<if test="item.shouxu_feelv==null or item.shouxu_feelv==''">
+				'5',
+			</if>
+
+			<if test="item.handling_charge!=null and item.handling_charge!=''">
+				#{item.handling_charge},
+			</if>
+			<if test="item.handling_charge==null or item.handling_charge==''">
+				'0.00',
+			</if>
+			#{item.daohuo_time},
+			#{item.trade_agency_stata},
+			#{item.fankuan_stata},
+			#{item.konghuo},
+			#{item.most_urgent},
+			#{item.printed},
+			#{item.shouliwangdian},
+			#{item.baozhuang_name},
+			#{item.yewuyuan},
+			#{item.is_recept_no}
+			)
+		</foreach>
+	</insert>
+	<insert id="saveSplitShipOrderMessage" parameterType="java.util.List">
+		insert into jy_split_shiping
+		( id,
+		split_id,
+		shiping_id,
+		split_time
+		)
+		values
+		<foreach collection="list" index="index" item="item"
+			separator=",">
+			(
+			#{item.id},
+			#{item.split_id},
+			#{item.shiping_id},
+			now()
+			)
+		</foreach>
+	</insert>
+	<delete id="deleteSplitShipOrder">
+		DELETE from jy_shiping_order WHERE
+		shiping_order_id=#{_parameter}
+	</delete>
+	<select id="appGetCreateAgreementInfo" resultType="CreateAgreement">
+		SELECT * from
+		jy_create_agreement WHERE driverid=#{param1}
+		LIMIT #{param2},#{param3}
+
+	</select>
+	<select id="appGetAgreementShip" resultType="ShippingOrder">
+		SELECT jso.*,json.sign_date AS sign_time from
+		jy_shiping_order jso
+		LEFT
+		JOIN jy_sign_order json ON json.order_id=jso.shiping_order_id
+		LEFT JOIN
+		jy_agreementtoorder jat ON
+		jso.shiping_order_id = jat.order_id
+		LEFT JOIN
+		jy_create_agreement jca
+		ON jca.agreement_id=jat.agreement_id
+		WHERE
+		jca.agreement_id=#{param1}
+		<if test="param4==4">
+			and jso.shipping_order_state=4
+		</if>
+		<if test="param4==''">
+			and jso.shipping_order_state!=4
+		</if>
+		LIMIT #{param2},#{param3}
+	</select>
+	<select id="getSplitOldShipOrder" resultType="int">
+		SELECT count(*)
+		from jy_split_shiping_order WHERE shiping_order_id=#{_parameter};
+	</select>
+	<select id="getPushDriverId" resultMap="DriverBaseResultMap">
+		SELECT * FROM
+		jy_driver_info jdi LEFT JOIN jy_user ju ON
+		ju.driver_id=jdi.driver_id
+		WHERE ju.driver_id IS NOT NULL AND ju.driver_id!=''
+	</select>
+	<insert id="insertVehbidPush">
+		insert into
+		jy_vehiclebidding(vehiclebidding_id,agreement_id,driver_id,is_vehbid)
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.vehiclebidding_id},#{item.agreement_id},#{item.driver_id},#{item.is_vehbid})
+		</foreach>
+	</insert>
+	<select id="getDriverChannelId" resultType="String">
+		SELECT group_concat(channelId) FROM jy_user ju WHERE ju.driver_id in(
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			#{item.driverId}
+		</foreach>
+		)
+	</select>
+	<select id="appVehbidPushMessage" resultType="CreateAgreement">
+		SELECT jca.*,jvp.*,jd.* FROM
+		jy_create_agreement jca LEFT JOIN
+		jy_vehiclebidding jvp
+		ON
+		jca.agreement_id=jvp.agreement_id
+		LEFT JOIN
+		jy_department jd ON jd.department_id=jca.ndp_id
+		WHERE
+		jvp.driver_id=#{param1}
+		<if test="param4!=null and param4!=''">
+			AND jvp.is_vehbid=#{param4}
+		</if>
+		LIMIT
+		#{param2},#{param3}
+	</select>
+	<update id="appVehbidAgreementDriver">
+		UPDATE jy_vehiclebidding SET
+		vehiclebidding_message=#{param3},vehiclebidding_price=#{param4},
+		is_vehbid="1",is_receipt_free=#{param6},vehicle_time=NOW()
+		WHERE
+		vehiclebidding_id=#{param5}
+	</update>
+	<select id="getVehbidInfo" resultType="int">
+		SELECT COUNT(*) FROM
+		jy_vehiclebidding jv WHERE jv.driver_id=#{param1} AND
+		jv.agreement_id=
+		#{param2}
+	</select>
+	<select id="appGetEvaluateInfo" resultType="CreateAgreement">
+		SELECT * FROM jy_shiping_order jso LEFT JOIN jy_order_custom joc
+		ON
+		joc.custom_id = jso.custom_id LEFT JOIN jy_agreementtoorder ja ON
+		ja.order_id=jso.shiping_order_id
+		LEFT JOIN jy_create_agreement jca ON
+		jca.agreement_id=ja.agreement_id
+		<if test="param3==1">
+			WHERE
+			jso.receipt_tel =#{param2}
+		</if>
+		<if test="param3==0">
+			WHERE jso.customer_id=#{param1} OR
+			joc.customer_id=#{param1}
+		</if>
+	</select>
+	<insert id="appCustomerEvaluateDriver">
+		INSERT INTO jy_evaluate (ratingid, shiping_order_id,
+		customer_grade,customer_content,customer_user,customer_bouns)
+		VALUES(#{param1},#{param2},#{param3},#{param4},#{param5},now())
+		ON
+		DUPLICATE KEY UPDATE customer_grade=#{param3},
+		customer_content=#{param4},customer_user=
+		#{param5},customer_bouns=now()
+	</insert>
+	<insert id="appReceivingEvaluateDriver">
+		INSERT INTO jy_evaluate (ratingid, shiping_order_id,
+		receiving_grade,receiving_content,receiving_user,receiving_bouns)
+		VALUES(#{param1},#{param2},#{param3},#{param4},#{param5},now())
+		ON
+		DUPLICATE KEY UPDATE receiving_grade=#{param3},
+		receiving_content=#{param4},receiving_user=
+		#{param5},receiving_bouns=now()
+	</insert>
+	<select id="getUpdateShipping" resultType="ShippingOrder">
+		SELECT * FROM
+		jy_shiping_order WHERE shiping_order_id=#{_parameter};
+	</select>
+	<select id="getPrinterAgreement" resultMap="printerCreateMessage">
+		SELECT jso.*,jca.*,jdi.*
+		<!-- jso.shiping_order_id,jso.shiping_order_num,jso.goods_num,jso.goods_vol,jso.goods_weight,jso.is_recept,jso.goods_name, 
+			jso.destination_fee ,jso.receipt_address,jca.agreement_id,jca.agreement_number,jca.car_number1,jca.car_name,jca.phone_number,jdi.driver_id,jdi.driving_license -->
+		FROM jy_create_agreement jca
+		LEFT JOIN jy_agreementtoorder jat ON
+		jca.agreement_id=jat.agreement_id
+		LEFT JOIN jy_shiping_order jso ON
+		jso.shiping_order_id=jat.order_id
+		LEFT JOIN jy_driver_info jdi ON
+		jdi.driver_id = jca.driverid
+		WHERE jca.agreement_id=#{_parameter};
+	</select>
+
+	<select id="getCreateAgreementOrder" resultType="ShippingOrder">
+		SELECT jso.* FROM jy_shiping_order jso INNER JOIN jy_agreementtoorder
+		jat ON jat.order_id = jso.shiping_order_id
+		INNER JOIN jy_create_agreement jc ON jat.agreement_id = jc.agreement_id
+		WHERE jc.agreement_id= #{param2}
+		<if test="array!=null and array.length!=0">
+			AND jso.shiping_order_id in
+			<foreach collection="array" index="index" item="item" open="("
+				separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<!--<if test="array==null or array.length==0">
+
+		</if>-->
+	</select>
+</mapper>
+

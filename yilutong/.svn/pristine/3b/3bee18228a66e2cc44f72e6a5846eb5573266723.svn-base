@@ -1,0 +1,196 @@
+/* 
+ ÎÄ¼þÃû:mapforlx.css
+´´½¨ÈË:»ÆÇå»ª
+ÀàÐÍ:css
+´´½¨ÈÕÆÚ:
+×îÐÂÐÞ¸ÄÈÕÆÚ:
+*/
+#head {
+	height: 49px;
+	width: 100%;
+	line-height: 49px;
+	background-color: #FAFAFA;
+	border: 1px solid #ccc;
+	padding-left: 20px
+}
+
+#a {
+    position: absolute;
+    z-index: 3;
+    width: 350px;
+    height: 350px;
+    right: 20px;
+    top: 100px;
+    background-color: white;
+    border: 1px solid #cccccc;
+}
+
+#b {
+    width: 350px;
+    height: 34px;
+    background-color: #337AB7;
+    line-height: 34px;
+}
+
+#f {
+	margin-left: 15px;
+	font-family: 'Microsoft YaHei', Î¢ÈíÑÅºÚ, Arial, Helvetica, sans-serif;
+	color: white;
+	font-size: 15px;
+}
+
+#c {
+	width: 350px;
+    height: 262px;
+}
+
+#t {
+	width: 320px;
+	height: 150px;
+	font-family: 'Microsoft YaHei', Î¢ÈíÑÅºÚ, Arial, Helvetica, sans-serif;
+	color: #333;
+	margin-top: 15px;
+	margin-left: 15px;
+	line-height: 3;
+}
+
+.ip {
+	width: 80px;
+	height: 30px;
+	color: #404040;
+	font-size: 14px;
+	padding-left: 5px;
+	font: 13px/16px 'Microsoft YaHei', Î¢ÈíÑÅºÚ, Helvetica, Arial, sans-serif;
+}
+
+.sl {
+	width: 83px;
+	height: 30px;
+	color: #404040;
+	font-size: 14px;
+	padding-left: 3px;
+	font: 13px/16px 'Microsoft YaHei', Î¢ÈíÑÅºÚ, Helvetica, Arial, sans-serif;
+}
+
+#d {
+	background-color: #F8F8F8;
+	width: 337px;
+	height: 45px;
+	padding: 10px 0 0 13px;
+}
+
+.bt {
+	height: 31px;
+	cursor: pointer;
+	padding: 0 22px;
+	font: 300 15px/29px 'Open Sans', Helvetica, Arial, sans-serif;
+	color: #333;
+	background-color: #fff;
+	border-color: #ccc;
+	border: 1px solid #ccc;
+}
+
+.bts {
+	height: 31px;
+	cursor: pointer;
+	padding: 0 22px;
+	font: 300 15px/29px 'Open Sans', Helvetica, Arial, sans-serif;
+	color: white;
+	background-color: #296191;
+	border-color: #ccc;
+	border: 1px solid #ccc;
+}
+
+.bt:hover {
+	background-color: #EBEBEB;
+}
+
+.bts:hover {
+	background-color: #3276B1;
+}
+
+#mins {
+	position: absolute;
+	z-index: 3;
+	background-color: #053158;
+	height: 32px;
+	width: 95px;
+	cursor: pointer;
+	color: white;
+	font-size: 14px;
+	font-family: Î¢ÈíÑÅºÚ;
+	font-weight: bolder;
+	line-height: 30px;
+	left: 10px;
+	bottom: 70px;
+}
+
+#maxs {
+	position: absolute;
+	z-index: 3;
+	color: #333;
+	background-color: white;
+	width: 320px;
+	left: -390px;
+	bottom: 103px;
+	border: 1px solid #ccc;
+}
+
+#bigndivs {
+	width: 320px;
+	height: 35px;
+	background-color: #2490ED;
+}
+
+#bigmapleaves {
+	color: white;
+	font-family: 'Microsoft YaHei', Î¢ÈíÑÅºÚ, Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+	line-height: 35px;
+	margin-left: 15px;
+}
+
+#sms {
+	cursor: pointer;
+	margin-left: 69%;;
+}
+
+#start {
+	width: 300px;
+	height: 40px;
+	border-bottom: 1px solid #ccc;
+	color: #356E35;
+	line-height: 40px;
+	font-size: 15px;
+	font-family: "Microsoft YaHei", Î¢ÈíÑÅºÚ, Arial, Helvetica, Sans-Serif;
+	font-weight: 300;
+	padding-left: 20px;
+}
+
+#end {
+	width: 300px;
+	height: 42px;
+	border-top: 1px solid #ccc;
+	color: #A90329;
+	line-height: 42px;
+	font-size: 15px;
+	font-family: "Microsoft YaHei", Î¢ÈíÑÅºÚ, Arial, Helvetica, Sans-Serif;
+	font-weight: 300;
+	padding-left: 20px;
+}
+
+#resplan {
+	font-family: "Microsoft YaHei", Î¢ÈíÑÅºÚ, Arial, Helvetica, Sans-Serif;
+	color: #333;
+	font-size: 13px;
+	line-height: 3;
+	overflow: hidden;
+	overflow-y: auto;
+}
+
+#z {
+	width: 100%;
+	overflow: hidden;
+	overflow-y: auto;
+}

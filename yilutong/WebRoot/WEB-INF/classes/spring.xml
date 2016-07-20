@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop" xmlns:c="http://www.springframework.org/schema/c" xmlns:cache="http://www.springframework.org/schema/cache" xmlns:context="http://www.springframework.org/schema/context" xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:jee="http://www.springframework.org/schema/jee" xmlns:lang="http://www.springframework.org/schema/lang" xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:p="http://www.springframework.org/schema/p" xmlns:task="http://www.springframework.org/schema/task" xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd
+		http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<!-- 引入项目配置文件 -->
+	<!-- <context:property-placeholder location="classpath:config.properties" /> -->
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:config.properties</value>
+			</list>
+		</property>
+	</bean>
+	<context:component-scan base-package="com.jy"/>  
+<!-- XFire start -->  
+<import resource="classpath:org/codehaus/xfire/spring/xfire.xml" />  
+ <bean id="webAnnotations" class="org.codehaus.xfire.annotations.jsr181.Jsr181WebAnnotations" />  
+<bean id="jsr181HandlerMapping"  class="org.codehaus.xfire.spring.remoting.Jsr181HandlerMapping">  
+    <property name="xfire" ref="xfire" />  
+    <property name="webAnnotations" ref="webAnnotations" />  
+</bean> 
+<!-- XFire end -->
+
+
+	<!-- 启动触发器的配置开始 -->
+	 <bean name="startQuertz" lazy-init="false" autowire="no"
+		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<!-- <ref bean="myJobTrigger" />
+				<ref bean="dataSetTrigger"/>
+				<ref bean="checkdata"/>hqh -->
+				<ref bean="timerdemo"/>
+			</list>
+		</property>
+	</bean><!-- 
+	启动触发器的配置结束
+
+	调度的配置开始
+	
+		quartz-1.8以前的配置 
+	 --><!-- <bean id="myJobTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail">
+			<ref bean="myJobDetail" />
+		</property>
+		<property name="cronExpression">
+			<value>0/1 * * * * ?</value>
+		</property>
+	</bean> -->
+	
+<!-- 	quartz-2.x的配置
+ -->	<bean id="myJobTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail">
+			<ref bean="myJobDetail" />
+		</property>
+		<!-- 			 -->
+		
+		<property name="cronExpression">
+ 		<!--<value>0/30 * * * * ?</value>-->
+   		<value>0 10 0 * * ?</value> 
+		</property>
+	</bean>
+	<!-- hqh start -->
+	<bean id="checkdata"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail">
+			<ref bean="checkdataDetail" />
+		</property>
+		<property name="cronExpression">
+ 		<value>0 0 12 * * ?</value>
+		</property>
+	</bean>
+	
+	<bean id="timerdemo"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail">
+			<ref bean="timerDemoDetail" />
+		</property>
+		<property name="cronExpression">
+ 		<value>59 59 23 * * ? </value>
+		</property>
+	</bean>
+	
+	<bean id="dataSetTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail">
+			<ref bean="dataSetDetail" />
+		</property>
+		<property name="cronExpression">
+ 		<value>0 0/1 * * * ?</value>
+		</property>
+	</bean>
+	<!-- hqh end -->
+	<!-- 调度的配置结束
+
+	job的配置开始 -->
+	<bean id="myJobDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject">
+			<ref bean="myJob" />
+		</property>
+		<property name="targetMethod">
+			<value>work</value>
+		</property>
+		<property name="concurrent" value="true" />
+	</bean>
+	
+	<!-- hqh -->
+	<bean id="dataSetDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject">
+			<ref bean="dataSet" />
+		</property>
+		<property name="targetMethod">
+			<value>dataset</value>
+		</property>
+		<property name="concurrent" value="true" />
+	</bean>
+	
+	<bean id="checkdataDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject">
+			<ref bean="checkData" />
+		</property>
+		<property name="targetMethod">
+			<value>checkdata</value>
+		</property>
+		<property name="concurrent" value="true" />
+	</bean>
+	
+	<bean id="timerDemoDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject">
+			<ref bean="timerDemo" />
+		</property>
+		<property name="targetMethod">
+			<value>demoTime</value>
+		</property>
+		<property name="concurrent" value="true" />
+	</bean>
+	
+	<!-- end -->
+	<!-- job的配置结束
+
+	工作的bean -->
+	<bean id="myJob" class="com.jy.quartz.MyJob" /> 
+	<bean id="dataSet" class="com.jy.quartz.DataSet" /> 
+	<bean id="checkData" class="com.jy.quartz.CheckData" /> 
+	<bean id="timerDemo" class="com.jy.quartz.TimerDemo" />
+</beans>

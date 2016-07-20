@@ -1,0 +1,613 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="com.jy.dao.TransportfreeDao">
+	<!--运费调整审核导出  -->
+	
+	<select id="getTransportfreeOut"  resultType="ShippingOrder">
+SELECT	
+		ji.send_time,ji.shiping_order_num,ji.custom_name,ji.transport_pay,ji.transpfrees,
+		ji.transpfree_time,ji.transpfree_remaks,ji.transpfree_th_times,ji.transpfree_th_notes,
+		ji.send_station,ji.end_address,ji.car_number,ji.receipt,ji.receipt_tel,ji.receipt_address,
+		ji.goods_name,
+		ji.is_recept,ji.shipping_order_name,
+		CASE WHEN ji.send_type='0' THEN '客户自提'
+		WHEN ji.send_type='1'  THEN '专车送货'
+		WHEN ji.send_type='2'  THEN '送货进仓'
+		WHEN ji.send_type='3'  THEN '送货上门'
+		WHEN ji.send_type='4' THEN '送货上楼'
+		END AS send_type,
+		CASE WHEN ji.shipping_order_state=0 THEN '未出库'
+		 WHEN ji.shipping_order_state=1 THEN '配送中'
+		 WHEN ji.shipping_order_state=2 THEN '转运中'
+		 WHEN ji.shipping_order_state=3 THEN '到达'
+		 WHEN ji.shipping_order_state=4 THEN '签收'
+		END AS shipping_order_state,
+		CASE WHEN ji.transpfree_sh=0 THEN '未审核'
+		 WHEN ji.transpfree_sh=1 THEN '已提审'
+		 WHEN ji.transpfree_sh=2 THEN '审核通过'
+		 WHEN ji.transpfree_sh=3 THEN '审核驳回'
+		 WHEN ji.transpfree_sh=4 THEN '未调整'
+		END AS transpfree_sh,
+		CASE WHEN ji.is_settlementyf=0 THEN '未结算'
+		 WHEN ji.is_settlementyf=1 THEN '现金'
+		 WHEN ji.is_settlementyf=2 THEN '刷卡'
+		  WHEN ji.is_settlementyf=3 THEN '支票'
+		   WHEN ji.is_settlementyf=4 THEN '其他'
+		END AS is_settlementyf,
+		ju.username
+		FROM
+		jy_shiping_order ji
+		INNER JOIN jy_agreementtoorder jat ON ji.shiping_order_id=jat.order_id 
+		LEFT JOIN jy_user ju ON ju.id=ji.transpfree_user
+		WHERE
+		(ji.is_settlementyf=0 OR (ji.transpfree_sh!=4 and ji.is_settlementyf=1)) AND ji.shipping_order_state!=4
+			<if test="param1!=null and param1!=''">
+			and ji.shiping_order_num like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and ji.transpfree_sh like "%${param2}%"
+		</if>
+		<if test="param3!=null and param3!=''">
+			<choose>
+						<when test="param3== '9'.toString()">
+					 	<![CDATA[ 
+					 	  ]]>
+						</when>
+						<when test="param3== '4'.toString()">
+							and ji.transpfree_sh  =4
+						</when>
+						<when test="param3== '0'.toString()">
+							and ji.transpfree_sh  !=4
+						</when>					
+					</choose>		
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.send_time &gt;=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.send_time &lt;=#{param5}
+		</if>
+		<if test="(param4!=null and param4!='') and (param5!=null and param5!='') ">
+			and ji.send_time &gt;=#{param4}
+			and ji.send_time &lt;=#{param5}
+		</if>
+		<if test="param6!=null and param6!=''">
+			and ji.transpfree_time &gt;=#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">
+			and ji.transpfree_time &lt;=#{param7}
+		</if>
+		<if test="(param6!=null and param6!='') and (param7!=null and param7!='')">
+			and ji.transpfree_time &gt;=#{param6}
+			and ji.transpfree_time &lt;=#{param7}
+		</if>
+			<if test="param8!=null and param8!=''">
+			and ji.transpfree_th_times &gt;=#{param8}
+		</if>
+		<if test="param9!=null and param9!=''">
+			and ji.transpfree_th_times &lt;=#{param9}
+		</if>
+		<if test="(param8!=null and param8!='') and (param9!=null and param9!='')">
+			and ji.transpfree_th_times &gt;=#{param8}
+			and ji.transpfree_th_times &lt;=#{param9}
+		</if>
+		<if test="param10!=null and param10!=''">
+		   and ji.custom_name like "%${param10}%"
+		</if>		
+		<if test="param11!=null and param11!=''">
+			and  ji.shiping_order_id in
+		<foreach collection="array" index="index" item="item" open="("
+		
+		 separator="," close=")">
+				#{item}
+		</foreach>	
+		</if>
+		ORDER BY
+		ji.updatetime
+		DESC
+	</select>
+	<!--  运费调整订单查询-->
+	<select id="getTransportfreeInfo"  resultType="ShippingOrder">
+	SELECT	
+		ji.*,
+		ju.username
+		FROM
+		jy_shiping_order ji
+		INNER JOIN jy_agreementtoorder jat ON ji.shiping_order_id=jat.order_id 
+		LEFT JOIN jy_user ju ON ju.id=ji.transpfree_user
+		WHERE
+		(ji.is_settlementyf=0 OR (ji.transpfree_sh!=4 and ji.is_settlementyf=1)) AND  ji.shipping_order_state!=4
+		<if test="param3!=null and param3!=''">
+			and ji.shiping_order_num like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.transpfree_sh like "%${param4}%"
+		</if>
+		<if test="param5!=null and param5!=''">		
+			<choose>
+					<when test="param5== '9'.toString()">
+				 	<![CDATA[ 
+				 	  ]]>
+					</when>
+					<when test="param5== '4'.toString()">
+						and ji.transpfree_sh  =4
+					</when>
+					<when test="param5== '0'.toString()">
+						and ji.transpfree_sh  !=4
+					</when>					
+				</choose>		
+		</if>
+		<if test="param6!=null and param6!=''">
+			and ji.send_time &gt;=#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">
+			and ji.send_time &lt;=#{param7}
+		</if>
+		<if test="(param6!=null and param6!='') and (param7!=null and param7!='')">
+			and ji.send_time &gt;=#{param6}
+			and ji.send_time &lt;=#{param7}
+		</if>
+		<if test="param8!=null and param8!=''">
+			and ji.transpfree_time &gt;=#{param8}
+		</if>
+		<if test="param9!=null and param9!=''">
+			and ji.transpfree_time &lt;=#{param9}
+		</if>
+		<if test="(param8!=null and param8!='') and (param9!=null and param9!='')">
+			and ji.transpfree_time &gt;=#{param8}
+			and ji.transpfree_time &lt;=#{param9}
+		</if>
+		<if test="param10!=null and param10!=''">
+			and ji.transpfree_th_times &gt;=#{param10}
+		</if>
+		<if test="param11!=null and param11!=''">
+			and ji.transpfree_th_times &lt;=#{param11}
+		</if>
+		<if test="(param10!=null and param10!='') and (param11!=null and param11!='')">
+			and ji.transpfree_th_times &gt;=#{param10}
+			and ji.transpfree_th_times &lt;=#{param11}
+		</if>
+		<if test="param12!=null and param12!=''">
+		   and ji.custom_name like "%${param12}%"
+		</if>
+		ORDER BY
+		ji.updatetime
+		DESC
+		limit
+		#{param1},#{param2}
+	</select>
+	<!--   运费调整订单查询-->
+	<select id="getTransportfree" resultType="int">
+		SELECT  		
+			COUNT( ji.shiping_order_id) 
+		FROM
+		jy_shiping_order ji
+		INNER JOIN jy_agreementtoorder jat ON ji.shiping_order_id=jat.order_id 
+		WHERE
+		(ji.is_settlementyf=0 OR (ji.transpfree_sh!=4 and ji.is_settlementyf=1)) AND  ji.shipping_order_state!=4
+		<if test="param1!=null and param1!=''">
+			and ji.shiping_order_num like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and ji.transpfree_sh like "%${param2}%"
+		</if>
+		<if test="param3!=null and param3!=''">
+			<choose>
+						<when test="param3== '9'.toString()">
+					 	<![CDATA[ 
+					 	  ]]>
+						</when>
+						<when test="param3== '4'.toString()">
+							and ji.transpfree_sh  =4
+						</when>
+						<when test="param3== '0'.toString()">
+							and ji.transpfree_sh  !=4
+						</when>					
+					</choose>		
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.send_time &gt;=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.send_time &lt;=#{param5}
+		</if>
+		<if test="(param4!=null and param4!='') and (param5!=null and param5!='') ">
+			and ji.send_time &gt;=#{param4}
+			and ji.send_time &lt;=#{param5}
+		</if>
+		<if test="param6!=null and param6!=''">
+			and ji.transpfree_time &gt;=#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">
+			and ji.transpfree_time &lt;=#{param7}
+		</if>
+		<if test="(param6!=null and param6!='') and (param7!=null and param7!='')">
+			and ji.transpfree_time &gt;=#{param6}
+			and ji.transpfree_time &lt;=#{param7}
+		</if>
+			<if test="param8!=null and param8!=''">
+			and ji.transpfree_th_times &gt;=#{param8}
+		</if>
+		<if test="param9!=null and param9!=''">
+			and ji.transpfree_th_times &lt;=#{param9}
+		</if>
+		<if test="(param8!=null and param8!='') and (param9!=null and param9!='')">
+			and ji.transpfree_th_times &gt;=#{param8}
+			and ji.transpfree_th_times &lt;=#{param9}
+		</if>
+		<if test="param10!=null and param10!=''">
+		   and ji.custom_name like "%${param10}%"
+		</if>		
+	</select>
+	<!--  运费调整修改运费>-->
+	<update id="addTransportfree"  parameterType="String">
+		update 
+		jy_shiping_order
+		<set>
+		updatetime=now(),
+		transpfrees=#{param2},
+		transpfree_time=now(),
+		transpfree_user=#{param3},
+		transpfree_remaks=#{param4},
+		transport_pay=#{param5},
+		reality_sum=#{param5},
+		transpfree_sh=0,
+		transpfree_sh_dids=null,
+		transpfree_th_times=null,
+		transpfree_th_users=null,
+		transpfree_th_notes=null,
+		transpfree_sh_times=null,
+		transpfree_sh_users=null,
+		transpfree_sh_notes=null
+		</set>
+		where
+		shiping_order_id=#{param1}
+	</update>
+	<!-- 运费调整提审修改订单 -->
+	<update id="delTransportfree"   parameterType="java.util.Arrays">
+		update jy_shiping_order
+		<set>
+		updatetime=now(),
+		updatetime=now(),
+		transpfree_sh_dids=#{param2},
+		transpfree_th_times=now(),
+		transpfree_th_users=#{param3},
+		transpfree_th_notes=#{param4},
+		transpfree_sh=1
+		</set>
+		 where shiping_order_id in
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	
+		<!-- 运费调整审核修改订单 -->
+	<update id="shTransportfree"   parameterType="java.util.Arrays">
+		update jy_shiping_order
+		<set>
+			updatetime=now(),
+		transpfree_sh_times=now(),
+		transpfree_sh_users=#{param3},
+		transpfree_sh_notes=#{param4},
+		transpfree_sh=#{param2}
+		</set>
+		 where shiping_order_id in
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	
+	<!--审核记录保存  -->
+	<insert id="saveTranspchecks" parameterType="java.util.List">
+		insert into
+		jy_transpfree_checks
+		(
+		checks_id,
+		orderid,
+		checks_type,
+		checks_user,
+		checks_times,
+		checks_notes,
+		checks_state
+		)
+		values
+		<foreach collection="list" index="index" item="item"
+			separator=",">
+		 (
+			#{item.checks_id},
+			#{item.orderid},
+			#{item.checks_type},
+			#{item.checks_user},
+			now(),
+			#{item.checks_notes},
+			#{item.checks_state}
+			)
+		</foreach>
+	</insert>
+	<!--  运费调整记录保存-->
+	<insert id="saveTransportFree" parameterType="Transportfree">
+		insert into
+		jy_transport_free
+		(
+		changefreeid,
+		formerfree,
+		formerchange,
+		newfree,
+		orderid,
+		downfree,
+		newchange,
+		changeuser,
+		changetime,
+		changeremark
+		)
+		values
+	<!-- 	<foreach collection="list" index="index" item="item"
+			separator=","> -->
+		 (
+			#{changefreeid},
+			#{formerfree},
+			#{formerchange},
+			#{newfree},
+			#{orderid},
+			#{downfree},
+			#{newchange},
+			#{changeuser},
+			now(),
+			#{changeremark}
+			)
+	<!-- 	</foreach> -->
+	</insert>
+	<!-- 调整审核查询 -->
+	<select id="getTransportfreeSHInfo"  resultType="ShippingOrder">
+		SELECT	
+		ji.*,
+		ju.username,
+		ju.username AS usernameth
+		FROM
+		jy_shiping_order ji
+		INNER JOIN jy_agreementtoorder jat ON ji.shiping_order_id=jat.order_id 
+		LEFT JOIN jy_user ju ON ju.id=ji.transpfree_user
+		LEFT JOIN jy_user ju1 ON ju1.id=ji.transpfree_th_users
+		WHERE
+		ji.transpfree_sh!=4 AND ji.transpfree_sh!=0 
+		<if test="param3!=null and param3!=''">
+			and ji.shiping_order_num like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.transpfree_sh like "%${param4}%"
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.transpfree_sh_dids like "%${param5}%"
+		</if>
+		<if test="param6!=null and param6!=''">
+			and ji.transpfree_time &gt;=#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">
+			and ji.transpfree_time &lt;=#{param7}
+		</if>
+		<if test="param8!=null and param8!=''">
+			and ji.send_time &gt;=#{param8}
+		</if>
+		<if test="param9!=null and param9!=''">
+			and ji.send_time &lt;=#{param9}
+		</if>
+		<if test="param10!=null and param10!=''">
+			and ji.transpfree_th_times &gt;=#{param10}
+		</if>
+		<if test="param11!=null and param11!=''">
+			and ji.transpfree_th_times &lt;=#{param11}
+		</if>
+		<if test="param12!=null and param12!=''">
+		   and ji.custom_name like "%${param12}%"
+		</if>
+		ORDER BY
+		ji.updatetime
+		DESC
+		limit
+		#{param1},#{param2}
+	</select>
+
+	<select id="getTransportfreeSH" resultType="int">
+				SELECT 		
+					COUNT(ji.shiping_order_id)	
+				FROM
+				jy_shiping_order ji
+				INNER JOIN jy_agreementtoorder jat ON ji.shiping_order_id=jat.order_id 
+				WHERE
+				ji.transpfree_sh!=4 AND ji.transpfree_sh!=0
+				<if test="param1!=null and param1!=''">
+					and ji.shiping_order_num like "%${param1}%"
+				</if>
+				<if test="param2!=null and param2!=''">
+					and ji.transpfree_sh like "%${param2}%"
+				</if>
+				<if test="param3!=null and param3!=''">
+					and  ji.transpfree_sh_dids like "%${param3}%"
+				</if>
+				<if test="param4!=null and param4!=''">
+					and ji.transpfree_time &gt;=#{param4}
+				</if>
+				<if test="param5!=null and param5!=''">
+					and ji.transpfree_time &lt;=#{param5}
+				</if>
+				<if test="param6!=null and param6!=''">
+					and ji.send_time &gt;=#{param6}
+				</if>
+				<if test="param7!=null and param7!=''">
+					and ji.send_time &lt;=#{param7}
+				</if>
+					<if test="param8!=null and param8!=''">
+					and ji.transpfree_th_times &gt;=#{param8}
+				</if>
+				<if test="param9!=null and param9!=''">
+					and ji.transpfree_th_times &lt;=#{param9}
+				</if>				
+				<if test="param10!=null and param10!=''">
+				   and ji.custom_name like "%${param10}%"
+				</if>				
+	</select>
+	
+	<!-- 调整历史记录查询 -->
+	<select id="getTransportfreeRc"  resultType="Transportfree">
+		SELECT	
+		ji.*,
+		ju.username AS usernametz,
+		jo.shiping_order_num
+		FROM
+		jy_transport_free ji
+		LEFT JOIN jy_user ju ON ju.id=ji.changeuser
+		LEFT JOIN jy_shiping_order jo ON jo.shiping_order_id=ji.orderid
+		where 
+		ji.orderid=#{param5}
+		<if test="param3!=null and param3!=''">
+			and ji.changetime &gt;=#{param3}
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.changetime &lt;=#{param4}
+		</if>		
+		ORDER BY
+		ji.changetime
+		DESC
+		limit
+		#{param1},#{param2}
+	</select>
+
+	<select id="getTransportfreeRcs" resultType="int">
+		SELECT    
+				COUNT(ji.changefreeid)
+		FROM
+		jy_transport_free ji
+		LEFT JOIN jy_user ju ON ju.id=ji.changeuser
+		LEFT JOIN jy_shiping_order jo ON jo.shiping_order_id=ji.orderid
+		where 
+		ji.orderid=#{param3}
+		<if test="param1!=null and param1!=''">
+			and ji.changetime &gt;=#{param1}
+		</if>
+		<if test="param2!=null and param2!=''">
+			and ji.changetime &lt;=#{param2}
+		</if>		
+	</select>
+	<!--运费调整审核记录查询  -->
+		<select id="getTranfreeShRc"  resultType="TranspfreeCheckeds">
+		SELECT	
+		ji.*,
+		ju.username AS usernamecz,
+		jo.shiping_order_num
+		FROM
+		jy_transpfree_checks ji
+		LEFT JOIN jy_user ju ON ju.id=ji.checks_user
+		LEFT JOIN jy_shiping_order jo ON jo.shiping_order_id=ji.orderid
+		where 
+		ji.orderid=#{param5}
+		<if test="param3!=null and param3!=''">
+			and ji.checks_times &gt;=#{param3}
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.checks_times &lt;=#{param4}
+		</if>		
+		ORDER BY
+		ji.checks_times
+		DESC
+		limit
+		#{param1},#{param2}
+	</select>
+
+	<select id="getTranfreeShRcs" resultType="int">
+		SELECT    
+				COUNT(ji.checks_id)
+		FROM
+		jy_transpfree_checks ji
+		LEFT JOIN jy_user ju ON ju.id=ji.checks_user
+		LEFT JOIN jy_shiping_order jo ON jo.shiping_order_id=ji.orderid
+		where 
+		ji.orderid=#{param3}
+		<if test="param1!=null and param1!=''">
+			and ji.checks_times &gt;=#{param1}
+		</if>
+		<if test="param2!=null and param2!=''">
+			and ji.checks_times &lt;=#{param2}
+		</if>		
+	</select>
+	
+	
+	
+	<select id="getTransportfreeShOut"  resultType="ShippingOrder">
+		SELECT	
+		ji.send_time,ji.shiping_order_num,ji.transport_pay,ji.transpfrees,
+		ji.transpfree_time,ji.transpfree_remaks,ji.transpfree_th_times,ji.transpfree_th_notes,
+		ji.send_station,ji.end_address,ji.custom_name,ji.car_number,
+		ji.receipt,ji.receipt_tel,ji.receipt_address,ji.goods_name,
+		ji.is_recept,ji.shipping_order_name,
+			CASE WHEN ji.transpfree_sh=0 THEN '未审核'
+			 WHEN ji.transpfree_sh=1 THEN '已提审'
+			 WHEN ji.transpfree_sh=2 THEN '审核通过'
+			 WHEN ji.transpfree_sh=3 THEN '审核驳回'
+			 WHEN ji.transpfree_sh=4 THEN '未调整'
+			END AS transpfree_sh,
+			CASE WHEN ji.send_type='0' THEN '客户自提'
+			WHEN ji.send_type='1'  THEN '专车送货'
+			WHEN ji.send_type='2'  THEN '送货进仓'
+			WHEN ji.send_type='3'  THEN '送货上门'
+			WHEN ji.send_type='4' THEN '送货上楼'
+			END AS send_type,
+			CASE WHEN ji.shipping_order_state=0 THEN '未出库'
+			 WHEN ji.shipping_order_state=1 THEN '配送中'
+			 WHEN ji.shipping_order_state=2 THEN '转运中'
+			 WHEN ji.shipping_order_state=3 THEN '到达'
+			 WHEN ji.shipping_order_state=4 THEN '签收'
+			END AS shipping_order_state,
+		ju.username,
+		ju.username AS usernameth
+		FROM
+		jy_shiping_order ji
+		INNER JOIN jy_agreementtoorder jat ON ji.shiping_order_id=jat.order_id 
+		LEFT JOIN jy_user ju ON ju.id=ji.transpfree_user
+		LEFT JOIN jy_user ju1 ON ju1.id=ji.transpfree_th_users
+		WHERE
+		ji.transpfree_sh!=4 AND ji.transpfree_sh!=0 
+				<if test="param1!=null and param1!=''">
+					and ji.shiping_order_num like "%${param1}%"
+				</if>
+				<if test="param2!=null and param2!=''">
+					and ji.transpfree_sh like "%${param2}%"
+				</if>
+				<if test="param3!=null and param3!=''">
+					and  ji.transpfree_sh_dids like "%${param3}%"
+				</if>
+				<if test="param4!=null and param4!=''">
+					and ji.transpfree_time &gt;=#{param4}
+				</if>
+				<if test="param5!=null and param5!=''">
+					and ji.transpfree_time &lt;=#{param5}
+				</if>			
+				<if test="param6!=null and param6!=''">
+					and ji.send_time &gt;=#{param6}
+				</if>
+				<if test="param7!=null and param7!=''">
+					and ji.send_time &lt;=#{param7}
+				</if>			
+					<if test="param8!=null and param8!=''">
+					and ji.transpfree_th_times &gt;=#{param8}
+				</if>
+				<if test="param9!=null and param9!=''">
+					and ji.transpfree_th_times &lt;=#{param9}
+				</if>			
+				<if test="param10!=null and param10!=''">
+				   and ji.custom_name like "%${param10}%" 
+				</if>				
+				<if test="param11!=null and param11!=''">
+					and  ji.shiping_order_id in
+				<foreach collection="array" index="index" item="item" open="("
+				
+				 separator="," close=")">
+						#{item}
+				</foreach>	
+				</if>
+				ORDER BY
+				ji.updatetime
+				DESC
+	</select>
+</mapper>

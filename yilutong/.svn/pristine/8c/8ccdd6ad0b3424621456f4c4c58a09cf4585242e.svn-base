@@ -1,0 +1,1316 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jy.dao.SettleDaiskgfDao">
+	<!-- 导出 -->
+	<select id="getSettlementYfout" resultType="ShippingOrder">
+		SELECT
+		ji.send_time,ji.shiping_order_num,ji.custom_name,
+		ji.send_shouji,ji.goods_name,ji.goods_num,
+		ji.goods_weight,ji.goods_vol,
+		ji.shiping_order_id,
+		ji.settlgf_fu,ji.send_phone,
+		ji.is_settlgf AS paytypes,
+		ji.send_station,ji.end_address,ji.receipt,ji.receipt_tel,
+		ji.receipt_phone,ji.order_time,
+		IF ((ji.is_settlgf!=0 and
+		ji.settle_gf!=1),jsj.settl_times,NULL) AS settlyf_time,
+		IF
+		((ji.is_settlgf!=0 and ji.settle_gf!=1),jsj.settl_notes,NULL) AS
+		settlyf_remaks,
+		IF (ji.settlgf_sh!=0 ,jst.settlyf_time,NULL) AS
+		settlyf_th_times,
+		IF
+		((ji.settlgf_sh!=0 OR
+		ji.settlgf_sh!=1),jss.settlyf_time,NULL) AS
+		settlyf_sh_times,
+		IF
+		(ji.settlgf_sh!=0 ,jst.settlyf_remaks,NULL) AS
+		settlyf_th_remaks,
+		IF
+		((ji.settlgf_sh!=0 OR
+		ji.settlgf_sh!=1),jss.settlyf_remaks,NULL) AS
+		settlyf_sh_remaks,
+		IF
+		((ji.is_settlgf!=0 and ji.settle_gf!=1)
+		,ju.username,NULL) AS
+		username,
+		IF (ji.settlgf_sh!=0,ju1.username,NULL)
+		AS usernameth,
+			CASE WHEN ji.send_type='0' THEN '客户自提'
+		WHEN ji.send_type='1'  THEN '专车送货'
+		WHEN ji.send_type='2'  THEN '送货进仓'
+		WHEN ji.send_type='3'  THEN '送货上门'
+		WHEN ji.send_type='4' THEN '送货上楼'
+		END AS send_type,
+		CASE WHEN ji.settlgf_sh=0
+		THEN '未审核'
+		WHEN ji.settlgf_sh=1 THEN '已提审'
+		WHEN ji.settlgf_sh=2 THEN
+		'审核通过'
+		WHEN ji.settlgf_sh=3 THEN '审核驳回'
+		END AS settlgf_sh,
+		CASE WHEN
+		ji.is_settlgf=0 THEN '未结算'
+		WHEN ji.is_settlgf=1 THEN '现金'
+		WHEN
+		ji.is_settlgf=2 THEN '转账'
+		WHEN ji.is_settlgf=3 THEN '支票'
+		WHEN
+		ji.is_settlgf=4 THEN '其他'
+		END AS is_settlgf,
+		CASE WHEN
+		ji.shipping_order_state=0 THEN '未出库'
+		WHEN ji.shipping_order_state=1
+		THEN '配送中'
+		WHEN ji.shipping_order_state=2 THEN '转运中'
+		WHEN
+		ji.shipping_order_state=3 THEN '到达'
+		WHEN ji.shipping_order_state=4 THEN
+		'签收'
+		END AS shipping_order_state,
+		CASE
+		WHEN ji.settle_gf!=1 AND
+		ji.settle_gf!=2 THEN '未调整'
+		WHEN ji.settle_gf=1 THEN '调整未结算'
+		WHEN
+		ji.settle_gf=2 THEN '调整已结算'
+		END AS settle_gf,
+		ji.trade_agency ,
+		IF(ji.paidgf_fu IS NULL,0,ji.paidgf_fu) AS paidgf_fu,
+		ji.trade_agency-(IF(ji.paidgf_fu IS NULL,0,ji.paidgf_fu)) AS trade_cha
+		FROM
+		jy_shiping_order ji
+		LEFT JOIN jy_order_custom joc ON joc.custom_id
+		= ji.custom_id
+		LEFT JOIN jy_settlemengf_history jsj ON
+		jsj.order_id=ji.shiping_order_id
+		AND jsj.settl_order=0
+		AND
+		jsj.settl_times=(SELECT MAX(jsj1.settl_times)
+		FROM
+		jy_settlemengf_history jsj1
+		WHERE jsj1.order_id=jsj.order_id AND
+		jsj1.settl_order=0)
+		LEFT JOIN jy_settlgfSh jst ON
+		jst.orderids=ji.shiping_order_id AND jst.settlyf_sf=0 AND
+		jst.settlyf_type=0
+		AND jst.settlyf_time=(SELECT MAX(jst1.settlyf_time)
+		FROM jy_settlgfSh jst1
+		WHERE jst1.orderids=jst.orderids AND
+		jst1.settlyf_type=0 AND jst1.settlyf_sf=0)
+		LEFT JOIN jy_settlgfSh jss
+		ON jss.orderids=ji.shiping_order_id AND
+		jss.settlyf_sf=0 AND
+		jss.settlyf_type=1
+		AND jss.settlyf_time=(SELECT
+		MAX(jss1.settlyf_time)
+		FROM jy_settlgfSh jss1
+		WHERE
+		jss1.orderids=jss.orderids AND
+		jss1.settlyf_type=1 AND
+		jss1.settlyf_sf=0)
+		LEFT JOIN jy_user ju ON
+		jsj.settl_user=ju.id
+		LEFT JOIN jy_user ju1 ON
+		jst.settlyf_user=ju.id
+		WHERE
+		(ji.trade_agency IS NOT NULL AND ji.trade_agency!='' AND
+		ji.trade_agency!=0)
+		<if test="param1!=null and param1!=''">
+			and ji.shiping_order_num like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			<choose>
+				<when test="param2=='0'.toString()">
+					and (ji.is_settlgf like "%${param2}%" or
+					ji.settle_gf=1)
+				</when>
+				<otherwise>
+					and (ji.is_settlgf like "%${param2}%" and
+					ji.settle_gf!=1)
+				</otherwise>
+			</choose>
+		</if>
+		<if test="param3!=null and param3!=''">
+			<choose>
+			<when test="param3=='0'.toString()">
+					and ((	ji.trade_agency-(IF(ji.paidgf_fu IS NULL,0,ji.paidgf_fu))) !=0 or  ji.is_settlgf =0  or  ji.settle_gf =1)
+			</when>
+				<when test="param3=='1'.toString()">
+					and (	ji.trade_agency-(IF(ji.paidgf_fu IS NULL,0,ji.paidgf_fu))) =0 	and  ji.is_settlgf !=0  AND  ji.settle_gf !=1
+			</when>
+		</choose>		
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.send_time &gt;=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.send_time &lt;=#{param5}
+		</if>
+		<if test="(param4!=null and param4!='') and (param5!=null and param5!='') ">
+			and ji.send_time &gt;=#{param4}
+			and ji.send_time
+			&lt;=#{param5}
+		</if>
+		<if test="param6!=null and param6!=''">
+			and jsj.settl_times &gt;=#{param6} and (ji.is_settlgf!=0
+			and ji.settle_gf!=5)
+		</if>
+		<if test="param7!=null and param7!=''">
+			and jsj.settl_times &lt;=#{param7} and (ji.is_settlgf!=0
+			and ji.settle_gf!=5)
+		</if>
+		<if test="param8!=null and param8!=''">
+			and ji.order_time &gt;=#{param8}
+		</if>
+		<if test="param9!=null and param9!=''">
+			and ji.order_time &lt;=#{param9}
+		</if>
+		<if test="(param8!=null and param8!='') and (param9!=null and param9!='')">
+			and ji.order_time &gt;=#{param8}
+			and ji.order_time
+			&lt;=#{param9}
+		</if>
+		<if test="param10!=null and param10!=''">
+			and (joc.customer_id =#{param10} or ji.customer_id
+			=#{param10} )
+		</if>
+
+		<if test="param11!=null and param11!=''">
+			and ji.shiping_order_id in
+			<foreach collection="array" index="index" item="item" open="("
+				separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		GROUP BY ji.shiping_order_id
+		ORDER BY jsj.settl_times DESC,
+		ji.updatetime
+		DESC
+	</select>
+	<!-- 运费结算订单查询 -->
+	<select id="getSettlementYfInfo" resultType="ShippingOrder">
+		SELECT
+		ji.*,
+		jdp.department_name,
+		IF ((ji.is_settlgf!=0 and
+		ji.settle_gf!=1),jsj.settl_times,NULL) AS
+		settlyf_time,
+		IF
+		((ji.is_settlgf!=0 and
+		ji.settle_gf!=1),jsj.settl_notes,NULL) AS
+		settlyf_remaks,
+		IF (ji.settlgf_sh!=0 ,jst.settlyf_time,NULL) AS
+		settlyf_th_times,
+		IF
+		((ji.settlgf_sh!=0 OR
+		ji.settlgf_sh!=1),jss.settlyf_time,NULL) AS
+		settlyf_sh_times,
+		IF
+		(ji.settlgf_sh!=0 ,jst.settlyf_remaks,NULL) AS
+		settlyf_th_remaks,
+		IF
+		((ji.settlgf_sh!=0 OR
+		ji.settlgf_sh!=1),jss.settlyf_remaks,NULL) AS
+		settlyf_sh_remaks,
+		IF
+		((ji.is_settlgf!=0 and ji.settle_gf!=1)
+		,ju.username,NULL) AS
+		username,
+		IF (ji.settlgf_sh!=0,ju1.username,NULL)
+		AS usernameth,
+		ji.trade_agency-(IF(ji.paidgf_fu IS
+		NULL,0,ji.paidgf_fu)) AS trade_cha
+		FROM
+		jy_shiping_order ji
+		LEFT JOIN
+		jy_order_custom joc ON joc.custom_id
+		= ji.custom_id
+		LEFT JOIN
+		jy_settlemengf_history jsj ON jsj.order_id=ji.shiping_order_id
+		AND
+		jsj.settl_order=0
+		AND jsj.settl_times=(SELECT MAX(jsj1.settl_times)
+		FROM jy_settlemengf_history jsj1
+		WHERE jsj1.order_id=jsj.order_id AND
+		jsj1.settl_order=0)
+		LEFT JOIN jy_settlgfSh jst ON
+		jst.orderids=ji.shiping_order_id AND jst.settlyf_sf=0 AND
+		jst.settlyf_type=0
+		AND jst.settlyf_time=(SELECT MAX(jst1.settlyf_time)
+		FROM jy_settlgfSh jst1
+		WHERE jst1.orderids=jst.orderids AND
+		jst1.settlyf_type=0 AND jst1.settlyf_sf=0)
+		LEFT JOIN jy_department jdp ON jdp.department_id=ji.settlgf_th_did
+		LEFT JOIN jy_settlgfSh jss
+		ON jss.orderids=ji.shiping_order_id AND
+		jss.settlyf_sf=0 AND
+		jss.settlyf_type=1
+		AND jss.settlyf_time=(SELECT
+		MAX(jss1.settlyf_time)
+		FROM jy_settlgfSh jss1
+		WHERE
+		jss1.orderids=jss.orderids AND
+		jss1.settlyf_type=1 AND
+		jss1.settlyf_sf=0)
+		LEFT JOIN jy_user ju ON
+		jsj.settl_user=ju.id
+		LEFT JOIN jy_user ju1 ON
+		jst.settlyf_user=ju.id
+		WHERE
+		(ji.trade_agency IS NOT NULL AND ji.trade_agency!='' AND
+		ji.trade_agency!=0)
+		<if test="param3!=null and param3!=''">
+			and ji.shiping_order_num like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			<choose>
+				<when test="param4=='0'.toString()">
+					and ( ji.is_settlgf like "%${param4}%" or
+					ji.settle_gf=1)
+				</when>
+				<otherwise>
+					and ( ji.is_settlgf like "%${param4}%" and
+					ji.settle_gf!=1)
+				</otherwise>
+			</choose>
+		</if>
+		<if test="param5!=null and param5!=''">
+			<choose>
+			<when test="param5=='0'.toString()">
+					and ((	ji.trade_agency-(IF(ji.paidgf_fu IS NULL,0,ji.paidgf_fu))) !=0 or  ji.is_settlgf =0  or  ji.settle_gf =1)
+			</when>
+				<when test="param5=='1'.toString()">
+					and (	ji.trade_agency-(IF(ji.paidgf_fu IS NULL,0,ji.paidgf_fu))) =0 	and  ji.is_settlgf !=0  AND  ji.settle_gf !=1
+			</when>
+		</choose>		
+		</if>
+		<if test="param6!=null and param6!=''">
+			and ji.send_time &gt;=#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">
+			and ji.send_time &lt;=#{param7}
+		</if>
+		<if test="param8!=null and param8!=''">
+			and jsj.settl_times &gt;=#{param8} and (ji.is_settlgf!=0
+			and ji.settle_gf!=1)
+		</if>
+		<if test="param9!=null and param9!=''">
+			and jsj.settl_times &lt;=#{param9} and (ji.is_settlgf!=0
+			and ji.settle_gf!=1)
+		</if>
+		<if test="param10!=null and param10!=''">
+			and ji.order_time &gt;=#{param10}
+		</if>
+		<if test="param11!=null and param11!=''">
+			and ji.order_time &lt;=#{param11}
+		</if>
+		<if test="param12!=null and param12!=''">
+			and ( joc.customer_id =#{param12} or ji.customer_id
+			=#{param12} )
+		</if>
+		GROUP BY ji.shiping_order_id
+		ORDER BY jsj.settl_times DESC,
+		ji.updatetime
+		DESC
+		limit
+		#{param1},#{param2}
+	</select>
+	<!-- 运费结算订单查询 -->
+	<select id="getSettlementYf" resultType="int">
+		SELECT
+		COUNT(*)
+		FROM
+		(
+		SELECT
+		ji.shiping_order_id
+		FROM
+		jy_shiping_order ji
+		LEFT JOIN jy_order_custom joc ON joc.custom_id = ji.custom_id
+		LEFT JOIN
+		jy_settlemengf_history jsj ON jsj.order_id=ji.shiping_order_id
+		AND
+		jsj.settl_order=0
+		LEFT JOIN jy_settlgfSh jst ON
+		jst.orderids=ji.shiping_order_id AND jst.settlyf_sf=0 AND
+		jst.settlyf_type=0
+		LEFT JOIN jy_settlgfSh jss ON
+		jss.orderids=ji.shiping_order_id AND jss.settlyf_sf=0 AND
+		jss.settlyf_type=1
+		
+		
+		WHERE
+		(ji.trade_agency IS NOT NULL AND
+		ji.trade_agency!='' AND ji.trade_agency!=0)
+		<if test="param1!=null and param1!=''">
+			and ji.shiping_order_num like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			<choose>
+				<when test="param2=='0'.toString()">
+					and (ji.is_settlgf like "%${param2}%" or
+					ji.settle_gf=1)
+				</when>
+				<otherwise>
+					and (ji.is_settlgf like "%${param2}%" and
+					ji.settle_gf!=1)
+				</otherwise>
+			</choose>
+		</if>
+		<if test="param3!=null and param3!=''">
+			<choose>
+			<when test="param3=='0'.toString()">
+					and ((	ji.trade_agency-(IF(ji.paidgf_fu IS NULL,0,ji.paidgf_fu))) !=0 or  ji.is_settlgf =0  or  ji.settle_gf =1)
+			</when>
+				<when test="param3=='1'.toString()">
+					and (	ji.trade_agency-(IF(ji.paidgf_fu IS NULL,0,ji.paidgf_fu))) =0 	and  ji.is_settlgf !=0  AND  ji.settle_gf !=1
+			</when>
+		</choose>		
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.send_time &gt;=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.send_time &lt;=#{param5}
+		</if>
+		<if test="param6!=null and param6!=''">
+			and jsj.settl_times &gt;=#{param6} and (ji.is_settlgf!=0
+			and ji.settle_gf!=1)
+		</if>
+		<if test="param7!=null and param7!=''">
+			and jsj.settl_times &lt;=#{param7} and (ji.is_settlgf!=0
+			and ji.settle_gf!=1)
+		</if>
+		<if test="param8!=null and param8!=''">
+			and ji.order_time &gt;=#{param8}
+		</if>
+		<if test="param9!=null and param9!=''">
+			and ji.order_time &lt;=#{param9}
+		</if>
+		<if test="(param8!=null and param8!='') and (param9!=null and param9!='')">
+			and ji.order_time &gt;=#{param8}
+			and ji.order_time
+			&lt;=#{param9}
+		</if>
+		<if test="param10!=null and param10!=''">
+			and ( joc.customer_id =#{param10} or ji.customer_id
+			=#{param10} )
+		</if>
+		GROUP BY ji.shiping_order_id
+
+		)as tt
+	</select>
+
+
+
+	<!--审核记录保存 -->
+	<insert id="saveSettlGFSh" parameterType="java.util.List">
+		insert into
+		jy_settlgfSh
+		(
+		settlementids,
+		settlyf_remaks,
+		orderids,
+		settlyf_type,
+		settlyf_time,
+		settlyf_state,
+		settlyf_user,
+		settlyf_sf,
+		settlyf_id,
+		settle_th_did
+		)
+		values
+		<foreach collection="list" index="index" item="item"
+			separator=",">
+			(
+			#{item.settlementids},
+			#{item.settlyf_remaks},
+			#{item.orderids},
+			#{item.settlyf_type},
+			now(),
+			#{item.settlyf_state},
+			#{item.settlyf_user},
+			#{item.settlyf_sf},
+			#{item.settlyf_id},
+			#{item.settle_th_did}	
+			)
+		</foreach>
+	</insert>
+	<!-- 运费结算记录保存 -->
+	<insert id="saveSettlementYf" parameterType="Transportfree">
+		insert into
+		jy_transport_free
+		(
+		changefreeid,
+		formerfree,
+		formerchange,
+		newfree,
+		orderid,
+		downfree,
+		newchange,
+		changeuser,
+		changetime,
+		changeremark
+		)
+		values
+		<!-- <foreach collection="list" index="index" item="item" separator=","> -->
+		(
+		#{changefreeid},
+		#{formerfree},
+		#{formerchange},
+		#{newfree},
+		#{orderid},
+		#{downfree},
+		#{newchange},
+		#{changeuser},
+		now(),
+		#{changeremark}
+		)
+		<!-- </foreach> -->
+	</insert>
+	<!-- 调整审核查询 -->
+	<select id="getSettlementYfSHInfo" resultType="ShippingOrder">
+		SELECT
+		ji.*,
+		IF ((ji.is_settlgf!=0 and
+		ji.settle_gf!=1),jsj.settl_times,NULL) AS
+		settlyf_time,
+		IF
+		((ji.is_settlgf!=0 and
+		ji.settle_gf!=1),jsj.settl_notes,NULL) AS
+		settlyf_remaks,
+		IF (ji.settlgf_sh!=0 ,jst.settlyf_time,NULL) AS
+		settlyf_th_times,
+		IF
+		((ji.settlgf_sh!=0 OR
+		ji.settlgf_sh!=1),jss.settlyf_time,NULL) AS
+		settlyf_sh_times,
+		IF
+		(ji.settlgf_sh!=0 ,jst.settlyf_remaks,NULL) AS
+		settlyf_th_remaks,
+		IF
+		((ji.settlgf_sh!=0 OR
+		ji.settlgf_sh!=1),jss.settlyf_remaks,NULL) AS
+		settlyf_sh_remaks,
+		IF
+		((ji.is_settlgf!=0 and ji.settle_gf!=1)
+		,ju.username,NULL) AS
+		username,
+		IF (ji.settlgf_sh!=0,ju1.username,NULL)
+		AS usernameth,
+		ji.trade_agency-(IF(ji.paidgf_fu IS
+		NULL,0,ji.paidgf_fu)) AS trade_cha
+		FROM
+		jy_shiping_order ji
+		LEFT JOIN
+		jy_settlemengf_history jsj ON jsj.order_id=ji.shiping_order_id
+		AND
+		jsj.settl_order=0
+		AND jsj.settl_times=(SELECT MAX(jsj1.settl_times)
+		FROM
+		jy_settlemengf_history jsj1
+		WHERE jsj1.order_id=jsj.order_id AND
+		jsj1.settl_order=0)
+		LEFT JOIN jy_settlgfSh jst ON
+		jst.orderids=ji.shiping_order_id AND
+		jst.settlyf_sf=0 AND
+		jst.settlyf_type=0
+		AND jst.settlyf_time=(SELECT
+		MAX(jst1.settlyf_time)
+		FROM jy_settlgfSh jst1
+		WHERE
+		jst1.orderids=jst.orderids AND
+		jst1.settlyf_type=0 AND
+		jst1.settlyf_sf=0)
+		LEFT JOIN jy_settlgfSh jss ON
+		jss.orderids=ji.shiping_order_id AND
+		jss.settlyf_sf=0 AND
+		jss.settlyf_type=1
+		AND jss.settlyf_time=(SELECT
+		MAX(jss1.settlyf_time)
+		FROM jy_settlgfSh jss1
+		WHERE
+		jss1.orderids=jss.orderids AND
+		jss1.settlyf_type=1 AND
+		jss1.settlyf_sf=0)
+		LEFT JOIN jy_user ju ON
+		jsj.settl_user=ju.id
+		LEFT JOIN jy_user ju1 ON
+		jst.settlyf_user=ju.id
+		WHERE
+		ji.settlgf_sh!=0
+		<if test="param3!=null and param3!=''">
+			and ji.shiping_order_num like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.settlgf_sh like "%${param4}%"
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.settlgf_th_did like "%${param5}%"
+		</if>
+		<if test="param6!=null and param6!=''">
+			and ji.send_time &gt;=#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">
+			and ji.send_time &lt;=#{param7}
+		</if>
+		<if test="(param6!=null and param6!='') and (param7!=null and param7!='')">
+			and ji.send_time &gt;=#{param6}
+			and ji.send_time
+			&lt;=#{param7}
+		</if>
+		<if test="param8!=null and param8!=''">
+			and jst.settlyf_time &gt;=#{param8}
+		</if>
+		<if test="param9!=null and param9!=''">
+			and jst.settlyf_time &lt;=#{param9}
+		</if>
+		<if test="param10!=null and param10!=''">
+			and jsj.settl_times &gt;=#{param10} and (ji.is_settlgf!=0
+			and ji.settle_gf!=1)
+		</if>
+		<if test="param11!=null and param11!=''">
+			and jsj.settl_times &lt;=#{param11} and (ji.is_settlgf!=0
+			and ji.settle_gf!=1)
+		</if>
+		<if test="param12!=null and param12!=''">
+			and ji.custom_name like "%${param12}%"
+		</if>
+		GROUP BY ji.shiping_order_id
+		ORDER BY jst.settlyf_time DESC,
+		ji.updatetime
+		DESC
+		limit
+		#{param1},#{param2}
+	</select>
+
+	<select id="getSettlementYfSH" resultType="int">
+		SELECT
+		COUNT(*)
+		FROM
+		(
+		SELECT
+		ji.shiping_order_id
+		FROM
+		jy_shiping_order ji
+		LEFT JOIN jy_settlemengf_history jsj ON
+		jsj.order_id=ji.shiping_order_id
+		AND jsj.settl_order=0
+		LEFT JOIN
+		jy_settlgfSh jst ON jst.orderids=ji.shiping_order_id AND
+		jst.settlyf_sf=0 AND jst.settlyf_type=0
+		LEFT JOIN jy_settlgfSh jss ON
+		jss.orderids=ji.shiping_order_id AND
+		jss.settlyf_sf=0 AND
+		jss.settlyf_type=1
+		LEFT JOIN jy_user ju ON jsj.settl_user=ju.id
+		LEFT
+		JOIN jy_user ju1 ON jst.settlyf_user=ju.id
+		WHERE
+		ji.settlgf_sh!=0
+		<if test="param1!=null and param1!=''">
+			and ji.shiping_order_num like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and ji.settlgf_sh like "%${param2}%"
+		</if>
+		<if test="param3!=null and param3!=''">
+			and ji.settlgf_th_did like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.send_time &gt;=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.send_time &lt;=#{param5}
+		</if>
+		<if test="param6!=null and param6!=''">
+			and jst.settlyf_time &gt;=#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">
+			and jst.settlyf_time &lt;=#{param7}
+		</if>
+		<if test="param8!=null and param8!=''">
+			and jsj.settl_times &gt;=#{param8} and (ji.is_settlgf!=0
+			and
+			ji.settle_gf!=1)
+		</if>
+		<if test="param9!=null and param9!=''">
+			and jsj.settl_times &lt;=#{param9} and (ji.is_settlgf!=0
+			and
+			ji.settle_gf!=1)
+		</if>
+		<if test="param10!=null and param10!=''">
+			and ji.custom_name like "%${param10}%"
+		</if>
+		GROUP BY ji.shiping_order_id
+		ORDER BY jst.settlyf_time DESC,
+		ji.updatetime
+		) as tt
+	</select>
+
+	<!-- 审核导出 -->
+
+	<select id="getSettlementYfSHout" resultType="ShippingOrder">
+		SELECT
+		ji.send_time,ji.shiping_order_num,ji.custom_name,ji.send_shouji,ji.goods_name,ji.goods_num,
+		ji.goods_weight,ji.goods_vol,ji.send_phone,
+		ji.send_station,ji.end_address,ji.receipt,ji.receipt_tel,ji.receipt_phone,
+		ji.shiping_order_id,
+			CASE WHEN ji.send_type='0' THEN '客户自提'
+		WHEN ji.send_type='1'  THEN '专车送货'
+		WHEN ji.send_type='2'  THEN '送货进仓'
+		WHEN ji.send_type='3'  THEN '送货上门'
+		WHEN ji.send_type='4' THEN '送货上楼'
+		END AS send_type,
+		CASE WHEN ji.settlgf_sh=0
+		THEN '未审核'
+		WHEN ji.settlgf_sh=1 THEN '已提审'
+		WHEN ji.settlgf_sh=2 THEN
+		'审核通过'
+		WHEN ji.settlgf_sh=3 THEN '审核驳回'
+		END AS settlgf_sh,
+		CASE WHEN
+		ji.is_settlgf=0 THEN '未结算'
+		WHEN ji.is_settlgf=1 THEN '现金'
+		WHEN
+		ji.is_settlgf=2 THEN '转账'
+		WHEN ji.is_settlgf=3 THEN '支票'
+		WHEN
+		ji.is_settlgf=4 THEN '其他'
+		END AS is_settlgf,
+		CASE WHEN
+		ji.shipping_order_state=0 THEN '未出库'
+		WHEN ji.shipping_order_state=1
+		THEN '配送中'
+		WHEN ji.shipping_order_state=2 THEN '转运中'
+		WHEN
+		ji.shipping_order_state=3 THEN '到达'
+		WHEN ji.shipping_order_state=4 THEN
+		'签收'
+		END AS shipping_order_state,
+		IF
+		((ji.is_settlgf!=0 and
+		ji.settle_gf!=1),jsj.settl_times,NULL) AS
+		settlyf_time,
+		IF
+		((ji.is_settlgf!=0 and
+		ji.settle_gf!=1),jsj.settl_notes,NULL) AS
+		settlyf_remaks,
+		IF (ji.settlgf_sh!=0 ,jst.settlyf_time,NULL) AS
+		settlyf_th_times,
+		IF
+		((ji.settlgf_sh!=0 OR
+		ji.settlgf_sh!=1),jss.settlyf_time,NULL) AS
+		settlyf_sh_times,
+		IF
+		(ji.settlgf_sh!=0 ,jst.settlyf_remaks,NULL) AS
+		settlyf_th_remaks,
+		IF
+		((ji.settlgf_sh!=0 OR
+		ji.settlgf_sh!=1),jss.settlyf_remaks,NULL) AS
+		settlyf_sh_remaks,
+		IF
+		((ji.is_settlgf!=0 and ji.settle_gf!=1)
+		,ju.username,NULL) AS
+		username,
+		IF (ji.settlgf_sh!=0,ju1.username,NULL)
+		AS usernameth,
+		ji.trade_agency ,
+		IF(ji.paidgf_fu IS NULL,0,ji.paidgf_fu)
+		AS paidgf_fu,
+		ji.trade_agency-(IF(ji.paidgf_fu IS NULL,0,ji.paidgf_fu))
+		AS trade_cha
+		FROM
+		jy_shiping_order ji
+		LEFT JOIN jy_settlemengf_history
+		jsj ON
+		jsj.order_id=ji.shiping_order_id AND jsj.settl_order=0
+		AND
+		jsj.settl_times=(SELECT MAX(jsj1.settl_times) FROM
+		jy_settlemengf_history jsj1
+		WHERE jsj1.order_id=jsj.order_id AND
+		jsj1.settl_order=0)
+		LEFT JOIN jy_settlgfSh jst ON
+		jst.orderids=ji.shiping_order_id AND jst.settlyf_sf=0 AND
+		jst.settlyf_type=0
+		AND jst.settlyf_time=(SELECT MAX(jst1.settlyf_time)
+		FROM jy_settlgfSh jst1
+		WHERE jst1.orderids=jst.orderids AND
+		jst1.settlyf_type=0 AND jst1.settlyf_sf=0)
+		LEFT JOIN jy_settlgfSh jss
+		ON jss.orderids=ji.shiping_order_id AND
+		jss.settlyf_sf=0 AND
+		jss.settlyf_type=1
+		AND jss.settlyf_time=(SELECT
+		MAX(jss1.settlyf_time)
+		FROM jy_settlgfSh jss1
+		WHERE
+		jss1.orderids=jss.orderids AND
+		jss1.settlyf_type=1 AND
+		jss1.settlyf_sf=0)
+		LEFT JOIN jy_user ju ON
+		jsj.settl_user=ju.id
+		LEFT
+		JOIN jy_user ju1 ON jst.settlyf_user=ju.id
+		WHERE
+		ji.settlgf_sh!=0
+		<if test="param1!=null and param1!=''">
+			and ji.shiping_order_num like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and ji.settlgf_sh like "%${param2}%"
+		</if>
+		<if test="param3!=null and param3!=''">
+			and ji.settlgf_th_did like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.send_time &gt;=#{param4}
+		</if>
+		<if test="param5!=null and param5!=''">
+			and ji.send_time &lt;=#{param5}
+		</if>
+		<if test="(param4!=null and param4!='') and (param5!=null and param5!='') ">
+			and ji.send_time &gt;=#{param4}
+			and ji.send_time
+			&lt;=#{param5}
+		</if>
+		<if test="param6!=null and param6!=''">
+			and jst.settlyf_time &gt;=#{param6}
+		</if>
+		<if test="param7!=null and param7!=''">
+			and jst.settlyf_time &lt;=#{param7}
+		</if>
+		<if test="param8!=null and param8!=''">
+			and jsj.settl_times &gt;=#{param8} and (ji.is_settlgf!=0
+			and
+			ji.settle_gf!=1)
+		</if>
+		<if test="param9!=null and param9!=''">
+			and jsj.settl_times &lt;=#{param9} and (ji.is_settlgf!=0
+			and
+			ji.settle_gf!=1)
+		</if>
+		<if test="param10!=null and param10!=''">
+			and ji.custom_name like "%${param10}%"
+		</if>
+		<if test="param11!=null and param11!=''">
+			and ji.shiping_order_id in
+			<foreach collection="array" index="index" item="item" open="("
+				separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		GROUP BY ji.shiping_order_id
+		ORDER BY jst.settlyf_time DESC
+	</select>
+
+	<!-- 调整历史记录查询 -->
+	<select id="getSettlementYfRc" resultType="Transportfree">
+		SELECT
+		ji.*,
+		ju.username AS usernametz,
+		jo.shiping_order_num
+		FROM
+		jy_transport_free ji
+		LEFT JOIN jy_user ju ON ju.id=ji.changeuser
+		LEFT
+		JOIN jy_shiping_order
+		jo ON jo.shiping_order_id=ji.orderid
+		where
+		ji.orderid=#{param5}
+		<if test="param3!=null and param3!=''">
+			and ji.changetime &gt;=#{param3}
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.changetime &lt;=#{param4}
+		</if>
+		ORDER BY
+		ji.changetime
+		DESC
+		limit
+		#{param1},#{param2}
+	</select>
+
+	<select id="getSettlementYfRcs" resultType="int">
+		SELECT
+		COUNT(ji.changefreeid)
+		FROM
+		jy_transport_free ji
+		LEFT JOIN jy_user
+		ju ON ju.id=ji.changeuser
+		LEFT JOIN jy_shiping_order jo ON
+		jo.shiping_order_id=ji.orderid
+		where
+		ji.orderid=#{param3}
+		<if test="param1!=null and param1!=''">
+			and ji.changetime &gt;=#{param1}
+		</if>
+		<if test="param2!=null and param2!=''">
+			and ji.changetime &lt;=#{param2}
+		</if>
+	</select>
+	<!--运费结算审核记录查询 -->
+	<select id="getSettleShRc" resultType="SettlGFSh">
+		SELECT
+		ji.*,
+		ju.username AS usernamecz,
+		jo.shiping_order_num
+		FROM
+		jy_settlgfSh ji
+		LEFT JOIN jy_user ju ON ju.id=ji.settlyf_user
+		LEFT JOIN
+		jy_shiping_order jo ON jo.shiping_order_id=ji.orderids
+		where
+		ji.orderids=#{param5}
+		and ji.settlyf_sf=0
+		<if test="param3!=null and param3!=''">
+			and ji.settlyf_time &gt;=#{param3}
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.settlyf_time &lt;=#{param4}
+		</if>
+		ORDER BY
+		ji.settlyf_time
+		DESC
+		limit
+		#{param1},#{param2}
+	</select>
+
+	<select id="getSettleShRcs" resultType="int">
+		SELECT
+		COUNT(ji.settlementids)
+		FROM
+		jy_settlgfSh ji
+		LEFT JOIN jy_user ju
+		ON ju.id=ji.settlyf_user
+		LEFT
+		JOIN jy_shiping_order jo ON
+		jo.shiping_order_id=ji.orderids
+		WHERE
+		ji.orderids=#{param3}
+		AND
+		ji.settlyf_sf =0
+		<if test="param1!=null and param1!=''">
+			and ji.settlyf_time &gt;=#{param1}
+		</if>
+		<if test="param2!=null and param2!=''">
+			and ji.settlyf_time &lt;=#{param2}
+		</if>
+	</select>
+	<!-- 运费结算提审修改订单 -->
+	<update id="delSettlementYf" parameterType="java.util.Arrays">
+		update jy_shiping_order
+		<set>
+			updatetime=now(),
+			settlgf_th_did=#{param2},
+			settlgf_sh=1
+		</set>
+		where shiping_order_id in
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+
+	<!-- 运费结算审核修改订单 -->
+	<update id="shSettlementYf" parameterType="java.util.Arrays">
+		update jy_shiping_order
+		<set>
+			updatetime=now(),
+			settlgf_sh=#{param2}
+		</set>
+		where shiping_order_id in
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	<!-- 运费结算修改运费> -->
+	<update id="updateSettlementYf" parameterType="String">
+		update
+		jy_shiping_order
+		<set>
+			updatetime=now(),
+			paidgf_fu=#{param2},
+			settlgf_sh=0,
+			settle_gf=1
+		</set>
+		where
+		shiping_order_id=#{param1}
+	</update>
+	<!-- 运费结算修改> -->
+	<update id="addSettlementYf" parameterType="java.util.Arrays">
+		update
+		jy_shiping_order
+		<set>
+			updatetime=now(),
+			is_settlgf=#{param2},
+			settlgf_th_did=null,
+			settlgf_sh=0,
+			settle_gf=2
+		</set>
+		where
+		shiping_order_id in
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+
+
+	<!--结算记录保存 -->
+	<insert id="saveSettlchecks" parameterType="java.util.List">
+		insert into
+		jy_settlemengf_history
+		(
+		settlements_id,
+		order_id,
+		allmoney,
+		settl_money,
+		over_money,
+		settl_user,
+		settl_times,
+		settl_notes,
+		settl_order,
+		settl_type,
+		settl_zpnum,
+		settl_khbank,
+		settl_username,
+		settl_kahao
+		)
+		values
+		<foreach collection="list" index="index" item="item"
+			separator=",">
+			(
+			#{item.settlements_id},
+			#{item.order_id},
+			#{item.allmoney},
+			#{item.settl_money},
+			#{item.over_money},
+			#{item.settl_user},
+			now(),
+			#{item.settl_notes},
+			#{item.settl_order},
+			#{item.settl_type},
+			#{item.settl_zpnum},
+			#{item.settl_khbank},
+			#{item.settl_username},
+			#{item.settl_kahao}
+			)
+		</foreach>
+	</insert>
+	<!-- 客户查询 -->
+	<select id="getCustomerSetYf" resultType="Customer">
+		(SELECT ji.customer_id,
+		ji.customer_num,
+		ji.customer_name,
+		ji.customer_address,
+		ji.customer_tel,
+		<!-- COUNT(jso.shiping_order_id) AS
+		allnuns,
+		SUM(IF(jso.is_settlgf=0,1,0)) AS notseetls,
+		SUM(IF(jso.is_settlgf!=0,1,0)) AS seetls,
+		SUM(IF(jso.is_settlgf!=0,jso.paidgf_fu,0)) AS reality_sum,
+		SUM(IF(jso.is_settlgf!=0,(jso.trade_agency-jso.paidgf_fu),jso.trade_agency))AS
+		reality_yue,
+		SUM(jso.trade_agency) AS transport_pay -->
+		
+		COUNT(jso.shiping_order_id) AS allnuns,
+			SUM(IF(jso.is_setldaisk=0,1,0)) AS notseetls,
+			SUM(IF(jso.is_setldaisk!=0,1,0)) AS seetls,
+			SUM(IF(jso.is_setldaisk!=0 AND jso.settlgf_sh=2,SUBSTRING_INDEX(jso.settlgf_fu,",",1),SUBSTRING_INDEX(jso.settlgf_fu,",",-1) ))    AS reality_sum,
+			ROUND(SUM(IF(jso.is_setldaisk!=0 AND jso.settlgf_sh=2,(jso.trade_agency-SUBSTRING_INDEX(jso.settlgf_fu,",",1)),(jso.trade_agency-SUBSTRING_INDEX(jso.settlgf_fu,",",-1)))),2)AS reality_yue,
+			SUM(jso.trade_agency) AS transport_pay		
+		
+		FROM
+		jy_customer ji
+		INNER JOIN jy_order_custom joc ON joc.customer_id=ji.customer_id
+		INNER
+		JOIN jy_shiping_order jso ON jso.custom_id=joc.custom_id
+		WHERE
+		(jso.trade_agency IS NOT NULL OR jso.trade_agency!='' and
+		jso.trade_agency!=0)
+		<if test="param3!=null and param3!=''">
+			and ji.customer_name like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.customer_num like "%${param4}%"
+		</if>
+	   <if test="param5 != null and param5 != ''">
+		   and jso.order_time &gt;=#{param5}
+	  </if>
+	 <if test="param6 != null and param6 != ''">
+		   and jso.order_time &lt;=#{param6}
+	</if>           
+		GROUP BY ji.customer_id)
+		UNION ALL
+		(SELECT ji.customer_id,
+		ji.customer_num,
+		ji.customer_name,
+		ji.customer_address,
+		ji.customer_tel,
+		COUNT(jso.shiping_order_id) AS allnuns,
+		SUM(IF(jso.is_settlgf=0,1,0))
+		AS notseetls,
+		SUM(IF(jso.is_settlgf!=0,1,0)) AS seetls,
+		SUM(IF(jso.is_settlgf!=0,jso.paidgf_fu,0)) AS reality_sum,
+		SUM(IF(jso.is_settlgf!=0,(jso.trade_agency-jso.paidgf_fu),jso.trade_agency))AS
+		reality_yue,
+		SUM(jso.trade_agency) AS transport_pay
+		FROM
+		jy_customer_fahuo ji
+		INNER JOIN jy_shiping_order jso ON
+		jso.customer_id=ji.customer_id
+		WHERE
+		(jso.trade_agency IS NOT NULL  and
+		jso.trade_agency!='' and jso.trade_agency!=0)
+		<if test="param3!=null and param3!=''">
+			and ji.customer_name like "%${param3}%"
+		</if>
+		<if test="param4!=null and param4!=''">
+			and ji.customer_num like "%${param4}%"
+		</if>
+		     <if test="param5 != null and param5 != ''">
+				   and jso.order_time &gt;=#{param5}
+			  </if>
+			  <if test="param6 != null and param6 != ''">
+				   and jso.order_time &lt;=#{param6}
+			  </if>           
+		GROUP BY ji.customer_id)
+			<choose>
+			<when test="param7!=null and param7!=''">
+				ORDER BY ${param7}  ${param8}	
+			</when>
+			<otherwise>
+			ORDER BY reality_yue DESC
+			</otherwise>
+		</choose> 
+		limit
+		#{param1},#{param2}
+	</select>
+	<select id="getCustomerSetYfs" resultType="int">
+		SELECT COUNT(*) FROM ((SELECT ji.customer_id
+		FROM
+		jy_customer ji
+		INNER
+		JOIN jy_order_custom joc ON joc.customer_id=ji.customer_id
+		INNER JOIN
+		jy_shiping_order jso ON jso.custom_id=joc.custom_id
+		WHERE
+		(jso.trade_agency IS NOT NULL OR jso.trade_agency !='')
+		<if test="param1!=null and param1!=''">
+			and ji.customer_name like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and ji.customer_num like "%${param2}%"
+		</if>
+		     <if test="param3 != null and param3 != ''">
+			   and jso.order_time &gt;=#{param3}
+		  </if>
+		  <if test="param4 != null and param4 != ''">
+			   and jso.order_time &lt;=#{param4}
+		  </if>
+		GROUP BY ji.customer_id)
+		UNION ALL
+		(SELECT ji.customer_id
+		FROM
+		jy_customer_fahuo ji
+		INNER JOIN jy_shiping_order jso ON
+		jso.customer_id=ji.customer_id
+		where
+		(jso.trade_agency IS NOT NULL  and
+		jso.trade_agency!='' and jso.trade_agency!=0)
+		<if test="param1!=null and param1!=''">
+			and ji.customer_name like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and ji.customer_num like "%${param2}%"
+		</if>
+		     <if test="param3 != null and param3 != ''">
+			   and jso.order_time &gt;=#{param3}
+		  </if>
+		  <if test="param4 != null and param4 != ''">
+			   and jso.order_time &lt;=#{param4}
+		  </if>
+		GROUP BY ji.customer_id)) AS tt
+
+	</select>
+	<!-- 客户导出 -->
+	<select id="getCustomerSetYfout" resultType="Customer">
+		(SELECT ji.customer_id,
+		ji.customer_num,
+		ji.customer_name,
+		ji.customer_address,
+		ji.customer_tel,
+						COUNT(jso.shiping_order_id) AS allnuns,
+			SUM(IF(jso.is_setldaisk=0,1,0)) AS notseetls,
+			SUM(IF(jso.is_setldaisk!=0,1,0)) AS seetls,
+			SUM(IF(jso.is_setldaisk!=0 AND jso.settlgf_sh=2,SUBSTRING_INDEX(jso.settlgf_fu,",",1),SUBSTRING_INDEX(jso.settlgf_fu,",",-1) ))    AS reality_sum,
+			ROUND(SUM(IF(jso.is_setldaisk!=0 AND jso.settlgf_sh=2,(jso.trade_agency-SUBSTRING_INDEX(jso.settlgf_fu,",",1)),(jso.trade_agency-SUBSTRING_INDEX(jso.settlgf_fu,",",-1)))),2)AS reality_yue,
+			SUM(jso.trade_agency) AS transport_pay		
+		
+		FROM
+		jy_customer ji
+		INNER JOIN jy_order_custom joc ON joc.customer_id=ji.customer_id
+		INNER
+		JOIN jy_shiping_order jso ON jso.custom_id=joc.custom_id
+		WHERE
+		(jso.trade_agency IS NOT NULL and jso.trade_agency!='' and
+		jso.trade_agency!=0)
+		<if test="param1!=null and param1!=''">
+			and ji.customer_name like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and ji.customer_num like "%${param2}%"
+		</if>
+		     <if test="param3 != null and param3 != ''">
+			   and jso.order_time &gt;=#{param3}
+		  </if>
+		  <if test="param4 != null and param4 != ''">
+			   and jso.order_time &lt;=#{param4}
+		  </if>
+		<if test="param7!=null and param7!=''">
+			and ji.customer_id in
+			<foreach collection="array" index="index" item="item" open="("
+				separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		GROUP BY ji.customer_id)
+		UNION ALL
+		(SELECT ji.customer_id,
+		ji.customer_num,
+		ji.customer_name,
+		ji.customer_address,
+		ji.customer_tel,
+		COUNT(jso.shiping_order_id) AS allnuns,
+		SUM(IF(jso.is_settlgf=0,1,0))
+		AS notseetls,
+		SUM(IF(jso.is_settlgf!=0,1,0)) AS seetls,
+		SUM(IF(jso.is_settlgf!=0,jso.paidgf_fu,0)) AS reality_sum,
+		SUM(IF(jso.is_settlgf!=0,(jso.trade_agency-jso.paidgf_fu),jso.trade_agency))AS
+		reality_yue,
+		SUM(jso.trade_agency) AS transport_pay
+		FROM
+		jy_customer_fahuo ji
+		INNER JOIN jy_shiping_order jso ON
+		jso.customer_id=ji.customer_id
+		where
+		(jso.trade_agency IS NOT NULL and
+		jso.trade_agency!='' and jso.trade_agency!=0)
+		<if test="param1!=null and param1!=''">
+			and ji.customer_name like "%${param1}%"
+		</if>
+		<if test="param2!=null and param2!=''">
+			and ji.customer_num like "%${param2}%"
+		</if>
+		     <if test="param3 != null and param3 != ''">
+			   and jso.order_time &gt;=#{param3}
+		  </if>
+		  <if test="param4 != null and param4 != ''">
+			   and jso.order_time &lt;=#{param4}
+		  </if>
+		<if test="param7!=null and param7!=''">
+			and ji.customer_id in
+			<foreach collection="array" index="index" item="item" open="("
+				separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		GROUP BY ji.customer_id)
+		<choose>
+			<when test="param5!=null and param5!=''">
+				ORDER BY ${param5}  ${param6}	
+			</when>
+			<otherwise>
+			ORDER BY reality_yue DESC
+			</otherwise>
+		</choose> 
+	</select>
+
+	<!-- 运费结算记录 -->
+	<select id="getSettleRc" resultType="Settle_historyGF">
+		SELECT
+		ji.*,
+		ju.username AS
+		usernamecz,
+		jo.shiping_order_num
+		FROM
+		jy_settlemengf_history ji
+		LEFT JOIN
+		jy_user ju ON ju.id=ji.settl_user
+		LEFT JOIN jy_shiping_order jo ON
+		jo.shiping_order_id=ji.order_id
+		where
+		ji.order_id=#{param3}
+		and
+		ji.settl_order=#{param4}
+		ORDER BY
+		ji.settl_times
+		DESC
+		limit
+		#{param1},#{param2}
+	</select>
+
+	<select id="getSettleRcs" resultType="int">
+		SELECT
+		COUNT(ji.settlements_id)
+		FROM
+		jy_settlemengf_history ji
+		LEFT JOIN jy_user
+		ju ON ju.id=ji.settl_user
+		LEFT JOIN jy_shiping_order jo ON
+		jo.shiping_order_id=ji.order_id
+		where
+		ji.order_id=#{param1}
+		and
+		ji.settl_order=#{param2}
+	</select>
+
+	<update id="saveSettl_fu" parameterType="java.util.List">
+		<foreach collection="list" index="index" item="item"
+			separator=" ;">
+			update
+			jy_shiping_order
+			set
+			settlgf_fu=#{item.settlgf_fu}
+			where
+			shiping_order_id =#{item.shiping_order_id}
+		</foreach>
+	</update>
+	<!-- 结算历史表修改查询> -->
+	<select id="getupdateSettle" resultType="Settle_historyGF">
+		SELECT
+		jsj.*
+		FROM
+		${param1} AS jsj
+		WHERE jsj.settl_order= #{param2}
+		and
+		jsj.order_id IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		AND jsj.settl_times=(SELECT MAX(jsj1.settl_times) FROM ${param1} AS	jsj1 WHERE jsj1.order_id=jsj.order_id
+		AND jsj1.settl_order=#{param2})
+		GROUP BY jsj.order_id
+	</select>
+	<!-- 结算历史表审核状态修改> -->
+	<update id="updateSettle" parameterType="java.util.List">
+		<foreach collection="list" index="index" item="item"
+			separator=" ;">
+			update
+			${param2}
+			<set>
+				settl_times=now(),
+				settl_state=${param3}
+			</set>
+			where
+			settlements_id=#{item.settlements_id}
+		</foreach>
+	</update>
+
+
+
+</mapper>

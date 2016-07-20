@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jy.dao.ToolsDao">
+	
+	<select id="getdept" resultType="Department">
+		SELECT department_id,department_name FROM jy_department where 1=1
+		<if test="param1 !=null">
+			and department_name like '%${param1}%'
+		</if>
+		 	and  department_id  IN
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	
+	<select id="getChildren" resultType="String">
+		<if test="_parameter !=null">
+			select department_id from jy_department where FIND_IN_SET(department_id,
+			queryChildrenAreaInfo(#{_parameter}))
+		</if>
+		<if test="_parameter == null">
+			select department_id from jy_department where 1=0
+		</if>
+	</select>
+	
+	<select id="getUser" resultType="User">
+		SELECT DISTINCT  id ,realname FROM jy_user where 1=1
+		AND state=1
+		<if test="param1!=null">
+			and realname like "%${param1}%"
+		</if>
+		<if test="param2!=null and  param2!=''">
+			and id != #{param2}
+		</if>
+	</select>
+	
+	
+	
+<select id="getDep" resultType="Department">
+		SELECT
+		DISTINCT
+		department_id,
+		department_name
+		FROM
+		jy_department
+		where 1=1
+		<if test="_parameter !=null">
+			and department_name like '%${_parameter}%'
+		</if>
+	</select>
+	
+	
+
+</mapper>

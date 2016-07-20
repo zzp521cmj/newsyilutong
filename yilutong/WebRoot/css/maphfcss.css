@@ -1,0 +1,170 @@
+/* 创建时间：2015-6-2
+创建人：黄清华
+类型：css
+注释：回放的css */
+html {
+	height: 94%
+}
+
+body {
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
+	overflow: hidden;
+	font-family: 'Microsoft YaHei', 微软雅黑, Arial, Helvetica, sans-serif;
+}
+
+#controller {
+	width: 100%;
+	border-bottom: 3px outset;
+	height: 30px;
+	filter: alpha(Opacity = 100);
+	-moz-opacity: 1;
+	opacity: 1;
+	z-index: 10000;
+	background-color: #F7F7F7;;
+}
+
+#container {
+	height: 100%
+}
+
+#all {
+	width: 270px;
+	height: 80px;
+	padding: 9 0 0 14;
+}
+
+#mytable {
+	font-size: 13px;
+	color: #666;
+	padding: 7px 0 0 5px;
+	font-family: 'Microsoft YaHei', 微软雅黑, Arial, Helvetica, sans-serif;
+	line-height: 20px;
+	width: 100%;
+	height: 100%;
+}
+
+#td {
+	font-family: 'Microsoft YaHei', 微软雅黑, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #666;
+	width: 100%;
+	height: 100%;
+}
+
+#thtb {
+	font-family: 'Microsoft YaHei', 微软雅黑, Arial, Helvetica, sans-serif;
+	font-size: 13px;
+	width: 100%;
+	height: 100%;
+}
+
+#rlimg {
+	position: absolute;
+	margin-top: 2px;
+	margin-left: 4px;
+}
+
+#sjip {
+	width: 240px;
+	height: 25px;
+	border: 1px solid;
+	border-color: #95B8E7;
+	padding-left: 30px;
+}
+
+#datehidiv {
+	width: 330px;
+	height: 215px;
+	position: absolute;
+	z-index: 3;
+	border: 1px solid #95B8E7;
+	background-color: white;
+	padding: 10 0 0 20;
+	line-height: 70px;
+	    margin-top: 120px;
+}
+
+.Wdate {
+	width: 205px;
+	height: 25px;
+	border: 1px solid;
+	border-color: #95B8E7;
+	padding-left: 7px;
+}
+
+.txbt {
+	height: 31px;
+	cursor: pointer;
+	padding: 0 22px;
+	font: 300 15px/29px 'Open Sans', Helvetica, Arial, sans-serif;
+	color: #333;
+	background-color: #296191;
+	color: white;
+	border-color: #ccc;
+	border: 1px solid #ccc;
+	color: white;
+	border-color: #ccc;
+	border: 1px solid #ccc;
+}
+
+#jdt {
+	width: 250;
+	margin-left: 7px;
+	height: 110px;
+}
+
+#tab {
+	width: 267px;
+	height: 282px;
+}
+
+.tabdiv {
+	width: 265px;
+	overflow: hidden;
+	overflow-y: auto;
+	height: 236;
+}
+
+#pause {
+	width: 80;
+	height: 30px;
+	cursor: pointer;
+	font: 300 13px/29px 'Open Sans', Helvetica, Arial, sans-serif;
+	background-color: #296191;
+	color: white;
+	border-color: #ccc;
+	border: 1px solid white;
+	text-align: center;
+}
+
+#pause:hover {
+	background-color: #3276B1;
+}
+
+.tabdivhead {
+	height: 37;
+	text-align: center;
+	padding-top: 3px;
+	margin-top: 45;
+	border-bottom: 1px solid #DDDDDD;
+}
+
+.ipfz {
+	width: 26;
+	border: 1px solid #A9A9A9;
+	height: 25px;
+	margin-left: 3px;
+	margin-right: 3px;
+}
+
+.ibt {
+	border: 1px solid #A9A9A9;
+	height: 25px;
+	background-color: #fafafa;
+}
+
+.ibt:hover {
+	background-color: #DFDFDF;
+}
